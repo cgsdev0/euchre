@@ -1,0 +1,23 @@
+name: Upload static assets
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'assets/'
+  workflow_dispatch: {}
+      
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@master
+      - uses: BetaHuhn/do-spaces-action@v2
+        with:
+          access_key: ${{ secrets.SPACES_ACCESS_KEY}}
+          secret_key: ${{ secrets.SPACES_SECRET_KEY }}
+          space_name: "cdn.rollycubes.com"
+          space_region: "sfo3"
+          cdn_domain: "cdn.rollycubes.com"
+          source: assets
