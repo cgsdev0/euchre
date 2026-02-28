@@ -6,7 +6,6 @@
 #include "Game.h"
 #include "Loop.h"
 #include "StringUtils.h"
-#include "achievements/All.h"
 using namespace std::chrono_literals;
 
 const int ADD_SUB_OFFSET = 37;
@@ -25,15 +24,9 @@ Game::Game() {
         this->state.rolls[i] = 1;
         this->state.used[i] = false;
     }
-
-    // Initialize all achievements
-    this->achievements = initAchievements();
 }
 
 Game::~Game() {
-    for (auto &achievement : this->achievements) {
-        delete achievement;
-    }
 }
 
 bool Game::isInitialized() { return state.players.size() > 0; }
@@ -215,10 +208,9 @@ int Game::connectedPlayerCount() {
     return count;
 }
 
-#define ACTION(x)                 \
-    {                             \
-        #x, std::mem_fn(&Game::x) \
-    }
+#define ACTION(x) \
+    {             \
+        #x, std::mem_fn(&Game::x)}
 
 static const std::unordered_map<
     std::string, std::function<void(Game *, SendFunc, HandlerArgs, json &,
@@ -281,25 +273,15 @@ void Game::processEvent(const API::ServerPlayer *player, SendFunc &broadcast, Ha
             std::cout << std::endl;
         }
     }
-    for (auto achievement : this->achievements) {
-        auto progress = achievement->processEvent(data, prev, state, player->session);
-        if (progress <= 0) continue;
-        API::AchievementProgress ap{
-            .achievement_id = achievement->getAchievementID(),
-            .progress = progress,
-            .user_id = user_id,
-            .user_index = this->getPlayerId(player->session)};
-        server->reportStats2("achievement_progress", ap.toString(), [broadcast](auto s) {
-            API::AchievementUnlock a;
-            try {
-                a.fromString(s);
-                broadcast(a.toString());
-                // TODO: this sucks, but im lazy
-            } catch (std::exception &e) {
-                // expected
-            }
-        });
+}
+
+inline const API::ServerPlayer &getPlayer(const API::GameState &state, const std::string &session) {
+    for (const auto &player : state.players) {
+        if (player.session == session) {
+            return player;
+        }
     }
+    throw API::GameError({.error = "unknown player"});
 }
 
 void Game::handleMessage(HANDLER_ARGS) {
@@ -447,9 +429,6 @@ void Game::kick(HANDLER_ARGS) {
     } else if (state.turn_index > id) {
         state.turn_index--;
     }
-    for (auto &achievement : achievements) {
-        achievement->removePlayer(state.players[id].session);
-    }
     state.players.erase(state.players.begin() + id);
     broadcast(res.dump());
 }
@@ -460,7 +439,6 @@ void Game::restart(HANDLER_ARGS) {
     if (!state.victory)
         throw API::GameError({.error = "game still in progress"});
 
-    metrics->restarts->Increment();
     this->was_persisted = false;
     this->events.clear();
     this->user_palette.clear();
@@ -525,11 +503,6 @@ void Game::guardUpdate(const std::string &session) {
 }
 
 void Game::roll(HANDLER_ARGS) {
-    /* server.reportStats2("add_stats", "{}", [broadcast](auto s) { */
-    /*     API::AchievementUnlock a{ */
-    /*         .name = "you did it congrats"}; */
-    /*     broadcast(a.toString()); */
-    /* }); */
     if (state.victory)
         throw API::GameError({.error = "game is over"});
     if (session != turn_token)
@@ -547,10 +520,6 @@ void Game::roll(HANDLER_ARGS) {
         resp["rolls"].push_back(state.rolls[i]);
     }
     state.rolled = true;
-
-    // Metric collection
-    metrics->rolls->Increment();
-    metrics->specific_rolls[(state.rolls[0] - 1) * 6 + state.rolls[1] - 1]->Increment();
 
     // Update statistics
     for (uint i = 0; i < state.players.size(); ++i) {
@@ -640,7 +609,6 @@ void Game::update(HANDLER_ARGS) {
         if (!isDoubles()) {
             if (TARGET_SCORES.count(score)) {
                 // WIN CONDITION
-                metrics->wins[score]->Increment();
                 json win;
                 state.players[winnerId].win_count++;
                 for (uint i = 0; i < state.players.size(); ++i) {
@@ -653,21 +621,6 @@ void Game::update(HANDLER_ARGS) {
                     if (winnerId == i) {
                         state.players[i].win_hist[idx]++;
                     }
-                    API::ReportStats stats{
-                        .dice_hist = state.players[i].dice_hist,
-                        .doubles = state.players[i].doubles_count,
-                        .games = 1,
-                        .rolls = state.players[i].roll_count,
-                        .sum_hist = state.players[i].sum_hist,
-                        .user_id = user_id,
-                        .win_hist = state.players[i].win_hist,
-                        .wins = (winnerId == i ? 1 : 0)};
-                    server.reportStats2("add_stats", stats.toString(), [broadcast](auto s) {
-                        std::cout << "AUTH SAYS: " << s << std::endl;
-                        /* API::Achievement_Unlock a{ */
-                        /*     .name = "you did it congrats"}; */
-                        /* broadcast(a.toString()); */
-                    });
                 }
 
                 state.players[winnerId].crowned = std::optional<bool>(true);
@@ -732,15 +685,15 @@ void Game::update(HANDLER_ARGS) {
                     broadcast(update.dump());
                     RichTextStream stream;
                     stream << RT::italic
-                               << state.players[state.turn_index]
-                               << " reset "
-                               << state.players[i]
-                               << " to "
-                               << RT::color("red")
-                               << "zero"
-                               << RT::reset
-                               << RT::italic
-                               << "!";
+                           << state.players[state.turn_index]
+                           << " reset "
+                           << state.players[i]
+                           << " to "
+                           << RT::color("red")
+                           << "zero"
+                           << RT::reset
+                           << RT::italic
+                           << "!";
                     broadcast(log_rich_chat(stream));
                     break;
                 }

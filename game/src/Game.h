@@ -2,9 +2,7 @@
 #define INCLUDE_GAME_H
 
 #include "Consts.h"
-#include "Metrics.h"
 #include "RichTextStream.h"
-#include "achievements/BaseAchievement.h"
 
 #include <chrono>
 #include <functional>
@@ -23,8 +21,6 @@ typedef std::function<std::vector<int>()> RollFunc;
 class GameCoordinator;
 struct HandlerArgs {
     SendFunc send;
-    AuthSendFunc reportStats;
-    AuthSendFunc2 reportStats2;
     RollFunc do_a_roll;
 };
 
@@ -155,9 +151,7 @@ class Game {
     std::chrono::system_clock::time_point updated = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point turn_start_time = std::chrono::system_clock::now();
     std::string turn_token;
-    std::vector<BaseAchievement *> achievements;
     API::GameState state;
-    Metrics *metrics;
     std::vector<std::byte> events;
     std::vector<std::string> user_palette;
     bool was_persisted = false;

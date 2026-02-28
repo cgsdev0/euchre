@@ -60,7 +60,6 @@ void GameCoordinator::load_persistence() {
         API::GameState state;
         state.fromString(room.value().dump());
         Game *g = new Game(state);
-        g->metrics = metrics;
         g->was_persisted = true;
         games.insert({room.key(), g});
 
@@ -132,7 +131,6 @@ std::string GameCoordinator::createRoom(bool isPrivate, std::string seed) {
         }
     } while (games.find(id) != games.end());
     Game *g = new Game(isPrivate);
-    g->metrics = metrics;
     games.insert({id, g});
     if (!eviction_set.count(id)) {
         eviction_queue.push({std::chrono::system_clock::now(), id});

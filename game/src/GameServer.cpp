@@ -14,51 +14,12 @@
 #include "App.h"
 #include "Consts.h"
 #include "Game.h"
+#include "RngCore.h"
 
-#include "AuthServerRequestQueue.h"
 #include "GameCoordinator.h"
-#include "JWTVerifier.h"
 #include "MoveOnlyFunction.h"
 
-#include "Metrics.h"
-#include "RngOverTcp.h"
-#include <prometheus/counter.h>
-#include <prometheus/registry.h>
-#include <prometheus/text_serializer.h>
-
 #define DONT_REUSE_THE_FUCKING_PORT_LINUX 1
-
-template <typename T>
-concept can_roll = requires(T value) {
-    { value.roll() } -> std::convertible_to<std::vector<int>>;
-};
-
-template <can_roll T>
-struct BaseRngServer : public T {};
-
-struct CppRngServer {
-    std::uniform_int_distribution<int> dis{1, 6};
-    std::random_device rd;
-    std::mt19937 gen;
-
-    CppRngServer() {
-        // seed the RNG (once per boot)
-        gen.seed(rd());
-    }
-
-    std::vector<int> roll() {
-        return std::vector{dis(gen), dis(gen)};
-    }
-};
-
-template <can_roll... Ts>
-using CanRollVariant = std::variant<Ts...>;
-
-using RngServer = CanRollVariant<BaseRngServer<FortranRngServer>, BaseRngServer<CppRngServer>>;
-
-auto roll(RngServer &element) {
-    return std::visit([](auto &&el) { return el.roll(); }, element);
-}
 
 // for convenience
 using json = nlohmann::json;
@@ -128,7 +89,7 @@ void connectNewPlayer(uWS::App *app, uWS::WebSocket<false, true, PerSocketData> 
     }
 }
 
-uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, const JWTVerifier &jwt_verifier, AuthServerRequestQueue &authServer, Metrics &metrics, GameCoordinator &coordinator, RngServer &rng) {
+uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, GameCoordinator &coordinator, RngCore &rng) {
 
     return {/* Settings */
             .compression = uWS::SHARED_COMPRESSOR,
@@ -174,7 +135,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                 },
             .open =
                 [&, app](auto *ws) {
-                    metrics.ws_counter->Increment();
                     PerSocketData *userData =
                         (PerSocketData *)ws->getUserData();
 
@@ -212,47 +172,29 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         if (!data["type"].is_string())
                             throw API::GameError({.error = "Type is not specified correctly"});
                         auto action_type = data["type"].get<std::string>();
-                        if (action_type == "authenticate") {
-                            auto token = data["access_token"].get<std::string>();
-                            try {
-                                auto claim = jwt_verifier.decode_and_verify(token);
-                                userData->is_verified = true;
-                                userData->user_id = claim.user_id;
-                                userData->display_name = claim.display_name;
-                                connectNewPlayer(app, ws, userData, coordinator);
-
-                            } catch (const std::runtime_error &e) {
-                                std::cout << "authentication error\n"
-                                          << e.what() << std::endl;
-                                ws->close();
-                            }
+                        // Toss out any messages from unverified connection
+                        if (!userData->is_verified) return;
+                        auto it = coordinator.games.find(room);
+                        if (it != coordinator.games.end()) {
+                            Game *g = it->second;
+                            g->handleMessage(
+                                [ws, room, app](auto s) {
+                                    // ws->send(s, uWS::OpCode::TEXT);
+                                    app->publish(room, s, uWS::OpCode::TEXT);
+                                },
+                                {
+                                    .send =
+                                        [ws](auto s) { ws->send(s, uWS::OpCode::TEXT); },
+                                    .do_a_roll = [&rng]() { return rng.roll(); },
+                                },
+                                data, session);
+                            /*if (data["type"].is_string()) {
+                              if (data["type"] == "leave") {
+                              ws->close();
+                              }
+                              }*/
                         } else {
-                            // Toss out any messages from unverified connection
-                            if (!userData->is_verified) return;
-                            auto it = coordinator.games.find(room);
-                            if (it != coordinator.games.end()) {
-                                Game *g = it->second;
-                                g->handleMessage(
-                                    [ws, room, app](auto s) {
-                                        // ws->send(s, uWS::OpCode::TEXT);
-                                        app->publish(room, s, uWS::OpCode::TEXT);
-                                    },
-                                    {
-                                        .send =
-                                            [ws](auto s) { ws->send(s, uWS::OpCode::TEXT); },
-                                        .reportStats = [&authServer](auto url, auto json) { authServer.send(url, json); },
-                                        .reportStats2 = [&authServer](auto url, auto json, auto cb) { authServer.send(url, json, cb); },
-                                        .do_a_roll = [&rng]() { return roll(rng); },
-                                    },
-                                    data, session);
-                                /*if (data["type"].is_string()) {
-                                  if (data["type"] == "leave") {
-                                  ws->close();
-                                  }
-                                  }*/
-                            } else {
-                                response = API::GameError({.error = "Room not found: " + room}).toString();
-                            }
+                            response = API::GameError({.error = "Room not found: " + room}).toString();
                         }
                     } catch (API::GameError &e) {
                         response = e.toString();
@@ -289,7 +231,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                 [&, app](auto *ws, int code, std::string_view message) {
                     PerSocketData *userData =
                         (PerSocketData *)ws->getUserData();
-                    metrics.ws_counter->Decrement();
 
                     if (userData->dedupe_conns) return;
 
@@ -316,7 +257,7 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                 }};
 }
 
-uWS::App::WebSocketBehavior<HomeSocketData> makeHomeWebsocketBehavior(uWS::App *app, const JWTVerifier &jwt_verifier, AuthServerRequestQueue &authServer, Metrics &metrics, GameCoordinator &coordinator) {
+uWS::App::WebSocketBehavior<HomeSocketData> makeHomeWebsocketBehavior(uWS::App *app, GameCoordinator &coordinator) {
 
     return {/* Settings */
             .compression = uWS::SHARED_COMPRESSOR,
@@ -348,9 +289,7 @@ void writeCORS(auto *req, auto *res) {
 }
 int main(int argc, char **argv) {
 
-    auto registry = std::make_shared<prometheus::Registry>();
-    Metrics metrics(registry);
-    GameCoordinator coordinator(&metrics);
+    GameCoordinator coordinator;
 
     signal_handler = [&]() {
         std::cout << "Caught signal, attempting graceful shutdown..." << std::endl;
@@ -373,60 +312,24 @@ int main(int argc, char **argv) {
         std::cout << e.what() << std::endl;
     }
 
-    std::string authServerUrl("http://auth:3031/server/");
-    std::string devAuthServerUrl("http://localhost:3031/server/");
+    RngCore rng;
 
-    std::string baseAuthUrl;
-
-    RngServer rng;
-
-    if (std::getenv("DEV")) {
-        baseAuthUrl = devAuthServerUrl;
-        rng.emplace<BaseRngServer<CppRngServer>>();
-    } else {
-        baseAuthUrl = authServerUrl;
-        rng.emplace<BaseRngServer<FortranRngServer>>();
-    }
-
-    auto rolled = roll(rng);
+    auto rolled = rng.roll();
     std::cout << rolled[0] << " " << rolled[1] << std::endl;
 
-    bool auth_enabled = true;
-    if (std::getenv("NO_AUTH")) {
-        auth_enabled = false;
-    }
-
-    JWTVerifier jwt_verifier;
-
-    if (auth_enabled) {
-        std::cout << "Selected auth server URL: " << baseAuthUrl << std::endl;
-        jwt_verifier.init(baseAuthUrl);
-    }
-
-    AuthServerRequestQueue authServer(baseAuthUrl, uWS::Loop::get());
-
     uWS::App app;
-    app.get("/metrics", [&](auto *res, auto *req) {
-           const prometheus::TextSerializer serializer;
-           auto collected_metrics = registry->Collect();
-           res->write(serializer.Serialize(collected_metrics));
+    app.get("/list", [&](auto *res, auto *req) {
+           writeCORS(req, res);
+           res->writeHeader("Content-Type", "application/json");
+           res->write(coordinator.list_rooms().toString());
            res->end();
        })
-        .get("/list", [&](auto *res, auto *req) {
-            writeCORS(req, res);
-            res->writeHeader("Content-Type", "application/json");
-            res->write(coordinator.list_rooms().toString());
-            res->end();
-        })
         .get("/create", [&](auto *res, auto *req) {
             writeCORS(req, res);
             std::string session = getSession(req);
             bool isPrivate = true;
             if (req->getQuery().find("public") != std::string::npos) {
                 isPrivate = false;
-                metrics.game_counter_public->Increment();
-            } else {
-                metrics.game_counter_private->Increment();
             }
             if (session == "") {
                 res->end();
@@ -434,8 +337,8 @@ int main(int argc, char **argv) {
                 res->end(coordinator.createRoom(isPrivate));
             }
         })
-        .ws<HomeSocketData>("/ws/list", makeHomeWebsocketBehavior(&app, jwt_verifier, authServer, metrics, coordinator))
-        .ws<PerSocketData>("/ws/:mode/:room", makeWebsocketBehavior(&app, jwt_verifier, authServer, metrics, coordinator, rng))
+        .ws<HomeSocketData>("/ws/list", makeHomeWebsocketBehavior(&app, coordinator))
+        .ws<PerSocketData>("/ws/:mode/:room", makeWebsocketBehavior(&app, coordinator, rng))
         // This 1 makes it so that the port is not reusable
         // because it SUCKS ASS when the port is reusable and you
         // don't realize the port is reusable and then you have a bad day
