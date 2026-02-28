@@ -23,7 +23,6 @@ struct PerSocketData {
     string session;
     string room;
     string display_name;
-    bool is_verified;
     bool dedupe_conns;
 };
 

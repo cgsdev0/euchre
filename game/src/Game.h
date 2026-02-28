@@ -6,12 +6,10 @@
 
 #include <chrono>
 #include <functional>
-#include <json.hpp>
+#include <optional>
 #include <string>
 
 #include <vector>
-
-using json = nlohmann::json;
 
 typedef std::function<void(std::string)> SendFunc;
 
@@ -49,8 +47,8 @@ class Game {
     API::JoinMsg addPlayer(const PerSocketData &data);
     int getPlayerId(const std::string &id);
 
-    json disconnectPlayer(std::string id);
-    json reconnectPlayer(std::string id, std::string old_id, const PerSocketData &data);
+    std::optional<API::DisconnectMsg> disconnectPlayer(std::string id);
+    std::optional<API::ReconnectMsg> reconnectPlayer(std::string id, const PerSocketData &data);
     bool isPlayerConnected(std::string id) const;
 
     void advanceTurn();

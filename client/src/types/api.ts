@@ -166,7 +166,6 @@ export interface DisconnectMsg {
 export interface ReconnectMsg {
   type: "reconnect";
   id: number;
-  name?: string;
 }
 /**
  * Update everything

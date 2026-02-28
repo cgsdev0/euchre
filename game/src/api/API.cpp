@@ -582,16 +582,12 @@ namespace API {
 
     inline void from_json(const json & j, ReconnectMsg& x) {
         x.id = j.at("id").get<int64_t>();
-        x.name = get_stack_optional<std::string>(j, "name");
         x.type = j.at("type").get<ReconnectMsgType>();
     }
 
     inline void to_json(json & j, const ReconnectMsg & x) {
         j = json::object();
         j["id"] = x.id;
-        if (x.name) {
-            j["name"] = x.name;
-        }
         j["type"] = x.type;
     }
 

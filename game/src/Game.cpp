@@ -6,6 +6,8 @@
 #include "Game.h"
 #include "Loop.h"
 #include "StringUtils.h"
+#include <json.hpp>
+using json = nlohmann::json;
 using namespace std::chrono_literals;
 
 Game::Game() {
@@ -71,17 +73,14 @@ void Game::advanceTurn() {
     }
 }
 
-json Game::disconnectPlayer(std::string id) {
-    json result;
+std::optional<API::DisconnectMsg> Game::disconnectPlayer(std::string id) {
     for (uint i = 0; i < state.players.size(); ++i) {
         if (state.players[i].session == id) {
             state.players[i].connected = false;
-            result["type"] = "disconnect";
-            result["id"] = i;
-            break;
+            return API::DisconnectMsg{.id = i};
         }
     }
-    return result;
+    return std::nullopt;
 }
 
 bool Game::isPlayerConnected(std::string id) const {
@@ -93,25 +92,14 @@ bool Game::isPlayerConnected(std::string id) const {
     return false;
 }
 
-json Game::reconnectPlayer(std::string id, std::string old_id, const PerSocketData &data) {
-    json result;
-    bool has_old_id = (id != old_id);
+std::optional<API::ReconnectMsg> Game::reconnectPlayer(std::string id, const PerSocketData &data) {
     for (uint i = 0; i < state.players.size(); ++i) {
-        if (has_old_id && state.players[i].session == old_id) {
-            // Update our session to the new id
-            state.players[i].session = id;
-            if (state.turn == i) {
-                turn_token = id;
-            }
-        }
         if (state.players[i].session == id) {
             state.players[i].connected = true;
-            result["type"] = "reconnect";
-            result["id"] = i;
-            break;
+            return API::ReconnectMsg{.id = i};
         }
     }
-    return result;
+    return std::nullopt;
 }
 
 int Game::connectedPlayerCount() {
@@ -122,17 +110,6 @@ int Game::connectedPlayerCount() {
     }
     return count;
 }
-
-#define ACTION(x) \
-    {             \
-        #x, std::mem_fn(&Game::x)}
-
-static const std::unordered_map<
-    std::string, std::function<void(Game *, HandlerArgs, json &,
-                                    const std::string &)>>
-    action_map;
-
-#undef ACTION
 
 inline const API::ServerPlayer &getPlayer(const API::GameState &state, const std::string &session) {
     for (const auto &player : state.players) {
@@ -196,13 +173,9 @@ void Game::update_name(const HandlerArgs &server, const API::UpdateNameMsg &msg)
     for (uint i = 0; i < state.players.size(); ++i) {
         if (state.players[i].session == server.session) {
             state.players[i].name = std::optional<std::string>(name);
-            json res;
-            res["type"] = "update_name";
-            if (state.players[i].name != std::nullopt) {
-                res["name"] = *state.players[i].name;
-            }
-            res["id"] = i;
-            server.broadcast(res.dump());
+            auto res = msg;
+            res.id = i;
+            server.broadcast(res.toString());
             return;
         }
     }

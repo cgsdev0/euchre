@@ -14,7 +14,6 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         int64_t id;
-        std::optional<std::string> name;
         ReconnectMsgType type = static_cast<ReconnectMsgType>(0);
     };
 }

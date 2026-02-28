@@ -55,8 +55,10 @@ void connectNewPlayer(uWS::App *app, uWS::WebSocket<false, true, PerSocketData> 
                 return;
             }
         } else {
-            json resp = g->reconnectPlayer(userData->session, userData->session, *userData);
-            app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
+            auto resp = g->reconnectPlayer(userData->session, *userData);
+            if (resp) {
+                app->publish(userData->room, resp->toString(), uWS::OpCode::TEXT);
+            }
         }
         auto msg = g->toWelcomeMsg(userData->session);
         ws->send(msg.toString(), uWS::OpCode::TEXT);
@@ -79,9 +81,7 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
             .upgrade =
                 [&, app](auto *res, auto *req, auto *context) {
                     std::string session = getSession(req);
-                    bool is_verified = true;
-                    std::string mode = std::string(req->getParameter(0));
-                    std::string room = std::string(req->getParameter(1));
+                    std::string room = std::string(req->getParameter(0));
                     bool dedupe_conns = false;
                     auto it = coordinator.games.find(room);
                     if (it != coordinator.games.end()) {
@@ -95,7 +95,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         {.session = session,
                          .room = room,
                          .display_name = "",
-                         .is_verified = is_verified,
                          .dedupe_conns = dedupe_conns},
                         req->getHeader("sec-websocket-key"),
                         req->getHeader("sec-websocket-protocol"),
@@ -109,18 +108,12 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
 
                     if (userData->session == "guest:") {
                         ws->send("cookie", uWS::OpCode::TEXT);
-                        userData->is_verified = false;
                         return;
                     }
                     if (userData->dedupe_conns) {
                         json resp;
                         resp["error"] = "already connected";
                         ws->send(resp.dump(), uWS::OpCode::TEXT);
-                        return;
-                    }
-                    if (!userData->is_verified) {
-                        // We shouldn't mutate the game state until we're sure this user is
-                        // real.
                         return;
                     }
                     connectNewPlayer(app, ws, userData, coordinator);
@@ -136,26 +129,17 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                     std::string session = userData->session;
                     std::string response;
                     try {
-                        // Toss out any messages from unverified connection
-                        if (!userData->is_verified) return;
                         auto it = coordinator.games.find(room);
                         if (it != coordinator.games.end()) {
                             Game *g = it->second;
                             g->handleMessage(
                                 {
-                                    .broadcast = [ws, room, app](auto s) {
-                    // ws->send(s, uWS::OpCode::TEXT);
-                    app->publish(room, s, uWS::OpCode::TEXT); },
+                                    .broadcast = [ws, room, app](auto s) { app->publish(room, s, uWS::OpCode::TEXT); },
                                     .send =
                                         [ws](auto s) { ws->send(s, uWS::OpCode::TEXT); },
                                     .session = session,
                                 },
                                 message);
-                            /*if (data["type"].is_string()) {
-                              if (data["type"] == "leave") {
-                              ws->close();
-                              }
-                              }*/
                         } else {
                             response = API::GameError({.error = "Room not found: " + room}).toString();
                         }
@@ -163,27 +147,27 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         response = e.toString();
                     } catch (nlohmann::detail::parse_error &e) {
                         std::cout << "RECEIVED BAD JSON (parse_error): " << message
-                                  << std::endl
+                                  << "\n"
                                   << e.what() << std::endl;
                         response = API::GameError({.error = e.what()}).toString();
                     } catch (nlohmann::detail::type_error &e) {
                         std::cout << "HANDLED BAD JSON (type_error): " << message
-                                  << std::endl
+                                  << "\n"
                                   << e.what() << std::endl;
                         response = API::GameError({.error = e.what()}).toString();
                     } catch (nlohmann::detail::invalid_iterator &e) {
                         std::cout << "HANDLED BAD JSON (invalid_iterator): " << message
-                                  << std::endl
+                                  << "\n"
                                   << e.what() << std::endl;
                         response = API::GameError({.error = e.what()}).toString();
                     } catch (nlohmann::detail::out_of_range &e) {
                         std::cout << "HANDLED BAD JSON (out_of_range): " << message
-                                  << std::endl
+                                  << "\n"
                                   << e.what() << std::endl;
                         response = API::GameError({.error = e.what()}).toString();
                     } catch (nlohmann::detail::other_error &e) {
                         std::cout << "HANDLED BAD JSON (other_error): " << message
-                                  << std::endl
+                                  << "\n"
                                   << e.what() << std::endl;
                         response = API::GameError({.error = e.what()}).toString();
                     }
@@ -202,9 +186,9 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                     auto it = coordinator.games.find(room);
                     if (it != coordinator.games.end()) {
                         Game *g = it->second;
-                        json resp = g->disconnectPlayer(session);
-                        if (!resp.is_null()) {
-                            app->publish(room, resp.dump(), uWS::OpCode::TEXT);
+                        auto resp = g->disconnectPlayer(session);
+                        if (resp) {
+                            app->publish(room, resp->toString(), uWS::OpCode::TEXT);
                         }
                         if (!g->connectedPlayerCount()) {
                             coordinator.queue_eviction(room);
@@ -213,23 +197,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                 }};
 }
 
-const std::set<std::string> allowed_origins{
-    "https://rollycubes.com",
-    "https://prod.rollycubes.com",
-    "https://beta.rollycubes.com",
-    "https://www.rollycubes.com",
-    "https://rollycubes.live",
-    "http://localhost:3000",
-    "http://localhost:3005"};
-void writeCORS(auto *req, auto *res) {
-    std::string origin(req->getHeader("origin"));
-    if (allowed_origins.contains(origin)) {
-        res->writeHeader("Access-Control-Allow-Origin", origin);
-        res->writeHeader("Access-Control-Allow-Methods", "GET, POST, HEAD, OPTIONS");
-        res->writeHeader("Access-Control-Allow-Credentials", "true");
-        res->writeHeader("Access-Control-Allow-Headers", "csrf-token, content-type, x-access-token");
-    }
-}
 int main(int argc, char **argv) {
 
     GameCoordinator coordinator;
@@ -257,7 +224,6 @@ int main(int argc, char **argv) {
 
     uWS::App app;
     app.get("/create", [&](auto *res, auto *req) {
-           writeCORS(req, res);
            std::string session = getSession(req);
            bool isPrivate = true;
            if (req->getQuery().find("public") != std::string::npos) {
@@ -269,7 +235,7 @@ int main(int argc, char **argv) {
                res->end(coordinator.createRoom(isPrivate));
            }
        })
-        .ws<PerSocketData>("/ws/:mode/:room", makeWebsocketBehavior(&app, coordinator))
+        .ws<PerSocketData>("/ws/:room", makeWebsocketBehavior(&app, coordinator))
         // This 1 makes it so that the port is not reusable
         // because it SUCKS ASS when the port is reusable and you
         // don't realize the port is reusable and then you have a bad day
