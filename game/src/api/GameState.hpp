@@ -20,6 +20,7 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         int64_t dealer;
+        std::optional<std::vector<Card>> kitty;
         Phase phase;
         std::vector<Card> played_cards;
         std::vector<ServerPlayer> players;

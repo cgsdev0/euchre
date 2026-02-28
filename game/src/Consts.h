@@ -8,7 +8,7 @@
 using string = std::string;
 typedef unsigned int uint;
 
-static const uint MAX_PLAYERS = 8;
+static const uint MAX_PLAYERS = 4;
 static const uint MAX_CHAT_LOG = 100;
 static const uint SESSION_BYTES = 16;
 static const uint ROOM_LEN = 6;

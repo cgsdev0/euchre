@@ -198,16 +198,10 @@ export interface Redirect {
   room: string;
 }
 
-export interface Room {
-  code: string;
-  host_name: string;
-  last_updated: string;
-  player_count: number;
-}
-
 export interface GameState {
   type: "game_state";
   players: ServerPlayer[];
+  kitty?: Card[];
   played_cards: Card[];
   trump: "hearts" | "diamonds" | "spades" | "clubs";
   trick: number[];

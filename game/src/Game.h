@@ -36,7 +36,9 @@ class Game {
         this->state = g;
         if (this->state.players.size()) {
             turn_token = g.players[g.turn].session;
-            this->state.players[g.turn].connected = false;
+        }
+        for (auto &player : this->state.players) {
+            player.connected = false;
         }
     }
 

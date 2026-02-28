@@ -333,31 +333,6 @@
         "type"
       ]
     },
-    "Room": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "host_name": {
-          "type": "string"
-        },
-        "last_updated": {
-          "type": "string",
-          "format": "date"
-        },
-        "player_count": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "code",
-        "host_name",
-        "last_updated",
-        "player_count"
-      ]
-    },
     "GameState": {
       "type": "object",
       "properties": {
@@ -372,6 +347,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/ServerPlayer"
+          }
+        },
+        "kitty": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Card"
           }
         },
         "played_cards": {

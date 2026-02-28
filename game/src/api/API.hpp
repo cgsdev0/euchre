@@ -38,7 +38,6 @@
 #include "GameError.hpp"
 #include "RedirectType.hpp"
 #include "Redirect.hpp"
-#include "Room.hpp"
 #include "ServerPlayer.hpp"
 #include "GameStateType.hpp"
 #include "GameState.hpp"

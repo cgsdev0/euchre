@@ -24,14 +24,6 @@ Game::~Game() {
 bool Game::isInitialized() { return state.players.size() > 0; }
 bool Game::isPrivate() const { return state.private_session; }
 
-std::string Game::hostName() const {
-    if (state.players.size() < 1)
-        return "unknown";
-    if (state.players[0].name == std::nullopt)
-        return "unknown";
-    return *state.players[0].name;
-}
-
 bool Game::hasPlayer(std::string &id) {
     for (const auto &player : state.players) {
         if (player.session == id) {

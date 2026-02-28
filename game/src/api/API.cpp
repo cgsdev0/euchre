@@ -49,9 +49,6 @@ void to_json(json & j, const GameError & x);
 void from_json(const json & j, Redirect & x);
 void to_json(json & j, const Redirect & x);
 
-void from_json(const json & j, Room & x);
-void to_json(json & j, const Room & x);
-
 void from_json(const json & j, ServerPlayer & x);
 void to_json(json & j, const ServerPlayer & x);
 
@@ -440,21 +437,6 @@ namespace API {
         j["type"] = x.type;
     }
 
-    inline void from_json(const json & j, Room& x) {
-        x.code = j.at("code").get<std::string>();
-        x.host_name = j.at("host_name").get<std::string>();
-        x.last_updated = j.at("last_updated").get<std::string>();
-        x.player_count = j.at("player_count").get<int64_t>();
-    }
-
-    inline void to_json(json & j, const Room & x) {
-        j = json::object();
-        j["code"] = x.code;
-        j["host_name"] = x.host_name;
-        j["last_updated"] = x.last_updated;
-        j["player_count"] = x.player_count;
-    }
-
     inline void from_json(const json & j, ServerPlayer& x) {
         x.cards = j.at("cards").get<std::vector<Card>>();
         x.connected = j.at("connected").get<bool>();
@@ -474,6 +456,7 @@ namespace API {
 
     inline void from_json(const json & j, GameState& x) {
         x.dealer = j.at("dealer").get<int64_t>();
+        x.kitty = get_stack_optional<std::vector<Card>>(j, "kitty");
         x.phase = j.at("phase").get<Phase>();
         x.played_cards = j.at("played_cards").get<std::vector<Card>>();
         x.players = j.at("players").get<std::vector<ServerPlayer>>();
@@ -490,6 +473,9 @@ namespace API {
     inline void to_json(json & j, const GameState & x) {
         j = json::object();
         j["dealer"] = x.dealer;
+        if (x.kitty) {
+            j["kitty"] = x.kitty;
+        }
         j["phase"] = x.phase;
         j["played_cards"] = x.played_cards;
         j["players"] = x.players;
@@ -1216,15 +1202,6 @@ to_json(j, *this);
 return j.dump();
 }
 void RichTextMsg::fromString(const std::string &s) {
-auto j = json::parse(s);
-from_json(j, *this);
-}
-std::string Room::toString() const {
-json j;
-to_json(j, *this);
-return j.dump();
-}
-void Room::fromString(const std::string &s) {
 auto j = json::parse(s);
 from_json(j, *this);
 }
