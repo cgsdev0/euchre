@@ -13,6 +13,7 @@ namespace API {
     struct PlayJajaDingDongMsg {
 std::string toString() const;
 void fromString(const std::string &str);
+        int64_t id;
         PlayJajaDingDongMsgType type = static_cast<PlayJajaDingDongMsgType>(0);
     };
 }

@@ -10,20 +10,20 @@ export type ClientMsg =
   | ChatMsg
   | DiscardMsg
   | PlayCardMsg
-  | ObjectObject
+  | PassMsg
   | OrderMsg
   | TableTalkMsg
-  | ObjectObject1
+  | PlayJajaDingDongMsg
   | UpdateNameMsg
   | RestartMsg;
 
 export type ServerMsg =
   | WelcomeMsg
-  | ObjectObject
+  | PassMsg
   | OrderMsg
   | TableTalkMsg
   | PlayCardMsg
-  | ObjectObject1
+  | PlayJajaDingDongMsg
   | DealCardsMsg
   | UpdateNameMsg
   | JoinMsg
@@ -43,40 +43,42 @@ export interface ChatMsg {
 
 export interface DiscardMsg {
   type: "discard";
+  id: number;
   card: Card;
 }
 
 export interface Card {
-  suit?: "chat";
+  suit: "chat";
   illegal?: boolean;
-  rank?: "nine" | "ten" | "jack" | "queen" | "king" | "ace";
-  [k: string]: unknown;
+  rank: "nine" | "ten" | "jack" | "queen" | "king" | "ace";
 }
 
 export interface PlayCardMsg {
   type: "play_card";
-  id?: number;
+  id: number;
   card: Card;
 }
 
-export interface ObjectObject {
+export interface PassMsg {
   type: "pass";
+  id: number;
 }
 
 export interface OrderMsg {
-  type: "order";
+  type: "order" | "id";
   id?: number;
   suit?: number;
 }
 
 export interface TableTalkMsg {
   type: "table_talk";
-  id?: number;
+  id: number;
   table_talk: number;
 }
 
-export interface ObjectObject1 {
+export interface PlayJajaDingDongMsg {
   type: "play_jaja_ding_dong";
+  id: number;
 }
 
 export interface UpdateNameMsg {

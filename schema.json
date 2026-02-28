@@ -86,14 +86,15 @@
           "enum": [
             "pass"
           ]
+        },
+        "id": {
+          "type": "integer"
         }
-      },
-      "id": {
-        "type": "integer"
       },
       "additionalProperties": false,
       "required": [
-        "type"
+        "type",
+        "id"
       ]
     },
     "PlayJajaDingDongMsg": {
@@ -105,14 +106,15 @@
           "enum": [
             "play_jaja_ding_dong"
           ]
+        },
+        "id": {
+          "type": "integer"
         }
-      },
-      "id": {
-        "type": "integer"
       },
       "additionalProperties": false,
       "required": [
-        "type"
+        "type",
+        "id"
       ]
     },
     "TableTalkMsg": {
@@ -135,7 +137,8 @@
       "additionalProperties": false,
       "required": [
         "table_talk",
-        "type"
+        "type",
+        "id"
       ]
     },
     "OrderMsg": {
@@ -145,7 +148,8 @@
           "type": "string",
           "default": "order",
           "enum": [
-            "order"
+            "order",
+            "id"
           ]
         },
         "id": {
@@ -180,7 +184,8 @@
       "additionalProperties": false,
       "required": [
         "type",
-        "card"
+        "card",
+        "id"
       ]
     },
     "DiscardMsg": {
@@ -193,6 +198,9 @@
             "discard"
           ]
         },
+        "id": {
+          "type": "integer"
+        },
         "card": {
           "$ref": "#/definitions/Card"
         }
@@ -200,7 +208,8 @@
       "additionalProperties": false,
       "required": [
         "type",
-        "card"
+        "card",
+        "id"
       ]
     },
     "ChatMsg": {
@@ -248,7 +257,12 @@
             "ace"
           ]
         }
-      }
+      },
+      "additionalProperties": false,
+      "required": [
+        "suit",
+        "rank"
+      ]
     },
     "Player": {
       "type": "object",

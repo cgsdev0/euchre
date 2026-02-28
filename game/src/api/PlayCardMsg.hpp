@@ -16,7 +16,7 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         Card card;
-        std::optional<int64_t> id;
+        int64_t id;
         PlayCardMsgType type = static_cast<PlayCardMsgType>(0);
     };
 }

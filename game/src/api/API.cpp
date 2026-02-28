@@ -173,8 +173,8 @@ struct adl_serializer<std::variant<API::RichTextChunk, std::string>> {
 namespace API {
     inline void from_json(const json & j, Card& x) {
         x.illegal = get_stack_optional<bool>(j, "illegal");
-        x.rank = get_stack_optional<Rank>(j, "rank");
-        x.suit = get_stack_optional<Suit>(j, "suit");
+        x.rank = j.at("rank").get<Rank>();
+        x.suit = j.at("suit").get<Suit>();
     }
 
     inline void to_json(json & j, const Card & x) {
@@ -182,12 +182,8 @@ namespace API {
         if (x.illegal) {
             j["illegal"] = x.illegal;
         }
-        if (x.rank) {
-            j["rank"] = x.rank;
-        }
-        if (x.suit) {
-            j["suit"] = x.suit;
-        }
+        j["rank"] = x.rank;
+        j["suit"] = x.suit;
     }
 
     inline void from_json(const json & j, ClientMsg& x) {
@@ -356,34 +352,36 @@ namespace API {
     }
 
     inline void from_json(const json & j, PassMsg& x) {
+        x.id = j.at("id").get<int64_t>();
         x.type = j.at("type").get<PassMsgType>();
     }
 
     inline void to_json(json & j, const PassMsg & x) {
         j = json::object();
+        j["id"] = x.id;
         j["type"] = x.type;
     }
 
     inline void from_json(const json & j, PlayJajaDingDongMsg& x) {
+        x.id = j.at("id").get<int64_t>();
         x.type = j.at("type").get<PlayJajaDingDongMsgType>();
     }
 
     inline void to_json(json & j, const PlayJajaDingDongMsg & x) {
         j = json::object();
+        j["id"] = x.id;
         j["type"] = x.type;
     }
 
     inline void from_json(const json & j, TableTalkMsg& x) {
-        x.id = get_stack_optional<int64_t>(j, "id");
+        x.id = j.at("id").get<int64_t>();
         x.table_talk = j.at("table_talk").get<int64_t>();
         x.type = j.at("type").get<TableTalkMsgType>();
     }
 
     inline void to_json(json & j, const TableTalkMsg & x) {
         j = json::object();
-        if (x.id) {
-            j["id"] = x.id;
-        }
+        j["id"] = x.id;
         j["table_talk"] = x.table_talk;
         j["type"] = x.type;
     }
@@ -407,27 +405,27 @@ namespace API {
 
     inline void from_json(const json & j, PlayCardMsg& x) {
         x.card = j.at("card").get<Card>();
-        x.id = get_stack_optional<int64_t>(j, "id");
+        x.id = j.at("id").get<int64_t>();
         x.type = j.at("type").get<PlayCardMsgType>();
     }
 
     inline void to_json(json & j, const PlayCardMsg & x) {
         j = json::object();
         j["card"] = x.card;
-        if (x.id) {
-            j["id"] = x.id;
-        }
+        j["id"] = x.id;
         j["type"] = x.type;
     }
 
     inline void from_json(const json & j, DiscardMsg& x) {
         x.card = j.at("card").get<Card>();
+        x.id = j.at("id").get<int64_t>();
         x.type = j.at("type").get<DiscardMsgType>();
     }
 
     inline void to_json(json & j, const DiscardMsg & x) {
         j = json::object();
         j["card"] = x.card;
+        j["id"] = x.id;
         j["type"] = x.type;
     }
 
@@ -702,6 +700,7 @@ namespace API {
     inline void from_json(const json & j, ClientMsgType & x) {
         if (j == "chat") x = ClientMsgType::CHAT;
         else if (j == "discard") x = ClientMsgType::DISCARD;
+        else if (j == "id") x = ClientMsgType::ID;
         else if (j == "order") x = ClientMsgType::ORDER;
         else if (j == "pass") x = ClientMsgType::PASS;
         else if (j == "play_card") x = ClientMsgType::PLAY_CARD;
@@ -716,6 +715,7 @@ namespace API {
         switch (x) {
             case ClientMsgType::CHAT: j = "chat"; break;
             case ClientMsgType::DISCARD: j = "discard"; break;
+            case ClientMsgType::ID: j = "id"; break;
             case ClientMsgType::ORDER: j = "order"; break;
             case ClientMsgType::PASS: j = "pass"; break;
             case ClientMsgType::PLAY_CARD: j = "play_card"; break;
@@ -819,6 +819,7 @@ namespace API {
         if (j == "chat") x = ServerMsgType::CHAT;
         else if (j == "deal") x = ServerMsgType::DEAL;
         else if (j == "disconnect") x = ServerMsgType::DISCONNECT;
+        else if (j == "id") x = ServerMsgType::ID;
         else if (j == "join") x = ServerMsgType::JOIN;
         else if (j == "order") x = ServerMsgType::ORDER;
         else if (j == "pass") x = ServerMsgType::PASS;
@@ -837,6 +838,7 @@ namespace API {
             case ServerMsgType::CHAT: j = "chat"; break;
             case ServerMsgType::DEAL: j = "deal"; break;
             case ServerMsgType::DISCONNECT: j = "disconnect"; break;
+            case ServerMsgType::ID: j = "id"; break;
             case ServerMsgType::JOIN: j = "join"; break;
             case ServerMsgType::ORDER: j = "order"; break;
             case ServerMsgType::PASS: j = "pass"; break;
@@ -888,12 +890,14 @@ namespace API {
     }
 
     inline void from_json(const json & j, OrderMsgType & x) {
-        if (j == "order") x = OrderMsgType::ORDER;
+        if (j == "id") x = OrderMsgType::ID;
+        else if (j == "order") x = OrderMsgType::ORDER;
         else { throw std::runtime_error("Input JSON does not conform to schema!"); }
     }
 
     inline void to_json(json & j, const OrderMsgType & x) {
         switch (x) {
+            case OrderMsgType::ID: j = "id"; break;
             case OrderMsgType::ORDER: j = "order"; break;
             default: throw std::runtime_error("This should not happen");
         }
