@@ -20,6 +20,7 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         int64_t dealer;
+        int64_t id;
         Phase phase;
         std::vector<Card> played_cards;
         std::vector<Player> players;
@@ -32,6 +33,5 @@ void fromString(const std::string &str);
         int64_t turn;
         WelcomeMsgType type = static_cast<WelcomeMsgType>(0);
         std::vector<Card> your_cards;
-        int64_t your_id;
     };
 }

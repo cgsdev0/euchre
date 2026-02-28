@@ -92,7 +92,7 @@ export interface RestartMsg {
 
 export interface WelcomeMsg {
   type: "welcome";
-  your_id: number;
+  id: number;
   played_cards: Card[];
   trump: "hearts" | "diamonds" | "spades" | "clubs";
   your_cards: Card[];

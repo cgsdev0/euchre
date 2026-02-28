@@ -78,6 +78,7 @@
     },
     "PassMsg": {
       "type": "object",
+      "name": "PassMsg",
       "properties": {
         "type": {
           "type": "string",

@@ -274,6 +274,7 @@ namespace API {
 
     inline void from_json(const json & j, ServerMsg& x) {
         x.dealer = get_stack_optional<int64_t>(j, "dealer");
+        x.id = get_stack_optional<int64_t>(j, "id");
         x.phase = get_stack_optional<Phase>(j, "phase");
         x.played_cards = get_stack_optional<std::vector<Card>>(j, "played_cards");
         x.players = get_stack_optional<std::vector<Player>>(j, "players");
@@ -286,8 +287,6 @@ namespace API {
         x.turn = get_stack_optional<int64_t>(j, "turn");
         x.type = get_stack_optional<ServerMsgType>(j, "type");
         x.your_cards = get_stack_optional<std::vector<Card>>(j, "your_cards");
-        x.your_id = get_stack_optional<int64_t>(j, "your_id");
-        x.id = get_stack_optional<int64_t>(j, "id");
         x.suit = get_stack_optional<int64_t>(j, "suit");
         x.table_talk = get_stack_optional<int64_t>(j, "table_talk");
         x.card = get_stack_optional<Card>(j, "card");
@@ -299,6 +298,9 @@ namespace API {
         j = json::object();
         if (x.dealer) {
             j["dealer"] = x.dealer;
+        }
+        if (x.id) {
+            j["id"] = x.id;
         }
         if (x.phase) {
             j["phase"] = x.phase;
@@ -335,12 +337,6 @@ namespace API {
         }
         if (x.your_cards) {
             j["your_cards"] = x.your_cards;
-        }
-        if (x.your_id) {
-            j["your_id"] = x.your_id;
-        }
-        if (x.id) {
-            j["id"] = x.id;
         }
         if (x.suit) {
             j["suit"] = x.suit;
@@ -550,6 +546,7 @@ namespace API {
 
     inline void from_json(const json & j, WelcomeMsg& x) {
         x.dealer = j.at("dealer").get<int64_t>();
+        x.id = j.at("id").get<int64_t>();
         x.phase = j.at("phase").get<Phase>();
         x.played_cards = j.at("played_cards").get<std::vector<Card>>();
         x.players = j.at("players").get<std::vector<Player>>();
@@ -562,12 +559,12 @@ namespace API {
         x.turn = j.at("turn").get<int64_t>();
         x.type = j.at("type").get<WelcomeMsgType>();
         x.your_cards = j.at("your_cards").get<std::vector<Card>>();
-        x.your_id = j.at("your_id").get<int64_t>();
     }
 
     inline void to_json(json & j, const WelcomeMsg & x) {
         j = json::object();
         j["dealer"] = x.dealer;
+        j["id"] = x.id;
         j["phase"] = x.phase;
         j["played_cards"] = x.played_cards;
         j["players"] = x.players;
@@ -582,7 +579,6 @@ namespace API {
         j["turn"] = x.turn;
         j["type"] = x.type;
         j["your_cards"] = x.your_cards;
-        j["your_id"] = x.your_id;
     }
 
     inline void from_json(const json & j, RestartMsg& x) {

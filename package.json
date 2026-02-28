@@ -16,7 +16,7 @@
   },
   "homepage": "https://github.com/cgsdev0/euchre#readme",
   "devDependencies": {
-    "json-schema-to-typescript": "^13.0.2",
+    "json-schema-to-typescript": "^15.0.4",
     "quicktype": "23.0.64"
   }
 }

@@ -29,6 +29,7 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         std::optional<int64_t> dealer;
+        std::optional<int64_t> id;
         std::optional<Phase> phase;
         std::optional<std::vector<Card>> played_cards;
         std::optional<std::vector<Player>> players;
@@ -41,8 +42,6 @@ void fromString(const std::string &str);
         std::optional<int64_t> turn;
         std::optional<ServerMsgType> type;
         std::optional<std::vector<Card>> your_cards;
-        std::optional<int64_t> your_id;
-        std::optional<int64_t> id;
         std::optional<int64_t> suit;
         std::optional<int64_t> table_talk;
         std::optional<Card> card;
