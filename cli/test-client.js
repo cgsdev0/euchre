@@ -83,6 +83,7 @@ const MSG_COLORS = {
   pass: C.gray,
   order: C.magenta,
   play_card: C.yellow,
+  discard: C.yellow,
   chat: C.white,
   error: C.red,
   redirect: C.yellow,
@@ -114,6 +115,8 @@ function formatIncoming(msg) {
       return `${prefix} ${playerName(msg.id)} ordered ${SUIT_SYMBOLS[msg.suit] || msg.suit}${msg.alone ? ' (going alone!)' : ''}`;
     case 'play_card':
       return `${prefix} ${playerName(msg.id)} played ${fmtCard(msg.card)}`;
+    case 'discard':
+      return `${prefix} ${playerName(msg.id)} discarded ${fmtCard(msg.card)}`;
     case 'update_name':
       return `${prefix} Player ${msg.id} is now "${msg.name}"`;
     case 'error':
@@ -381,13 +384,11 @@ let rl = null;
 async function main() {
   const hostArg = process.argv[2] || 'localhost:3001';
   let room = process.argv[3] || null;
+  const session = process.argv[4] || crypto.randomUUID();
 
   // Ensure host has protocol
   const host = hostArg.includes('://') ? hostArg.replace(/^https?/, 'http') : `http://${hostArg}`;
   const wsHost = host.replace(/^http/, 'ws');
-
-  // Generate session
-  const session = crypto.randomUUID();
   const cookie = `_session=${session}`;
 
   console.log(`${C.bold}Euchre Test Client${C.reset}`);
@@ -427,6 +428,11 @@ async function main() {
       if (['welcome', 'update', 'deal'].includes(msg.type)) {
         mergeState(msg);
       }
+      // Dealer picks up the top card when ordered up in round 1
+      if (msg.type === 'update' && msg.phase === 'discarding' && myId === gameState.dealer && gameState.top_card) {
+        gameState.your_cards = gameState.your_cards || [];
+        gameState.your_cards.push(gameState.top_card);
+      }
       if (msg.type === 'join' && gameState && gameState.players && msg.id !== undefined) {
         if (!gameState.players[msg.id]) gameState.players[msg.id] = {};
         gameState.players[msg.id].name = msg.name;
@@ -440,6 +446,11 @@ async function main() {
       }
       if (msg.type === 'update_name' && gameState && gameState.players && gameState.players[msg.id]) {
         gameState.players[msg.id].name = msg.name;
+      }
+      if (msg.type === 'discard' && gameState && gameState.your_cards && msg.id === myId) {
+        gameState.your_cards = gameState.your_cards.filter(
+          c => !(c.suit === msg.card.suit && c.rank === msg.card.rank)
+        );
       }
       if (msg.type === 'play_card' && gameState) {
         if (!gameState.trick) gameState.trick = [];
@@ -456,7 +467,7 @@ async function main() {
       log(formatIncoming(msg));
 
       // Print status line after state-affecting messages
-      if (['welcome', 'update', 'deal', 'order', 'pass', 'play_card'].includes(msg.type)) {
+      if (['welcome', 'update', 'deal', 'order', 'pass', 'play_card', 'discard'].includes(msg.type)) {
         const sl = statusLine();
         if (sl) log(sl);
       }
