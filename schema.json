@@ -4,9 +4,6 @@
       "type": "object",
       "oneOf": [
         {
-          "$ref": "#/definitions/ChatMsg"
-        },
-        {
           "$ref": "#/definitions/DiscardMsg"
         },
         {
@@ -77,6 +74,7 @@
       ]
     },
     "PassMsg": {
+      "description": "Pass during the voting rounds.",
       "type": "object",
       "name": "PassMsg",
       "properties": {
@@ -98,6 +96,7 @@
       ]
     },
     "PlayJajaDingDongMsg": {
+      "description": "Self-explanatory.",
       "type": "object",
       "properties": {
         "type": {
@@ -118,6 +117,7 @@
       ]
     },
     "TableTalkMsg": {
+      "description": "Use the quick-chat feature.",
       "type": "object",
       "properties": {
         "type": {
@@ -142,6 +142,7 @@
       ]
     },
     "OrderMsg": {
+      "description": "Order up a particular suit as trump.",
       "type": "object",
       "properties": {
         "type": {
@@ -161,10 +162,12 @@
       },
       "additionalProperties": false,
       "required": [
-        "type"
+        "type",
+        "id"
       ]
     },
     "PlayCardMsg": {
+      "description": "Choose a card to play for the current trick.",
       "type": "object",
       "properties": {
         "type": {
@@ -189,6 +192,7 @@
       ]
     },
     "DiscardMsg": {
+      "description": "Dealer chooses a card to discard.",
       "type": "object",
       "properties": {
         "type": {
@@ -210,26 +214,6 @@
         "type",
         "card",
         "id"
-      ]
-    },
-    "ChatMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "chat",
-          "enum": [
-            "chat"
-          ]
-        },
-        "msg": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "msg",
-        "type"
       ]
     },
     "Card": {
@@ -592,6 +576,7 @@
       ]
     },
     "RestartMsg": {
+      "description": "Start a new game.",
       "type": "object",
       "properties": {
         "type": {
@@ -752,6 +737,7 @@
       ]
     },
     "UpdateNameMsg": {
+      "description": "Change your display name.",
       "type": "object",
       "properties": {
         "type": {
