@@ -232,6 +232,9 @@
             "chat"
           ]
         },
+        "illegal": {
+          "type": "boolean"
+        },
         "rank": {
           "type": "string",
           "default": "nine",
@@ -482,7 +485,7 @@
             "welcome"
           ]
         },
-        "your_id": {
+        "id": {
           "type": "integer"
         },
         "played_cards": {
@@ -564,7 +567,7 @@
         "trump",
         "trick",
         "scores",
-        "your_id",
+        "id",
         "players",
         "private_session",
         "turn",

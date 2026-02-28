@@ -19,9 +19,6 @@
 using json = nlohmann::json;
 using time_point = std::chrono::system_clock::time_point;
 
-typedef uWS::HttpResponse<false> HttpResponse;
-typedef uWS::HttpRequest HttpRequest;
-
 static std::string serializeTimePoint(const time_point &time,
                                       const std::string &format) {
     std::time_t tt = std::chrono::system_clock::to_time_t(time);
@@ -29,23 +26,6 @@ static std::string serializeTimePoint(const time_point &time,
     std::stringstream ss;
     ss << std::put_time(&tm, format.c_str());
     return ss.str();
-}
-
-API::RoomListMsg GameCoordinator::list_rooms() {
-    API::RoomListMsg respList;
-    for (auto const &[code, game] : games) {
-        if (game->isPrivate()) {
-            continue;
-        }
-        std::string updated = serializeTimePoint(
-            game->getUpdated(), "UTC: %Y-%m-%d %H:%M:%S");
-        respList.rooms.push_back(
-            {.code = code,
-             .host_name = game->hostName(),
-             .last_updated = updated,
-             .player_count = game->connectedPlayerCount()});
-    }
-    return respList;
 }
 
 void GameCoordinator::load_persistence() {

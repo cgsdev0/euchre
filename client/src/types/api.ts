@@ -48,6 +48,7 @@ export interface DiscardMsg {
 
 export interface Card {
   suit?: "chat";
+  illegal?: boolean;
   rank?: "nine" | "ten" | "jack" | "queen" | "king" | "ace";
   [k: string]: unknown;
 }

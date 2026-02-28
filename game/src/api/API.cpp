@@ -172,12 +172,16 @@ struct adl_serializer<std::variant<API::RichTextChunk, std::string>> {
 }
 namespace API {
     inline void from_json(const json & j, Card& x) {
+        x.illegal = get_stack_optional<bool>(j, "illegal");
         x.rank = get_stack_optional<Rank>(j, "rank");
         x.suit = get_stack_optional<Suit>(j, "suit");
     }
 
     inline void to_json(json & j, const Card & x) {
         j = json::object();
+        if (x.illegal) {
+            j["illegal"] = x.illegal;
+        }
         if (x.rank) {
             j["rank"] = x.rank;
         }

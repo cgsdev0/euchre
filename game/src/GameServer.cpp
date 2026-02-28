@@ -14,7 +14,6 @@
 #include "App.h"
 #include "Consts.h"
 #include "Game.h"
-#include "RngCore.h"
 
 #include "GameCoordinator.h"
 #include "MoveOnlyFunction.h"
@@ -47,13 +46,11 @@ void connectNewPlayer(uWS::App *app, uWS::WebSocket<false, true, PerSocketData> 
         Game *g = it->second;
 
         auto welcome = [g, userData, ws, app, &coordinator]() {
-            auto msg = g->toWelcomeMsg();
-            msg.your_id = g->getPlayerId(userData->session);
+            auto msg = g->toWelcomeMsg(userData->session);
             ws->send(msg.toString(), uWS::OpCode::TEXT);
             ws->subscribe(userData->room);
-            app->publish("home/list", coordinator.list_rooms().toString(), uWS::OpCode::TEXT);
         };
-        if (!(g->hasPlayer(userData->session) || g->hasPlayer(userData->session_from_cookie))) {
+        if (!g->hasPlayer(userData->session)) {
             json resp = g->addPlayer(*userData);
             if (resp.is_null()) {
                 // room is full
@@ -64,7 +61,7 @@ void connectNewPlayer(uWS::App *app, uWS::WebSocket<false, true, PerSocketData> 
             }
             app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
         } else {
-            json resp = g->reconnectPlayer(userData->session, userData->session_from_cookie, *userData);
+            json resp = g->reconnectPlayer(userData->session, userData->session, *userData);
             app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
         }
         welcome();
@@ -77,7 +74,7 @@ void connectNewPlayer(uWS::App *app, uWS::WebSocket<false, true, PerSocketData> 
     }
 }
 
-uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, GameCoordinator &coordinator, RngCore &rng) {
+uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, GameCoordinator &coordinator) {
 
     return {/* Settings */
             .compression = uWS::SHARED_COMPRESSOR,
@@ -86,15 +83,9 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
             .upgrade =
                 [&, app](auto *res, auto *req, auto *context) {
                     std::string session = getSession(req);
-                    std::string session_from_cookie = session;
                     bool is_verified = true;
                     std::string mode = std::string(req->getParameter(0));
                     std::string room = std::string(req->getParameter(1));
-                    std::string user_id = std::string(req->getQuery("userId"));
-                    if (user_id.length()) {
-                        session = user_id;
-                        is_verified = false;
-                    }
                     bool dedupe_conns = false;
                     auto it = coordinator.games.find(room);
                     if (it != coordinator.games.end()) {
@@ -103,16 +94,11 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         if (g->isPlayerConnected(session)) {
                             dedupe_conns = true;
                         }
-                        if (g->isPlayerConnected(session_from_cookie)) {
-                            dedupe_conns = true;
-                        }
                     }
                     res->template upgrade<PerSocketData>(
                         {.session = session,
-                         .session_from_cookie = session_from_cookie,
                          .room = room,
                          .display_name = "",
-                         .user_id = "",
                          .is_verified = is_verified,
                          .dedupe_conns = dedupe_conns},
                         req->getHeader("sec-websocket-key"),
@@ -171,7 +157,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                                 {
                                     .send =
                                         [ws](auto s) { ws->send(s, uWS::OpCode::TEXT); },
-                                    .do_a_roll = [&rng]() { return rng.roll(); },
                                 },
                                 data, session);
                             /*if (data["type"].is_string()) {
@@ -228,25 +213,11 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         json resp = g->disconnectPlayer(session);
                         if (!resp.is_null()) {
                             app->publish(room, resp.dump(), uWS::OpCode::TEXT);
-                            app->publish("home/list", coordinator.list_rooms().toString(), uWS::OpCode::TEXT);
                         }
                         if (!g->connectedPlayerCount()) {
                             coordinator.queue_eviction(room);
                         }
                     }
-                }};
-}
-
-uWS::App::WebSocketBehavior<HomeSocketData> makeHomeWebsocketBehavior(uWS::App *app, GameCoordinator &coordinator) {
-
-    return {/* Settings */
-            .compression = uWS::SHARED_COMPRESSOR,
-            .maxPayloadLength = 16 * 1024,
-            /* Handlers */
-            .open =
-                [&, app](auto *ws) {
-                    ws->subscribe("home/list");
-                    ws->send(coordinator.list_rooms().toString(), uWS::OpCode::TEXT);
                 }};
 }
 
@@ -292,33 +263,21 @@ int main(int argc, char **argv) {
         std::cout << e.what() << std::endl;
     }
 
-    RngCore rng;
-
-    auto rolled = rng.roll();
-    std::cout << rolled[0] << " " << rolled[1] << std::endl;
-
     uWS::App app;
-    app.get("/list", [&](auto *res, auto *req) {
+    app.get("/create", [&](auto *res, auto *req) {
            writeCORS(req, res);
-           res->writeHeader("Content-Type", "application/json");
-           res->write(coordinator.list_rooms().toString());
-           res->end();
+           std::string session = getSession(req);
+           bool isPrivate = true;
+           if (req->getQuery().find("public") != std::string::npos) {
+               isPrivate = false;
+           }
+           if (session == "") {
+               res->end();
+           } else {
+               res->end(coordinator.createRoom(isPrivate));
+           }
        })
-        .get("/create", [&](auto *res, auto *req) {
-            writeCORS(req, res);
-            std::string session = getSession(req);
-            bool isPrivate = true;
-            if (req->getQuery().find("public") != std::string::npos) {
-                isPrivate = false;
-            }
-            if (session == "") {
-                res->end();
-            } else {
-                res->end(coordinator.createRoom(isPrivate));
-            }
-        })
-        .ws<HomeSocketData>("/ws/list", makeHomeWebsocketBehavior(&app, coordinator))
-        .ws<PerSocketData>("/ws/:mode/:room", makeWebsocketBehavior(&app, coordinator, rng))
+        .ws<PerSocketData>("/ws/:mode/:room", makeWebsocketBehavior(&app, coordinator))
         // This 1 makes it so that the port is not reusable
         // because it SUCKS ASS when the port is reusable and you
         // don't realize the port is reusable and then you have a bad day
