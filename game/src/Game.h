@@ -17,11 +17,10 @@ typedef std::function<void(std::string)> SendFunc;
 
 class GameCoordinator;
 struct HandlerArgs {
+    SendFunc broadcast;
     SendFunc send;
+    std::string &session;
 };
-
-#define HANDLER_ARGS \
-    SendFunc broadcast, HandlerArgs server, json &data, const ::std::string &session
 
 class Game {
   public:
@@ -47,7 +46,7 @@ class Game {
     std::string hostName() const;
 
     bool hasPlayer(std::string &id);
-    json addPlayer(const PerSocketData &data);
+    API::JoinMsg addPlayer(const PerSocketData &data);
     int getPlayerId(const std::string &id);
 
     json disconnectPlayer(std::string id);
@@ -58,12 +57,13 @@ class Game {
 
     std::chrono::system_clock::time_point getUpdated() { return this->updated; }
 
-    void handleMessage(HANDLER_ARGS);
+    void handleMessage(const HandlerArgs &server, const std::string_view message);
 
-    void chat(HANDLER_ARGS);
-    void leave(HANDLER_ARGS);
-    void restart(HANDLER_ARGS);
-    void update_name(HANDLER_ARGS);
+#define X(NAME, TYPE) \
+    void NAME(const HandlerArgs &server, const API::TYPE &msg);
+
+#include "Handlers.def"
+#undef X
 
     int connectedPlayerCount();
 

@@ -45,26 +45,22 @@ void connectNewPlayer(uWS::App *app, uWS::WebSocket<false, true, PerSocketData> 
         // Connecting to a valid game
         Game *g = it->second;
 
-        auto welcome = [g, userData, ws, app, &coordinator]() {
-            auto msg = g->toWelcomeMsg(userData->session);
-            ws->send(msg.toString(), uWS::OpCode::TEXT);
-            ws->subscribe(userData->room);
-        };
         if (!g->hasPlayer(userData->session)) {
-            json resp = g->addPlayer(*userData);
-            if (resp.is_null()) {
-                // room is full
-                std::string err = API::GameError({.error = "room full"}).toString();
-                ws->send(err, uWS::OpCode::TEXT);
+            try {
+                auto msg = g->addPlayer(*userData);
+                app->publish(userData->room, msg.toString(), uWS::OpCode::TEXT);
+            } catch (const API::GameError &error) {
+                ws->send(error.toString(), uWS::OpCode::TEXT);
                 ws->close();
                 return;
             }
-            app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
         } else {
             json resp = g->reconnectPlayer(userData->session, userData->session, *userData);
             app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
         }
-        welcome();
+        auto msg = g->toWelcomeMsg(userData->session);
+        ws->send(msg.toString(), uWS::OpCode::TEXT);
+        ws->subscribe(userData->room);
     } else {
         // Connecting to a non-existant room
         // let's migrate them to a new room
@@ -140,25 +136,21 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                     std::string session = userData->session;
                     std::string response;
                     try {
-                        auto data = json::parse(message);
-                        if (!data["type"].is_string())
-                            throw API::GameError({.error = "Type is not specified correctly"});
-                        auto action_type = data["type"].get<std::string>();
                         // Toss out any messages from unverified connection
                         if (!userData->is_verified) return;
                         auto it = coordinator.games.find(room);
                         if (it != coordinator.games.end()) {
                             Game *g = it->second;
                             g->handleMessage(
-                                [ws, room, app](auto s) {
-                                    // ws->send(s, uWS::OpCode::TEXT);
-                                    app->publish(room, s, uWS::OpCode::TEXT);
-                                },
                                 {
+                                    .broadcast = [ws, room, app](auto s) {
+                    // ws->send(s, uWS::OpCode::TEXT);
+                    app->publish(room, s, uWS::OpCode::TEXT); },
                                     .send =
                                         [ws](auto s) { ws->send(s, uWS::OpCode::TEXT); },
+                                    .session = session,
                                 },
-                                data, session);
+                                message);
                             /*if (data["type"].is_string()) {
                               if (data["type"] == "leave") {
                               ws->close();

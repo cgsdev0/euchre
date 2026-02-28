@@ -42,23 +42,22 @@ int Game::getPlayerId(const std::string &id) {
     return -1;
 }
 
-json Game::addPlayer(const PerSocketData &data) {
-    json result;
+API::JoinMsg Game::addPlayer(const PerSocketData &data) {
     if (state.players.size() >= MAX_PLAYERS) {
-        return result;
+        throw API::GameError("lobby is full");
     }
     auto &player = state.players.emplace_back();
     player.connected = true;
     player.session = data.session;
-    result["type"] = "join";
-    result["id"] = state.players.size() - 1;
+    API::JoinMsg msg;
+    msg.id = state.players.size() - 1;
 
     // This is our first player joining
     if (state.players.size() == 1) {
         turn_token = data.session;
         state.turn = 0;
     }
-    return result;
+    return msg;
 }
 
 void Game::advanceTurn() {
@@ -129,10 +128,9 @@ int Game::connectedPlayerCount() {
         #x, std::mem_fn(&Game::x)}
 
 static const std::unordered_map<
-    std::string, std::function<void(Game *, SendFunc, HandlerArgs, json &,
+    std::string, std::function<void(Game *, HandlerArgs, json &,
                                     const std::string &)>>
-    action_map = {ACTION(chat), ACTION(leave),
-                  ACTION(restart), ACTION(update_name)};
+    action_map;
 
 #undef ACTION
 
@@ -145,94 +143,66 @@ inline const API::ServerPlayer &getPlayer(const API::GameState &state, const std
     throw API::GameError({.error = "unknown player"});
 }
 
-void Game::handleMessage(HANDLER_ARGS) {
+void Game::handleMessage(const HandlerArgs &server, const std::string_view message) {
+    auto data = json::parse(message);
     if (!data["type"].is_string())
         throw API::GameError({.error = "Type is not specified correctly"});
     // Copy a snapshot of the current game state
     API::GameState prev(state);
     const API::ServerPlayer *player = nullptr;
-    player = &getPlayer(state, session);
+    player = &getPlayer(state, server.session);
     if (player == nullptr)
         throw API::GameError({.error = "unknown player"});
-    auto action_type = data["type"].get<std::string>();
-    auto it = action_map.find(action_type);
-    if (it != action_map.end()) {
-        it->second(this, broadcast, server, data, session);
-    } else {
-        throw API::GameError({.error = "Unknown action type"});
+
+    const auto type = data["type"].get<std::string>();
+
+#define X(name, Msg)                                \
+    if (type == #name) {                            \
+        API::Msg msg;                               \
+        msg.fromString(std::string(message));       \
+        this->name(server, msg);                    \
+        updated = std::chrono::system_clock::now(); \
+        return;                                     \
     }
-    updated = std::chrono::system_clock::now();
+#include "Handlers.def"
+#undef X
+
+    throw API::GameError({.error = "Unknown action type"});
 }
 
-void Game::chat(HANDLER_ARGS) {
-    json res;
+void Game::order(const HandlerArgs &server, const API::OrderMsg &msg) {
+}
+void Game::pass(const HandlerArgs &server, const API::PassMsg &msg) {
+}
+void Game::play_card(const HandlerArgs &server, const API::PlayCardMsg &msg) {
+}
+void Game::discard(const HandlerArgs &server, const API::DiscardMsg &msg) {
+}
+void Game::play_jaja_ding_dong(const HandlerArgs &server, const API::PlayJajaDingDongMsg &msg) {
+}
 
-    if (!data["msg"].is_string())
-        throw API::GameError({.error = "Message must be a string"});
-    for (uint i = 0; i < state.players.size(); ++i) {
-        if (state.players[i].session == session) {
-            res["type"] = data["type"];
-            auto msg = data["msg"].get<std::string>();
-            std::string name;
-            if (state.players[i].name)
-                name = *state.players[i].name;
-            if (name == "") {
-                name = "User" + std::to_string(i + 1);
-            }
-
-            auto msg2 = msg;
-            if (msg.length() > MAX_CHAT_LEN) {
-                msg2 = trimString(msg, MAX_CHAT_LEN, true);
-            }
-            RichTextStream stream;
-            stream << state.players[i] << ": " << msg2;
-            broadcast(log_rich_chat(stream));
-            return;
-        }
-    }
+void Game::table_talk(const HandlerArgs &server, const API::TableTalkMsg &msg) {
 };
 
-void Game::leave(HANDLER_ARGS) {
-    json res;
-    res["type"] = "leave";
-    for (uint i = 0; i < state.players.size(); ++i) {
-        if (state.players[i].session == session) {
-            res["id"] = i;
-            if (turn_token == state.players[i].session) {
-                advanceTurn();
-                json turn;
-                turn["type"] = "update_turn";
-                turn["id"] = state.turn;
-                broadcast(turn.dump());
-            }
-            state.players.erase(state.players.begin() + i);
-            broadcast(res.dump());
-            break;
-        }
-    }
-}
-
-void Game::restart(HANDLER_ARGS) {
+void Game::restart(const HandlerArgs &server, const API::RestartMsg &msg) {
     if (state.players.empty())
         throw API::GameError({.error = "uhhh this should never happen"});
     if (state.phase != API::Phase::ENDED)
         throw API::GameError({.error = "game still in progress"});
 }
 
-void Game::update_name(HANDLER_ARGS) {
-    if (!data["name"].is_string())
-        throw API::GameError({.error = "name must be a string"});
-    std::string name = trimString(data["name"].get<std::string>(), MAX_PLAYER_NAME);
+void Game::update_name(const HandlerArgs &server, const API::UpdateNameMsg &msg) {
+    std::string name = trimString(msg.name, MAX_PLAYER_NAME);
     for (uint i = 0; i < state.players.size(); ++i) {
-        if (state.players[i].session == session) {
+        if (state.players[i].session == server.session) {
             state.players[i].name = std::optional<std::string>(name);
-            json msg;
-            msg["type"] = "update_name";
+            json res;
+            res["type"] = "update_name";
             if (state.players[i].name != std::nullopt) {
-                msg["name"] = *state.players[i].name;
+                res["name"] = *state.players[i].name;
             }
-            msg["id"] = i;
-            broadcast(msg.dump());
+            res["id"] = i;
+            server.broadcast(res.dump());
             return;
         }
     }
