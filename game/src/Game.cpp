@@ -166,7 +166,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
         throw GameError({.error = "it's not your turn"});
     if (state.phase == Phase::VOTE_ROUND1) {
         int sitting_out = -1;
-        if (msg.alone) {
+        if (msg.alone && *msg.alone) {
             sitting_out = (state.turn + 2) % MAX_PLAYERS;
             state.players[sitting_out].sitting_out = true;
         }
@@ -191,7 +191,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
         if (msg.suit == state.top_card->suit) {
             throw GameError({.error = "that suit was turned down"});
         }
-        if (msg.alone) {
+        if (msg.alone && *msg.alone) {
             state.players[(state.turn + 2) % MAX_PLAYERS].sitting_out = true;
         }
         state.trump = *msg.suit;

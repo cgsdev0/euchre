@@ -297,7 +297,7 @@ namespace API {
         x.trick = get_stack_optional<std::vector<Card>>(j, "trick");
         x.trump = get_stack_optional<Suit>(j, "trump");
         x.turn = get_stack_optional<int64_t>(j, "turn");
-        x.type = get_stack_optional<ServerMsgType>(j, "type");
+        x.type = j.at("type").get<ServerMsgType>();
         x.your_cards = get_stack_optional<std::vector<Card>>(j, "your_cards");
         x.alone = get_stack_optional<bool>(j, "alone");
         x.suit = get_stack_optional<Suit>(j, "suit");
@@ -345,9 +345,7 @@ namespace API {
         if (x.turn) {
             j["turn"] = x.turn;
         }
-        if (x.type) {
-            j["type"] = x.type;
-        }
+        j["type"] = x.type;
         if (x.your_cards) {
             j["your_cards"] = x.your_cards;
         }
@@ -578,16 +576,14 @@ namespace API {
 
     inline void from_json(const json & j, DealCardsMsg& x) {
         x.top_card = j.at("top_card").get<Card>();
-        x.type = get_stack_optional<DealCardsMsgType>(j, "type");
+        x.type = j.at("type").get<DealCardsMsgType>();
         x.your_cards = j.at("your_cards").get<std::vector<Card>>();
     }
 
     inline void to_json(json & j, const DealCardsMsg & x) {
         j = json::object();
         j["top_card"] = x.top_card;
-        if (x.type) {
-            j["type"] = x.type;
-        }
+        j["type"] = x.type;
         j["your_cards"] = x.your_cards;
     }
 

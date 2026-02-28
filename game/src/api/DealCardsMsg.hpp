@@ -16,7 +16,7 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         Card top_card;
-        std::optional<DealCardsMsgType> type;
+        DealCardsMsgType type = static_cast<DealCardsMsgType>(0);
         std::vector<Card> your_cards;
     };
 }

@@ -64,7 +64,7 @@ void fromString(const std::string &str);
         std::optional<std::vector<Card>> trick;
         std::optional<Suit> trump;
         std::optional<int64_t> turn;
-        std::optional<ServerMsgType> type;
+        ServerMsgType type = static_cast<ServerMsgType>(0);
         std::optional<std::vector<Card>> your_cards;
         std::optional<bool> alone;
         std::optional<Suit> suit;

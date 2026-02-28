@@ -524,6 +524,7 @@
       },
       "additionalProperties": false,
       "required": [
+        "type",
         "your_cards",
         "top_card"
       ]
