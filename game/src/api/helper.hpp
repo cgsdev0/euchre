@@ -12,8 +12,6 @@
 #include <variant>
 #include "json.hpp"
 
-#include <unordered_map>
-
 #include <sstream>
 
 namespace API {

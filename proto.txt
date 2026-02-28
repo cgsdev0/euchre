@@ -2,11 +2,10 @@ message types
 
 # server -> client
 welcome
-score update
 deal the cards
 join/leave
 connect/disconnect
-update turn/phase/dealer/trump
+update turn/phase/dealer/trump/scores
 
 # client -> server
 play a card -> forward

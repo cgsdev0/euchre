@@ -16,6 +16,5 @@ void fromString(const std::string &str);
         int64_t id;
         std::optional<std::string> name;
         JoinMsgType type = static_cast<JoinMsgType>(0);
-        std::optional<std::string> user_id;
     };
 }

@@ -4,25 +4,16 @@
       "type": "object",
       "oneOf": [
         {
-          "$ref": "#/definitions/RoomListMsg"
-        },
-        {
-          "$ref": "#/definitions/RefetchPlayerMsg"
-        },
-        {
           "$ref": "#/definitions/WelcomeMsg"
         },
         {
+          "$ref": "#/definitions/DealCardsMsg"
+        },
+        {
+          "$ref": "#/definitions/UpdateNameMsg"
+        },
+        {
           "$ref": "#/definitions/RestartMsg"
-        },
-        {
-          "$ref": "#/definitions/WinMsg"
-        },
-        {
-          "$ref": "#/definitions/RollMsg"
-        },
-        {
-          "$ref": "#/definitions/RollAgainMsg"
         },
         {
           "$ref": "#/definitions/JoinMsg"
@@ -34,236 +25,10 @@
           "$ref": "#/definitions/ReconnectMsg"
         },
         {
-          "$ref": "#/definitions/KickMsg"
-        },
-        {
-          "$ref": "#/definitions/ChatMsg"
-        },
-        {
           "$ref": "#/definitions/RichTextMsg"
         },
         {
-          "$ref": "#/definitions/UpdateTurnMsg"
-        },
-        {
-          "$ref": "#/definitions/UpdateNameMsg"
-        },
-        {
           "$ref": "#/definitions/UpdateMsg"
-        }
-      ]
-    },
-    "Dice": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "#/definitions/DiceType"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "type"
-      ]
-    },
-    "Color": {
-      "type": "object",
-      "properties": {
-        "hue": {
-          "type": "number"
-        },
-        "sat": {
-          "type": "number"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "hue",
-        "sat"
-      ]
-    },
-    "UserData": {
-      "type": "object",
-      "properties": {
-        "achievements": {
-          "anyOf": [
-            {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/Achievement"
-              }
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "color": {
-          "$ref": "#/definitions/Color"
-        },
-        "created_date": {
-          "type": "string",
-          "format": "date"
-        },
-        "dice": {
-          "$ref": "#/definitions/Dice"
-        },
-        "donor": {
-          "type": "boolean"
-        },
-        "badges": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "id": {
-          "type": "string"
-        },
-        "image_url": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "pubkey_text": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "stats": {
-          "anyOf": [
-            {
-              "$ref": "#/definitions/UserStats"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
-        "username": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "color",
-        "created_date",
-        "dice",
-        "donor",
-        "id",
-        "username",
-        "badges"
-      ]
-    },
-    "AuthRefreshTokenResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "access_token": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "access_token"
-      ]
-    },
-    "AuthDonateResponse": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "link": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "link"
-      ]
-    },
-    "LoginRequest": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "anon_id": {
-          "type": "string"
-        },
-        "redirect_uri": {
-          "type": "string"
-        },
-        "state": {
-          "type": "string"
-        },
-        "code": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "code",
-        "redirect_uri",
-        "state"
-      ]
-    },
-    "AuthSettingsRequest": {
-      "oneOf": [
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "setting": {
-              "type": "string",
-              "default": "Color",
-              "enum": [
-                "Color"
-              ]
-            },
-            "color": {
-              "$ref": "#/definitions/Color"
-            }
-          },
-          "required": [
-            "setting",
-            "color"
-          ]
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "setting": {
-              "type": "string",
-              "default": "DiceType",
-              "enum": [
-                "DiceType"
-              ]
-            },
-            "dice_type": {
-              "$ref": "#/definitions/DiceType"
-            }
-          },
-          "required": [
-            "setting",
-            "dice_type"
-          ]
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "setting": {
-              "type": "string",
-              "default": "Pubkey",
-              "enum": [
-                "Pubkey"
-              ]
-            },
-            "text": {
-              "type": "string"
-            }
-          },
-          "required": [
-            "setting",
-            "text"
-          ]
         }
       ]
     },
@@ -276,203 +41,14 @@
         "name": {
           "type": "string"
         },
-        "score": {
-          "type": "integer"
-        },
-        "win_count": {
-          "type": "integer"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "crowned": {
-          "type": "boolean"
-        },
-        "skip_count": {
+        "card_count": {
           "type": "integer"
         }
       },
       "additionalProperties": false,
       "required": [
         "connected",
-        "score",
-        "skip_count",
-        "win_count"
-      ]
-    },
-    "UserId": {
-      "anyOf": [
-        {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "default": "User",
-              "enum": [
-                "User"
-              ]
-            },
-            "id": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "id",
-            "type"
-          ]
-        },
-        {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "default": "Anonymous",
-              "enum": [
-                "Anonymous"
-              ]
-            },
-            "id": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "id",
-            "type"
-          ]
-        }
-      ]
-    },
-    "AchievementProgress": {
-      "type": "object",
-      "properties": {
-        "achievement_id": {
-          "type": "string"
-        },
-        "user_id": {
-          "$ref": "#/definitions/UserId"
-        },
-        "user_index": {
-          "type": "integer"
-        },
-        "progress": {
-          "type": "integer"
-        },
-        "type": {
-          "type": "string",
-          "default": "achievement_progress",
-          "enum": [
-            "achievement_progress"
-          ]
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "achievement_id",
-        "progress",
-        "type",
-        "user_id",
-        "user_index"
-      ]
-    },
-    "AchievementUnlock": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "image_url": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "user_index": {
-          "type": "integer"
-        },
-        "max_progress": {
-          "type": "integer"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "type": {
-          "type": "string",
-          "default": "achievement_unlock",
-          "enum": [
-            "achievement_unlock"
-          ]
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "description",
-        "id",
-        "image_url",
-        "max_progress",
-        "name",
-        "type",
-        "user_id",
-        "user_index"
-      ]
-    },
-    "ReportStats": {
-      "type": "object",
-      "properties": {
-        "user_id": {
-          "$ref": "#/definitions/UserId"
-        },
-        "rolls": {
-          "type": "integer"
-        },
-        "wins": {
-          "type": "integer"
-        },
-        "games": {
-          "type": "integer"
-        },
-        "doubles": {
-          "type": "integer"
-        },
-        "dice_hist": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "sum_hist": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "win_hist": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "doubles",
-        "games",
-        "rolls",
-        "user_id",
-        "wins",
-        "dice_hist",
-        "sum_hist",
-        "win_hist"
+        "card_count"
       ]
     },
     "ServerPlayer": {
@@ -481,50 +57,13 @@
         "session": {
           "type": "string"
         },
-        "turn_count": {
-          "type": "integer"
-        },
-        "roll_count": {
-          "type": "integer"
-        },
-        "doubles_count": {
-          "type": "integer"
-        },
         "connected": {
           "type": "boolean"
         },
         "name": {
           "type": "string"
         },
-        "score": {
-          "type": "integer"
-        },
-        "win_count": {
-          "type": "integer"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "uuid"
-        },
-        "crowned": {
-          "type": "boolean"
-        },
-        "skip_count": {
-          "type": "integer"
-        },
-        "dice_hist": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "sum_hist": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "win_hist": {
+        "cards": {
           "type": "array",
           "items": {
             "type": "integer"
@@ -533,155 +72,9 @@
       },
       "additionalProperties": false,
       "required": [
-        "connected",
-        "doubles_count",
-        "roll_count",
-        "score",
         "session",
-        "skip_count",
-        "turn_count",
-        "win_count",
-        "dice_hist",
-        "sum_hist",
-        "win_hist"
-      ]
-    },
-    "UserStats": {
-      "type": "object",
-      "properties": {
-        "rolls": {
-          "type": "integer"
-        },
-        "doubles": {
-          "type": "integer"
-        },
-        "games": {
-          "type": "integer"
-        },
-        "wins": {
-          "type": "integer"
-        },
-        "dice_hist": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "sum_hist": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "win_hist": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "doubles",
-        "games",
-        "rolls",
-        "wins",
-        "dice_hist",
-        "sum_hist",
-        "win_hist"
-      ]
-    },
-    "Achievement": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "progress": {
-          "type": "integer"
-        },
-        "unlocked": {
-          "type": "string"
-        },
-        "rn": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        },
-        "rd": {
-          "type": [
-            "null",
-            "integer"
-          ]
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "id",
-        "progress",
-        "rd",
-        "rn",
-        "unlocked"
-      ]
-    },
-    "AchievementData": {
-      "type": "object",
-      "properties": {
-        "description": {
-          "type": "string"
-        },
-        "image_url": {
-          "type": [
-            "null",
-            "string"
-          ]
-        },
-        "id": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "max_progress": {
-          "type": "integer"
-        },
-        "unlocks": {
-          "$ref": "#/definitions/DiceType"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "description",
-        "id",
-        "image_url",
-        "max_progress",
-        "name"
-      ]
-    },
-    "DiceType": {
-      "enum": [
-        "Default",
-        "D20",
-        "Golden",
-        "Hands",
-        "Jumbo"
-      ]
-    },
-    "DieRoll": {
-      "type": "object",
-      "properties": {
-        "used": {
-          "type": "boolean"
-        },
-        "value": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "used",
-        "value"
+        "connected",
+        "cards"
       ]
     },
     "GameError": {
@@ -770,7 +163,7 @@
             "type": "string"
           }
         },
-        "turn_index": {
+        "turn": {
           "type": "integer"
         },
         "rolls": {
@@ -803,7 +196,7 @@
         "privateSession",
         "rolled",
         "rolls",
-        "turn_index",
+        "turn",
         "used",
         "victory"
       ]
@@ -836,7 +229,7 @@
             "type": "string"
           }
         },
-        "turn_index": {
+        "turn": {
           "type": "integer"
         },
         "rolls": {
@@ -869,52 +262,36 @@
         "privateSession",
         "rolled",
         "rolls",
-        "turn_index",
+        "turn",
         "type",
         "used",
         "victory"
       ]
     },
-    "RoomListMsg": {
+    "DealCardsMsg": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
-          "default": "room_list",
+          "default": "deal",
           "enum": [
-            "room_list"
+            "deal"
           ]
         },
-        "rooms": {
+        "your_cards": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Room"
+            "type": "integer"
           }
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "rooms"
-      ]
-    },
-    "RefetchPlayerMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "refetch_player",
-          "enum": [
-            "refetch_player"
-          ]
         },
-        "user_id": {
-          "type": "string"
+        "top_card": {
+          "type": "integer"
         }
       },
       "additionalProperties": false,
       "required": [
-        "type",
-        "user_id"
+        "your_cards",
+        "top_card"
       ]
     },
     "WelcomeMsg": {
@@ -930,62 +307,72 @@
         "your_id": {
           "type": "integer"
         },
+        "played_cards": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "your_cards": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "trick": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
+        "scores": {
+          "type": "array",
+          "items": {
+            "type": "integer"
+          }
+        },
         "players": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/Player"
           }
         },
-        "richChatLog": {
+        "rich_chat_log": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/RichTextMsg"
           }
         },
-        "chatLog": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "turn_index": {
+        "turn": {
           "type": "integer"
         },
-        "rolls": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
+        "dealer": {
+          "type": "integer"
         },
-        "used": {
-          "type": "array",
-          "items": {
-            "type": "boolean"
-          }
+        "phase": {
+          "type": "integer"
         },
-        "rolled": {
-          "type": "boolean"
+        "top_card": {
+          "type": "integer"
         },
-        "victory": {
-          "type": "boolean"
-        },
-        "privateSession": {
+        "private_session": {
           "type": "boolean"
         }
       },
       "additionalProperties": false,
       "required": [
-        "richChatLog",
-        "chatLog",
-        "id",
+        "rich_chat_log",
+        "played_cards",
+        "your_cards",
+        "trick",
+        "scores",
+        "your_id",
         "players",
-        "privateSession",
-        "rolled",
-        "rolls",
-        "turn_index",
+        "private_session",
+        "turn",
         "type",
-        "used",
-        "victory"
+        "phase",
+        "dealer"
       ]
     },
     "RestartMsg": {
@@ -1008,65 +395,6 @@
         "type"
       ]
     },
-    "WinMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "win",
-          "enum": [
-            "win"
-          ]
-        },
-        "id": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "id",
-        "type"
-      ]
-    },
-    "RollMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "roll",
-          "enum": [
-            "roll"
-          ]
-        },
-        "rolls": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "rolls",
-        "type"
-      ]
-    },
-    "RollAgainMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "roll_again",
-          "enum": [
-            "roll_again"
-          ]
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "type"
-      ]
-    },
     "JoinMsg": {
       "type": "object",
       "properties": {
@@ -1081,9 +409,6 @@
           "type": "integer"
         },
         "name": {
-          "type": "string"
-        },
-        "user_id": {
           "type": "string"
         }
       },
@@ -1128,29 +453,6 @@
         },
         "name": {
           "type": "string"
-        },
-        "user_id": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "id",
-        "type"
-      ]
-    },
-    "KickMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "kick",
-          "enum": [
-            "kick"
-          ]
-        },
-        "id": {
-          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -1172,10 +474,6 @@
         },
         "text": {
           "type": "string"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "uuid"
         },
         "color": {
           "type": "string"
@@ -1212,9 +510,9 @@
       "properties": {
         "type": {
           "type": "string",
-          "default": "chat_v2",
+          "default": "chat",
           "enum": [
-            "chat_v2"
+            "chat"
           ]
         },
         "msg": {
@@ -1234,49 +532,6 @@
       "additionalProperties": false,
       "required": [
         "msg",
-        "type"
-      ]
-    },
-    "ChatMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "chat",
-          "enum": [
-            "chat"
-          ]
-        },
-        "msg": {
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "msg",
-        "type"
-      ]
-    },
-    "UpdateTurnMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "update_turn",
-          "enum": [
-            "update_turn"
-          ]
-        },
-        "id": {
-          "type": "integer"
-        },
-        "skip": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "id",
         "type"
       ]
     },
@@ -1305,7 +560,7 @@
       ]
     },
     "UpdateMsg": {
-      "description": "TODO: add descriptions to these things",
+      "description": "Update everything",
       "type": "object",
       "properties": {
         "type": {
@@ -1315,26 +570,32 @@
             "update"
           ]
         },
-        "id": {
+        "turn": {
           "type": "integer"
         },
-        "score": {
+        "dealer": {
           "type": "integer"
         },
-        "used": {
+        "phase": {
+          "type": "integer"
+        },
+        "trump": {
+          "type": "integer"
+        },
+        "scores": {
           "type": "array",
           "items": {
-            "type": "boolean"
+            "type": "integer"
           }
-        },
-        "reset": {
-          "type": "boolean"
         }
       },
       "additionalProperties": false,
       "required": [
-        "id",
-        "score",
+        "turn",
+        "dealer",
+        "phase",
+        "trump",
+        "scores",
         "type"
       ]
     }

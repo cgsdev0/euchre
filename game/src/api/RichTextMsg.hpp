@@ -4,7 +4,7 @@
 #include <optional>
 #include <variant>
 
-#include "MsgElement.hpp"
+#include "Msg.hpp"
 #include "RichTextChunk.hpp"
 
 namespace API {
@@ -16,7 +16,7 @@ namespace API {
     struct RichTextMsg {
 std::string toString() const;
 void fromString(const std::string &str);
-        std::vector<MsgElement> msg;
+        std::vector<Msg> msg;
         RichTextMsgType type = static_cast<RichTextMsgType>(0);
     };
 }

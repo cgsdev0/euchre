@@ -10,5 +10,5 @@ namespace API {
 
 namespace API {
 
-    using ServerMsgMsg = std::variant<std::vector<MsgElement>, std::string>;
+    using Msg = std::variant<RichTextChunk, std::string>;
 }

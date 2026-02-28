@@ -10,20 +10,21 @@ namespace API {
 
 namespace API {
     /**
-     * TODO: add descriptions to these things
+     * Update everything
      */
 
 
     /**
-     * TODO: add descriptions to these things
+     * Update everything
      */
     struct UpdateMsg {
 std::string toString() const;
 void fromString(const std::string &str);
-        int64_t id;
-        std::optional<bool> reset;
-        int64_t score;
+        int64_t dealer;
+        int64_t phase;
+        std::vector<int64_t> scores;
+        int64_t trump;
+        int64_t turn;
         UpdateMsgType type = static_cast<UpdateMsgType>(0);
-        std::optional<std::vector<bool>> used;
     };
 }
