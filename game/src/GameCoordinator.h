@@ -1,5 +1,5 @@
 #ifndef INCLUDE_GAME_COORDINATOR_H
-#define INCLUDE_GAME_COORDINATOR_BASE_H
+#define INCLUDE_GAME_COORDINATOR_H
 
 #include "App.h"
 #include "Game.h"

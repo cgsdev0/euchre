@@ -32,7 +32,7 @@ void signal_callback_handler(int signum) {
 }
 
 std::string getSession(HttpRequest *req) {
-    const std::regex sessionRegex("_session=([^;]*)");
+    static const std::regex sessionRegex("_session=([^;]*)");
     std::smatch cookies;
     std::string s(req->getHeader("cookie"));
     std::regex_search(s, cookies, sessionRegex);

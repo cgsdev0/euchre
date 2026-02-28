@@ -176,6 +176,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
         if (sitting_out == state.dealer) {
             // guess we can skip discard here
             state.phase = Phase::PLAYING;
+            state.trump = state.top_card->suit;
             state.turn = state.dealer;
             advanceTurn();
         } else {
@@ -193,6 +194,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
         if (msg.alone) {
             state.players[(state.turn + 2) % MAX_PLAYERS].sitting_out = true;
         }
+        state.trump = *msg.suit;
         caller = state.turn;
         msg.id = state.turn;
         server.broadcast(msg.toString());
@@ -304,7 +306,7 @@ void Game::endTrick(const HandlerArgs &server) {
     WinTrickMsg msg;
     int starter = (state.turn + MAX_PLAYERS + 1) % MAX_PLAYERS;
     int winner = 0; // assume first player won the trick
-    Suit led = state.trick[0].suit;
+    Suit led = effectiveSuit(state.trick[0], state.trump);
     int best = 0;
     for (size_t i = 0; i < state.trick.size(); ++i) {
         int score = scoreCard(state.trick[i], state.trump, led);
@@ -329,6 +331,8 @@ void Game::endTrick(const HandlerArgs &server) {
 }
 
 void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
+    if (state.phase != Phase::PLAYING)
+        throw GameError({.error = "not just yet"});
     if (turn_token != server.session)
         throw GameError({.error = "it's not your turn"});
     if (!std::erase(state.players[state.turn].cards, msg.card))
@@ -357,6 +361,8 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
     server.broadcast(msg.toString()); // let everyone know
     if (state.trick.size() == MAX_PLAYERS) {
         endTrick(server);
+    } else {
+        advanceTurn();
     }
     sendUpdate(server, state);
 }
