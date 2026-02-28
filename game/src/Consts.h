@@ -2,8 +2,8 @@
 #define INCLUDE_CONSTS_H
 
 #include <chrono>
-#include <string>
 #include <set>
+#include <string>
 
 using string = std::string;
 typedef unsigned int uint;
@@ -43,7 +43,6 @@ struct PerSocketData {
     string display_name;
     string user_id;
     bool is_verified;
-    bool spectator;
     bool dedupe_conns;
 };
 

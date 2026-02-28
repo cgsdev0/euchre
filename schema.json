@@ -16,9 +16,6 @@
           "$ref": "#/definitions/RestartMsg"
         },
         {
-          "$ref": "#/definitions/SpectatorsMsg"
-        },
-        {
           "$ref": "#/definitions/WinMsg"
         },
         {
@@ -796,9 +793,6 @@
         },
         "privateSession": {
           "type": "boolean"
-        },
-        "spectators": {
-          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -809,7 +803,6 @@
         "privateSession",
         "rolled",
         "rolls",
-        "spectators",
         "turn_index",
         "used",
         "victory"
@@ -866,9 +859,6 @@
         },
         "privateSession": {
           "type": "boolean"
-        },
-        "spectators": {
-          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -879,7 +869,6 @@
         "privateSession",
         "rolled",
         "rolls",
-        "spectators",
         "turn_index",
         "type",
         "used",
@@ -938,7 +927,7 @@
             "welcome"
           ]
         },
-        "id": {
+        "your_id": {
           "type": "integer"
         },
         "players": {
@@ -982,9 +971,6 @@
         },
         "privateSession": {
           "type": "boolean"
-        },
-        "spectators": {
-          "type": "integer"
         }
       },
       "additionalProperties": false,
@@ -996,7 +982,6 @@
         "privateSession",
         "rolled",
         "rolls",
-        "spectators",
         "turn_index",
         "type",
         "used",
@@ -1020,26 +1005,6 @@
       "additionalProperties": false,
       "required": [
         "id",
-        "type"
-      ]
-    },
-    "SpectatorsMsg": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "default": "spectators",
-          "enum": [
-            "spectators"
-          ]
-        },
-        "count": {
-          "type": "integer"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "count",
         "type"
       ]
     },

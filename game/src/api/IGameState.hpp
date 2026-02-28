@@ -20,7 +20,6 @@ void fromString(const std::string &str);
         std::vector<RichTextMsg> rich_chat_log;
         bool rolled;
         std::vector<int64_t> rolls;
-        int64_t spectators;
         int64_t turn_index;
         std::vector<bool> used;
         bool victory;

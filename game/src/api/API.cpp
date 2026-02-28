@@ -94,9 +94,6 @@ void to_json(json & j, const WelcomeMsg & x);
 void from_json(const json & j, RestartMsg & x);
 void to_json(json & j, const RestartMsg & x);
 
-void from_json(const json & j, SpectatorsMsg & x);
-void to_json(json & j, const SpectatorsMsg & x);
-
 void from_json(const json & j, WinMsg & x);
 void to_json(json & j, const WinMsg & x);
 
@@ -180,9 +177,6 @@ void to_json(json & j, const WelcomeMsgType & x);
 
 void from_json(const json & j, RestartMsgType & x);
 void to_json(json & j, const RestartMsgType & x);
-
-void from_json(const json & j, SpectatorsMsgType & x);
-void to_json(json & j, const SpectatorsMsgType & x);
 
 void from_json(const json & j, WinMsgType & x);
 void to_json(json & j, const WinMsgType & x);
@@ -322,11 +316,9 @@ namespace API {
         x.rich_chat_log = get_stack_optional<std::vector<RichTextMsg>>(j, "richChatLog");
         x.rolled = get_stack_optional<bool>(j, "rolled");
         x.rolls = get_stack_optional<std::vector<int64_t>>(j, "rolls");
-        x.spectators = get_stack_optional<int64_t>(j, "spectators");
         x.turn_index = get_stack_optional<int64_t>(j, "turn_index");
         x.used = get_stack_optional<std::vector<bool>>(j, "used");
         x.victory = get_stack_optional<bool>(j, "victory");
-        x.count = get_stack_optional<int64_t>(j, "count");
         x.name = get_stack_optional<std::string>(j, "name");
         x.msg = get_stack_optional<std::variant<std::vector<MsgElement>, std::string>>(j, "msg");
         x.skip = get_stack_optional<bool>(j, "skip");
@@ -366,9 +358,6 @@ namespace API {
         if (x.rolls) {
             j["rolls"] = x.rolls;
         }
-        if (x.spectators) {
-            j["spectators"] = x.spectators;
-        }
         if (x.turn_index) {
             j["turn_index"] = x.turn_index;
         }
@@ -377,9 +366,6 @@ namespace API {
         }
         if (x.victory) {
             j["victory"] = x.victory;
-        }
-        if (x.count) {
-            j["count"] = x.count;
         }
         if (x.name) {
             j["name"] = x.name;
@@ -684,7 +670,6 @@ namespace API {
         x.rich_chat_log = j.at("richChatLog").get<std::vector<RichTextMsg>>();
         x.rolled = j.at("rolled").get<bool>();
         x.rolls = j.at("rolls").get<std::vector<int64_t>>();
-        x.spectators = j.at("spectators").get<int64_t>();
         x.turn_index = j.at("turn_index").get<int64_t>();
         x.used = j.at("used").get<std::vector<bool>>();
         x.victory = j.at("victory").get<bool>();
@@ -698,7 +683,6 @@ namespace API {
         j["richChatLog"] = x.rich_chat_log;
         j["rolled"] = x.rolled;
         j["rolls"] = x.rolls;
-        j["spectators"] = x.spectators;
         j["turn_index"] = x.turn_index;
         j["used"] = x.used;
         j["victory"] = x.victory;
@@ -752,7 +736,6 @@ namespace API {
         x.rich_chat_log = j.at("richChatLog").get<std::vector<RichTextMsg>>();
         x.rolled = j.at("rolled").get<bool>();
         x.rolls = j.at("rolls").get<std::vector<int64_t>>();
-        x.spectators = j.at("spectators").get<int64_t>();
         x.turn_index = j.at("turn_index").get<int64_t>();
         x.type = j.at("type").get<GameStateType>();
         x.used = j.at("used").get<std::vector<bool>>();
@@ -767,7 +750,6 @@ namespace API {
         j["richChatLog"] = x.rich_chat_log;
         j["rolled"] = x.rolled;
         j["rolls"] = x.rolls;
-        j["spectators"] = x.spectators;
         j["turn_index"] = x.turn_index;
         j["type"] = x.type;
         j["used"] = x.used;
@@ -806,7 +788,6 @@ namespace API {
         x.rich_chat_log = j.at("richChatLog").get<std::vector<RichTextMsg>>();
         x.rolled = j.at("rolled").get<bool>();
         x.rolls = j.at("rolls").get<std::vector<int64_t>>();
-        x.spectators = j.at("spectators").get<int64_t>();
         x.turn_index = j.at("turn_index").get<int64_t>();
         x.type = j.at("type").get<WelcomeMsgType>();
         x.used = j.at("used").get<std::vector<bool>>();
@@ -822,7 +803,6 @@ namespace API {
         j["richChatLog"] = x.rich_chat_log;
         j["rolled"] = x.rolled;
         j["rolls"] = x.rolls;
-        j["spectators"] = x.spectators;
         j["turn_index"] = x.turn_index;
         j["type"] = x.type;
         j["used"] = x.used;
@@ -837,17 +817,6 @@ namespace API {
     inline void to_json(json & j, const RestartMsg & x) {
         j = json::object();
         j["id"] = x.id;
-        j["type"] = x.type;
-    }
-
-    inline void from_json(const json & j, SpectatorsMsg& x) {
-        x.count = j.at("count").get<int64_t>();
-        x.type = j.at("type").get<SpectatorsMsgType>();
-    }
-
-    inline void to_json(json & j, const SpectatorsMsg & x) {
-        j = json::object();
-        j["count"] = x.count;
         j["type"] = x.type;
     }
 
@@ -1075,7 +1044,6 @@ namespace API {
             {"roll", ServerMsgType::ROLL},
             {"roll_again", ServerMsgType::ROLL_AGAIN},
             {"room_list", ServerMsgType::ROOM_LIST},
-            {"spectators", ServerMsgType::SPECTATORS},
             {"update", ServerMsgType::UPDATE},
             {"update_name", ServerMsgType::UPDATE_NAME},
             {"update_turn", ServerMsgType::UPDATE_TURN},
@@ -1101,7 +1069,6 @@ namespace API {
             case ServerMsgType::ROLL: j = "roll"; break;
             case ServerMsgType::ROLL_AGAIN: j = "roll_again"; break;
             case ServerMsgType::ROOM_LIST: j = "room_list"; break;
-            case ServerMsgType::SPECTATORS: j = "spectators"; break;
             case ServerMsgType::UPDATE: j = "update"; break;
             case ServerMsgType::UPDATE_NAME: j = "update_name"; break;
             case ServerMsgType::UPDATE_TURN: j = "update_turn"; break;
@@ -1265,18 +1232,6 @@ namespace API {
     inline void to_json(json & j, const RestartMsgType & x) {
         switch (x) {
             case RestartMsgType::RESTART: j = "restart"; break;
-            default: throw std::runtime_error("This should not happen");
-        }
-    }
-
-    inline void from_json(const json & j, SpectatorsMsgType & x) {
-        if (j == "spectators") x = SpectatorsMsgType::SPECTATORS;
-        else { throw std::runtime_error("Input JSON does not conform to schema!"); }
-    }
-
-    inline void to_json(json & j, const SpectatorsMsgType & x) {
-        switch (x) {
-            case SpectatorsMsgType::SPECTATORS: j = "spectators"; break;
             default: throw std::runtime_error("This should not happen");
         }
     }
@@ -1740,15 +1695,6 @@ to_json(j, *this);
 return j.dump();
 }
 void ServerPlayer::fromString(const std::string &s) {
-auto j = json::parse(s);
-from_json(j, *this);
-}
-std::string SpectatorsMsg::toString() const {
-json j;
-to_json(j, *this);
-return j.dump();
-}
-void SpectatorsMsg::fromString(const std::string &s) {
 auto j = json::parse(s);
 from_json(j, *this);
 }

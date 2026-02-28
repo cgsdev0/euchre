@@ -48,38 +48,26 @@ void connectNewPlayer(uWS::App *app, uWS::WebSocket<false, true, PerSocketData> 
 
         auto welcome = [g, userData, ws, app, &coordinator]() {
             auto msg = g->toWelcomeMsg();
-            msg.id = (userData->spectator) ? -1 : g->getPlayerId(userData->session);
+            msg.your_id = g->getPlayerId(userData->session);
             ws->send(msg.toString(), uWS::OpCode::TEXT);
             ws->subscribe(userData->room);
-            if (userData->spectator) {
-                API::SpectatorsMsg spec;
-                spec.count = g->incrSpectators();
-                ws->publish(userData->room, spec.toString(), uWS::OpCode::TEXT);
-            } else {
-                app->publish("home/list", coordinator.list_rooms().toString(), uWS::OpCode::TEXT);
-            }
+            app->publish("home/list", coordinator.list_rooms().toString(), uWS::OpCode::TEXT);
         };
-        if (!userData->spectator) {
-            if (!(g->hasPlayer(userData->session) || g->hasPlayer(userData->session_from_cookie))) {
-                json resp = g->addPlayer(*userData);
-                if (resp.is_null()) {
-                    // room is full
-                    std::string err = API::GameError({.error = "room full"}).toString();
-                    ws->send(err, uWS::OpCode::TEXT);
-                    userData->spectator = true;
-                    welcome();
-                    return;
-                }
-                app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
-            } else {
-                json resp = g->reconnectPlayer(userData->session, userData->session_from_cookie, *userData);
-                app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
+        if (!(g->hasPlayer(userData->session) || g->hasPlayer(userData->session_from_cookie))) {
+            json resp = g->addPlayer(*userData);
+            if (resp.is_null()) {
+                // room is full
+                std::string err = API::GameError({.error = "room full"}).toString();
+                ws->send(err, uWS::OpCode::TEXT);
+                ws->close();
+                return;
             }
+            app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
+        } else {
+            json resp = g->reconnectPlayer(userData->session, userData->session_from_cookie, *userData);
+            app->publish(userData->room, resp.dump(), uWS::OpCode::TEXT);
         }
         welcome();
-    } else if (userData->spectator) {
-        ws->close();
-        return;
     } else {
         // Connecting to a non-existant room
         // let's migrate them to a new room
@@ -126,7 +114,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                          .display_name = "",
                          .user_id = "",
                          .is_verified = is_verified,
-                         .spectator = (mode == "spectate"),
                          .dedupe_conns = dedupe_conns},
                         req->getHeader("sec-websocket-key"),
                         req->getHeader("sec-websocket-protocol"),
@@ -162,7 +149,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         (PerSocketData *)ws->getUserData();
 
                     if (userData->dedupe_conns) return;
-                    if (userData->spectator) return;
 
                     std::string room = userData->room;
                     std::string session = userData->session;
@@ -239,12 +225,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                     auto it = coordinator.games.find(room);
                     if (it != coordinator.games.end()) {
                         Game *g = it->second;
-                        if (userData->spectator) {
-                            API::SpectatorsMsg spec;
-                            spec.count = g->decrSpectators();
-                            ws->publish(userData->room, spec.toString(), uWS::OpCode::TEXT);
-                            return;
-                        }
                         json resp = g->disconnectPlayer(session);
                         if (!resp.is_null()) {
                             app->publish(room, resp.dump(), uWS::OpCode::TEXT);

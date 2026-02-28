@@ -1,0 +1,25 @@
+message types
+
+# server -> client
+welcome
+score update
+deal the cards
+join/leave
+connect/disconnect
+update turn/phase/dealer/trump
+
+# client -> server
+play a card -> forward
+pass -> forward
+order -> forward < alone?
+table talk -> forward
+play jaja ding dong -> forward
+discard -> secret
+
+phases
+0 - filling table
+1 - voting round 1
+2 - voting round 2
+3 - discarding
+4 - playing
+5 - game ended

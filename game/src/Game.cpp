@@ -19,7 +19,6 @@ Game::Game() {
     this->state.players.reserve(MAX_PLAYERS);
     this->state.rolls.resize(DICE_COUNT);
     this->state.used.resize(DICE_COUNT);
-    this->state.spectators = 0;
     for (uint i = 0; i < DICE_COUNT; ++i) {
         this->state.rolls[i] = 1;
         this->state.used[i] = false;

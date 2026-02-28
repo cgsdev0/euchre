@@ -11,7 +11,6 @@ export type ServerMsg =
   | RefetchPlayerMsg
   | WelcomeMsg
   | RestartMsg
-  | SpectatorsMsg
   | WinMsg
   | RollMsg
   | RollAgainMsg
@@ -84,7 +83,6 @@ export interface WelcomeMsg {
   rolled: boolean;
   victory: boolean;
   privateSession: boolean;
-  spectators: number;
 }
 
 export interface Player {
@@ -114,11 +112,6 @@ export interface RichTextChunk {
 export interface RestartMsg {
   type: "restart";
   id: number;
-}
-
-export interface SpectatorsMsg {
-  type: "spectators";
-  count: number;
 }
 
 export interface WinMsg {
@@ -324,7 +317,6 @@ export interface IGameState {
   rolled: boolean;
   victory: boolean;
   privateSession: boolean;
-  spectators: number;
 }
 
 export interface GameState {
@@ -338,5 +330,4 @@ export interface GameState {
   rolled: boolean;
   victory: boolean;
   privateSession: boolean;
-  spectators: number;
 }
