@@ -17,5 +17,7 @@ void fromString(const std::string &str);
         bool connected;
         std::optional<std::string> name;
         std::string session;
+        bool sitting_out;
+        int64_t tricks;
     };
 }

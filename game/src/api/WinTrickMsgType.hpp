@@ -6,5 +6,5 @@
 
 namespace API {
 
-    enum class OrderMsgType : int { ORDER };
+    enum class WinTrickMsgType : int { WIN_TRICK };
 }

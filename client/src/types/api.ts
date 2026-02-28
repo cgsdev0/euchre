@@ -42,7 +42,7 @@ export interface Schema {
  */
 export interface DiscardMsg {
   type: "discard";
-  id: number;
+  id?: number;
   card: Card;
 }
 
@@ -57,7 +57,7 @@ export interface Card {
  */
 export interface PlayCardMsg {
   type: "play_card";
-  id: number;
+  id?: number;
   card: Card;
 }
 /**
@@ -66,15 +66,16 @@ export interface PlayCardMsg {
  */
 export interface PassMsg {
   type: "pass";
-  id: number;
+  id?: number;
 }
 /**
  * Order up a particular suit as trump.
  *
  */
 export interface OrderMsg {
-  type: "order" | "id";
-  id: number;
+  type: "order";
+  id?: number;
+  alone?: boolean;
   suit?: Suit;
 }
 /**
@@ -83,7 +84,7 @@ export interface OrderMsg {
  */
 export interface TableTalkMsg {
   type: "table_talk";
-  id: number;
+  id?: number;
   table_talk: number;
 }
 /**
@@ -92,7 +93,7 @@ export interface TableTalkMsg {
  */
 export interface PlayJajaDingDongMsg {
   type: "play_jaja_ding_dong";
-  id: number;
+  id?: number;
 }
 /**
  * Change your display name.
@@ -101,7 +102,7 @@ export interface PlayJajaDingDongMsg {
 export interface UpdateNameMsg {
   type: "update_name";
   name: string;
-  id: number;
+  id?: number;
 }
 /**
  * Start a new game.
@@ -109,7 +110,7 @@ export interface UpdateNameMsg {
  */
 export interface RestartMsg {
   type: "restart";
-  id: number;
+  id?: number;
 }
 
 export interface WelcomeMsg {
@@ -118,7 +119,7 @@ export interface WelcomeMsg {
   played_cards: Card[];
   trump: Suit;
   your_cards: Card[];
-  trick: number[];
+  trick: Card[];
   scores: number[];
   players: Player[];
   rich_chat_log: RichTextMsg[];
@@ -131,6 +132,8 @@ export interface WelcomeMsg {
 
 export interface Player {
   connected: boolean;
+  tricks: number;
+  sitting_out: boolean;
   name?: string;
   card_count: number;
 }
@@ -181,9 +184,35 @@ export interface UpdateMsg {
   trump: Suit;
   scores: number[];
 }
+/**
+ * A player won a trick!
+ *
+ */
+export interface WinTrickMsg {
+  type: "win_trick";
+  id: number;
+}
+/**
+ * A team won a hand!
+ *
+ */
+export interface WinHandMsg {
+  type: "win_hand";
+  id: number;
+}
+/**
+ * A team won the game!
+ *
+ */
+export interface WinGameMsg {
+  type: "win_game";
+  id: number;
+}
 
 export interface ServerPlayer {
   session: string;
+  tricks: number;
+  sitting_out: boolean;
   connected: boolean;
   name?: string;
   cards: Card[];
@@ -205,7 +234,7 @@ export interface GameState {
   kitty?: Card[];
   played_cards: Card[];
   trump: Suit;
-  trick: number[];
+  trick: Card[];
   scores: number[];
   rich_chat_log: RichTextMsg[];
   turn: number;

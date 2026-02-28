@@ -12,5 +12,7 @@ void fromString(const std::string &str);
         int64_t card_count;
         bool connected;
         std::optional<std::string> name;
+        bool sitting_out;
+        int64_t tricks;
     };
 }

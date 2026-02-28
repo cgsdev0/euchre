@@ -52,8 +52,9 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         std::optional<Card> card;
-        int64_t id;
+        std::optional<int64_t> id;
         ClientMsgType type = static_cast<ClientMsgType>(0);
+        std::optional<bool> alone;
         std::optional<Suit> suit;
         std::optional<int64_t> table_talk;
         std::optional<std::string> name;

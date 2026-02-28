@@ -21,7 +21,8 @@ namespace API {
     struct OrderMsg {
 std::string toString() const;
 void fromString(const std::string &str);
-        int64_t id;
+        std::optional<bool> alone;
+        std::optional<int64_t> id;
         std::optional<Suit> suit;
         OrderMsgType type = static_cast<OrderMsgType>(0);
     };

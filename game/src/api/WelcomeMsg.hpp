@@ -28,7 +28,7 @@ void fromString(const std::string &str);
         std::vector<RichTextMsg> rich_chat_log;
         std::vector<int64_t> scores;
         std::optional<Card> top_card;
-        std::vector<int64_t> trick;
+        std::vector<Card> trick;
         Suit trump;
         int64_t turn;
         WelcomeMsgType type = static_cast<WelcomeMsgType>(0);

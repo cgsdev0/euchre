@@ -55,6 +55,9 @@ class Game {
     bool isPlayerConnected(std::string id) const;
 
     void advanceTurn();
+    void endGame(const HandlerArgs &server, int winner);
+    void endHand(const HandlerArgs &server);
+    void endTrick(const HandlerArgs &server);
     void dealCards(const HandlerArgs &server);
 
     std::chrono::system_clock::time_point getUpdated() { return this->updated; }
@@ -62,7 +65,7 @@ class Game {
     void handleMessage(const HandlerArgs &server, const std::string_view message);
 
 #define X(NAME, TYPE) \
-    void NAME(const HandlerArgs &server, const API::TYPE &msg);
+    void NAME(const HandlerArgs &server, API::TYPE &msg);
 
 #include "Handlers.def"
 #undef X
@@ -72,15 +75,20 @@ class Game {
     API::WelcomeMsg toWelcomeMsg(const std::string &session) {
         std::vector<API::Player> players;
         for (const auto &player : this->state.players) {
-            players.emplace_back(player.cards.size(), player.connected, player.name);
+            players.emplace_back(player.cards.size(), player.connected, player.name, player.sitting_out, player.tricks);
         }
         auto id = this->getPlayerId(session);
         auto your_cards = this->state.players[id].cards;
+        auto played_cards_clean = this->state.played_cards;
+        // hide the legality of the cards
+        for (auto &card : played_cards_clean) {
+            card.illegal = std::nullopt;
+        }
         return API::WelcomeMsg{
             .dealer = this->state.dealer,
             .id = id,
             .phase = this->state.phase,
-            .played_cards = this->state.played_cards,
+            .played_cards = played_cards_clean,
             .players = players,
             .private_session = this->state.private_session,
             .rich_chat_log = this->state.rich_chat_log,
@@ -111,6 +119,8 @@ class Game {
     std::string turn_token;
     API::GameState state;
     bool was_persisted = false;
+    // Who ordered up trump?
+    int caller;
     friend GameCoordinator;
 };
 

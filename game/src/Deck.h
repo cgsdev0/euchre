@@ -7,7 +7,7 @@
 struct Deck {
     Deck() {
         for (std::size_t i = 0; i < CARDS_IN_DECK; ++i) {
-            this->cards[i].suit = (API::Suit)(i / 4);
+            this->cards[i].suit = (API::Suit)(i / 6);
             this->cards[i].rank = (API::Rank)(i % 6);
         }
         shuffle();
@@ -20,7 +20,7 @@ struct Deck {
 
     const std::span<API::Card> deal(std::size_t n) {
         this->deal_ptr += n;
-        assert(this->deal_ptr < CARDS_IN_DECK);
+        assert(this->deal_ptr <= CARDS_IN_DECK);
         return std::span<API::Card>(this->cards + this->deal_ptr - n, n);
     }
 

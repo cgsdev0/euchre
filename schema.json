@@ -91,8 +91,7 @@
       },
       "additionalProperties": false,
       "required": [
-        "type",
-        "id"
+        "type"
       ]
     },
     "PlayJajaDingDongMsg": {
@@ -112,8 +111,7 @@
       },
       "additionalProperties": false,
       "required": [
-        "type",
-        "id"
+        "type"
       ]
     },
     "TableTalkMsg": {
@@ -137,8 +135,7 @@
       "additionalProperties": false,
       "required": [
         "table_talk",
-        "type",
-        "id"
+        "type"
       ]
     },
     "OrderMsg": {
@@ -149,12 +146,14 @@
           "type": "string",
           "default": "order",
           "enum": [
-            "order",
-            "id"
+            "order"
           ]
         },
         "id": {
           "type": "integer"
+        },
+        "alone": {
+          "type": "boolean"
         },
         "suit": {
           "$ref": "#/definitions/Suit"
@@ -162,8 +161,7 @@
       },
       "additionalProperties": false,
       "required": [
-        "type",
-        "id"
+        "type"
       ]
     },
     "PlayCardMsg": {
@@ -187,7 +185,69 @@
       "additionalProperties": false,
       "required": [
         "type",
-        "card",
+        "card"
+      ]
+    },
+    "WinTrickMsg": {
+      "description": "A player won a trick!",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "win_trick",
+          "enum": [
+            "win_trick"
+          ]
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "id"
+      ]
+    },
+    "WinHandMsg": {
+      "description": "A team won a hand!",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "win_hand",
+          "enum": [
+            "win_hand"
+          ]
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "id"
+      ]
+    },
+    "WinGameMsg": {
+      "description": "A team won the game!",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "win_game",
+          "enum": [
+            "win_game"
+          ]
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
         "id"
       ]
     },
@@ -212,8 +272,7 @@
       "additionalProperties": false,
       "required": [
         "type",
-        "card",
-        "id"
+        "card"
       ]
     },
     "Card": {
@@ -250,6 +309,12 @@
         "connected": {
           "type": "boolean"
         },
+        "tricks": {
+          "type": "integer"
+        },
+        "sitting_out": {
+          "type": "boolean"
+        },
         "name": {
           "type": "string"
         },
@@ -259,6 +324,8 @@
       },
       "additionalProperties": false,
       "required": [
+        "sitting_out",
+        "tricks",
         "connected",
         "card_count"
       ]
@@ -268,6 +335,12 @@
       "properties": {
         "session": {
           "type": "string"
+        },
+        "tricks": {
+          "type": "integer"
+        },
+        "sitting_out": {
+          "type": "boolean"
         },
         "connected": {
           "type": "boolean"
@@ -285,6 +358,8 @@
       "additionalProperties": false,
       "required": [
         "session",
+        "tricks",
+        "sitting_out",
         "connected",
         "cards"
       ]
@@ -372,7 +447,7 @@
         "trick": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "$ref": "#/definitions/Card"
           }
         },
         "scores": {
@@ -484,7 +559,7 @@
         "trick": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "$ref": "#/definitions/Card"
           }
         },
         "scores": {
@@ -535,10 +610,10 @@
         "rich_chat_log",
         "played_cards",
         "your_cards",
+        "id",
         "trump",
         "trick",
         "scores",
-        "id",
         "players",
         "private_session",
         "turn",
@@ -564,7 +639,6 @@
       },
       "additionalProperties": false,
       "required": [
-        "id",
         "type"
       ]
     },
@@ -725,7 +799,6 @@
       },
       "additionalProperties": false,
       "required": [
-        "id",
         "name",
         "type"
       ]
