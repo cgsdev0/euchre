@@ -55,9 +55,6 @@ void to_json(json & j, const Redirect & x);
 void from_json(const json & j, Room & x);
 void to_json(json & j, const Room & x);
 
-void from_json(const json & j, IGameState & x);
-void to_json(json & j, const IGameState & x);
-
 void from_json(const json & j, ServerPlayer & x);
 void to_json(json & j, const ServerPlayer & x);
 
@@ -482,31 +479,6 @@ namespace API {
         j["player_count"] = x.player_count;
     }
 
-    inline void from_json(const json & j, IGameState& x) {
-        x.chat_log = j.at("chatLog").get<std::vector<std::string>>();
-        x.players = j.at("players").get<std::vector<Player>>();
-        x.private_session = j.at("privateSession").get<bool>();
-        x.rich_chat_log = j.at("richChatLog").get<std::vector<RichTextMsg>>();
-        x.rolled = j.at("rolled").get<bool>();
-        x.rolls = j.at("rolls").get<std::vector<int64_t>>();
-        x.turn = j.at("turn").get<int64_t>();
-        x.used = j.at("used").get<std::vector<bool>>();
-        x.victory = j.at("victory").get<bool>();
-    }
-
-    inline void to_json(json & j, const IGameState & x) {
-        j = json::object();
-        j["chatLog"] = x.chat_log;
-        j["players"] = x.players;
-        j["privateSession"] = x.private_session;
-        j["richChatLog"] = x.rich_chat_log;
-        j["rolled"] = x.rolled;
-        j["rolls"] = x.rolls;
-        j["turn"] = x.turn;
-        j["used"] = x.used;
-        j["victory"] = x.victory;
-    }
-
     inline void from_json(const json & j, ServerPlayer& x) {
         x.cards = j.at("cards").get<std::vector<Card>>();
         x.connected = j.at("connected").get<bool>();
@@ -525,30 +497,36 @@ namespace API {
     }
 
     inline void from_json(const json & j, GameState& x) {
-        x.chat_log = j.at("chatLog").get<std::vector<std::string>>();
+        x.dealer = j.at("dealer").get<int64_t>();
+        x.phase = j.at("phase").get<Phase>();
+        x.played_cards = j.at("played_cards").get<std::vector<Card>>();
         x.players = j.at("players").get<std::vector<ServerPlayer>>();
-        x.private_session = j.at("privateSession").get<bool>();
-        x.rich_chat_log = j.at("richChatLog").get<std::vector<RichTextMsg>>();
-        x.rolled = j.at("rolled").get<bool>();
-        x.rolls = j.at("rolls").get<std::vector<int64_t>>();
+        x.private_session = j.at("private_session").get<bool>();
+        x.rich_chat_log = j.at("rich_chat_log").get<std::vector<RichTextMsg>>();
+        x.scores = j.at("scores").get<std::vector<int64_t>>();
+        x.top_card = get_stack_optional<Card>(j, "top_card");
+        x.trick = j.at("trick").get<std::vector<int64_t>>();
+        x.trump = j.at("trump").get<Trump>();
         x.turn = j.at("turn").get<int64_t>();
         x.type = j.at("type").get<GameStateType>();
-        x.used = j.at("used").get<std::vector<bool>>();
-        x.victory = j.at("victory").get<bool>();
     }
 
     inline void to_json(json & j, const GameState & x) {
         j = json::object();
-        j["chatLog"] = x.chat_log;
+        j["dealer"] = x.dealer;
+        j["phase"] = x.phase;
+        j["played_cards"] = x.played_cards;
         j["players"] = x.players;
-        j["privateSession"] = x.private_session;
-        j["richChatLog"] = x.rich_chat_log;
-        j["rolled"] = x.rolled;
-        j["rolls"] = x.rolls;
+        j["private_session"] = x.private_session;
+        j["rich_chat_log"] = x.rich_chat_log;
+        j["scores"] = x.scores;
+        if (x.top_card) {
+            j["top_card"] = x.top_card;
+        }
+        j["trick"] = x.trick;
+        j["trump"] = x.trump;
         j["turn"] = x.turn;
         j["type"] = x.type;
-        j["used"] = x.used;
-        j["victory"] = x.victory;
     }
 
     inline void from_json(const json & j, DealCardsMsg& x) {
@@ -1168,15 +1146,6 @@ to_json(j, *this);
 return j.dump();
 }
 void GameState::fromString(const std::string &s) {
-auto j = json::parse(s);
-from_json(j, *this);
-}
-std::string IGameState::toString() const {
-json j;
-to_json(j, *this);
-return j.dump();
-}
-void IGameState::fromString(const std::string &s) {
 auto j = json::parse(s);
 from_json(j, *this);
 }

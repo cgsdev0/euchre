@@ -356,65 +356,6 @@
         "player_count"
       ]
     },
-    "IGameState": {
-      "type": "object",
-      "properties": {
-        "players": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Player"
-          }
-        },
-        "richChatLog": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/RichTextMsg"
-          }
-        },
-        "chatLog": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "turn": {
-          "type": "integer"
-        },
-        "rolls": {
-          "type": "array",
-          "items": {
-            "type": "integer"
-          }
-        },
-        "used": {
-          "type": "array",
-          "items": {
-            "type": "boolean"
-          }
-        },
-        "rolled": {
-          "type": "boolean"
-        },
-        "victory": {
-          "type": "boolean"
-        },
-        "privateSession": {
-          "type": "boolean"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "richChatLog",
-        "chatLog",
-        "players",
-        "privateSession",
-        "rolled",
-        "rolls",
-        "turn",
-        "used",
-        "victory"
-      ]
-    },
     "GameState": {
       "type": "object",
       "properties": {
@@ -431,55 +372,78 @@
             "$ref": "#/definitions/ServerPlayer"
           }
         },
-        "richChatLog": {
+        "played_cards": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/RichTextMsg"
+            "$ref": "#/definitions/Card"
           }
         },
-        "chatLog": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
+        "trump": {
+          "type": "string",
+          "default": "hearts",
+          "enum": [
+            "hearts",
+            "diamonds",
+            "spades",
+            "clubs"
+          ]
         },
-        "turn": {
-          "type": "integer"
-        },
-        "rolls": {
+        "trick": {
           "type": "array",
           "items": {
             "type": "integer"
           }
         },
-        "used": {
+        "scores": {
           "type": "array",
           "items": {
-            "type": "boolean"
+            "type": "integer"
           }
         },
-        "rolled": {
-          "type": "boolean"
+        "rich_chat_log": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RichTextMsg"
+          }
         },
-        "victory": {
-          "type": "boolean"
+        "turn": {
+          "type": "integer"
         },
-        "privateSession": {
+        "dealer": {
+          "type": "integer"
+        },
+        "phase": {
+          "type": "string",
+          "default": "lobby",
+          "enum": [
+            "lobby",
+            "vote_round1",
+            "vote_round2",
+            "discarding",
+            "playing",
+            "ended"
+          ]
+        },
+        "top_card": {
+          "$ref": "#/definitions/Card"
+        },
+        "private_session": {
           "type": "boolean"
         }
       },
       "additionalProperties": false,
       "required": [
-        "richChatLog",
-        "chatLog",
+        "rich_chat_log",
+        "played_cards",
+        "trump",
+        "trick",
+        "scores",
         "players",
-        "privateSession",
-        "rolled",
-        "rolls",
+        "private_session",
         "turn",
         "type",
-        "used",
-        "victory"
+        "phase",
+        "dealer"
       ]
     },
     "DealCardsMsg": {

@@ -40,7 +40,6 @@
 #include "RedirectType.hpp"
 #include "Redirect.hpp"
 #include "Room.hpp"
-#include "IGameState.hpp"
 #include "ServerPlayer.hpp"
 #include "GameStateType.hpp"
 #include "GameState.hpp"

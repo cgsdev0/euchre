@@ -4,9 +4,13 @@
 #include <optional>
 #include <variant>
 
+#include "Card.hpp"
+
 namespace API {
+    enum class Phase : int;
     struct ServerPlayer;
     struct RichTextMsg;
+    enum class Trump : int;
     enum class GameStateType : int;
 }
 
@@ -15,15 +19,17 @@ namespace API {
     struct GameState {
 std::string toString() const;
 void fromString(const std::string &str);
-        std::vector<std::string> chat_log;
+        int64_t dealer;
+        Phase phase;
+        std::vector<Card> played_cards;
         std::vector<ServerPlayer> players;
         bool private_session;
         std::vector<RichTextMsg> rich_chat_log;
-        bool rolled;
-        std::vector<int64_t> rolls;
+        std::vector<int64_t> scores;
+        std::optional<Card> top_card;
+        std::vector<int64_t> trick;
+        Trump trump;
         int64_t turn;
         GameStateType type = static_cast<GameStateType>(0);
-        std::vector<bool> used;
-        bool victory;
     };
 }

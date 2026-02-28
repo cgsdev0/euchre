@@ -184,27 +184,17 @@ export interface Room {
   player_count: number;
 }
 
-export interface IGameState {
-  players: Player[];
-  richChatLog: RichTextMsg[];
-  chatLog: string[];
-  turn: number;
-  rolls: number[];
-  used: boolean[];
-  rolled: boolean;
-  victory: boolean;
-  privateSession: boolean;
-}
-
 export interface GameState {
   type: "game_state";
   players: ServerPlayer[];
-  richChatLog: RichTextMsg[];
-  chatLog: string[];
+  played_cards: Card[];
+  trump: "hearts" | "diamonds" | "spades" | "clubs";
+  trick: number[];
+  scores: number[];
+  rich_chat_log: RichTextMsg[];
   turn: number;
-  rolls: number[];
-  used: boolean[];
-  rolled: boolean;
-  victory: boolean;
-  privateSession: boolean;
+  dealer: number;
+  phase: "lobby" | "vote_round1" | "vote_round2" | "discarding" | "playing" | "ended";
+  top_card?: Card;
+  private_session: boolean;
 }
