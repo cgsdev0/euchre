@@ -152,7 +152,7 @@ export interface RichTextChunk {
 }
 
 export interface DealCardsMsg {
-  type?: "deal";
+  type: "deal";
   your_cards: Card[];
   top_card: Card;
 }
