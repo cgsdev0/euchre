@@ -9,11 +9,18 @@ namespace API {
 }
 
 namespace API {
+    /**
+     * Order up a particular suit as trump.
+     */
 
+
+    /**
+     * Order up a particular suit as trump.
+     */
     struct OrderMsg {
 std::string toString() const;
 void fromString(const std::string &str);
-        std::optional<int64_t> id;
+        int64_t id;
         std::optional<int64_t> suit;
         OrderMsgType type = static_cast<OrderMsgType>(0);
     };

@@ -18,11 +18,35 @@ namespace API {
 
 namespace API {
     /**
+     * Pass during the voting rounds.
+     *
+     * Order up a particular suit as trump.
+     *
+     * Use the quick-chat feature.
+     *
+     * Choose a card to play for the current trick.
+     *
+     * Self-explanatory.
+     *
+     * Change your display name.
+     *
      * Update everything
      */
 
 
     /**
+     * Pass during the voting rounds.
+     *
+     * Order up a particular suit as trump.
+     *
+     * Use the quick-chat feature.
+     *
+     * Choose a card to play for the current trick.
+     *
+     * Self-explanatory.
+     *
+     * Change your display name.
+     *
      * Update everything
      */
     struct ServerMsg {

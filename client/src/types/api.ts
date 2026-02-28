@@ -7,7 +7,6 @@
 
 
 export type ClientMsg =
-  | ChatMsg
   | DiscardMsg
   | PlayCardMsg
   | PassMsg
@@ -35,12 +34,10 @@ export type ServerMsg =
 export interface Schema {
   [k: string]: unknown;
 }
-
-export interface ChatMsg {
-  type: "chat";
-  msg: string;
-}
-
+/**
+ * Dealer chooses a card to discard.
+ *
+ */
 export interface DiscardMsg {
   type: "discard";
   id: number;
@@ -52,41 +49,62 @@ export interface Card {
   illegal?: boolean;
   rank: "nine" | "ten" | "jack" | "queen" | "king" | "ace";
 }
-
+/**
+ * Choose a card to play for the current trick.
+ *
+ */
 export interface PlayCardMsg {
   type: "play_card";
   id: number;
   card: Card;
 }
-
+/**
+ * Pass during the voting rounds.
+ *
+ */
 export interface PassMsg {
   type: "pass";
   id: number;
 }
-
+/**
+ * Order up a particular suit as trump.
+ *
+ */
 export interface OrderMsg {
   type: "order" | "id";
-  id?: number;
+  id: number;
   suit?: number;
 }
-
+/**
+ * Use the quick-chat feature.
+ *
+ */
 export interface TableTalkMsg {
   type: "table_talk";
   id: number;
   table_talk: number;
 }
-
+/**
+ * Self-explanatory.
+ *
+ */
 export interface PlayJajaDingDongMsg {
   type: "play_jaja_ding_dong";
   id: number;
 }
-
+/**
+ * Change your display name.
+ *
+ */
 export interface UpdateNameMsg {
   type: "update_name";
   name: string;
   id: number;
 }
-
+/**
+ * Start a new game.
+ *
+ */
 export interface RestartMsg {
   type: "restart";
   id: number;

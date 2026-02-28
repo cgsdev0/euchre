@@ -11,7 +11,14 @@ namespace API {
 }
 
 namespace API {
+    /**
+     * Choose a card to play for the current trick.
+     */
 
+
+    /**
+     * Choose a card to play for the current trick.
+     */
     struct PlayCardMsg {
 std::string toString() const;
 void fromString(const std::string &str);

@@ -9,7 +9,14 @@ namespace API {
 }
 
 namespace API {
+    /**
+     * Pass during the voting rounds.
+     */
 
+
+    /**
+     * Pass during the voting rounds.
+     */
     struct PassMsg {
 std::string toString() const;
 void fromString(const std::string &str);

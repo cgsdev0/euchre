@@ -34,7 +34,6 @@
 #include "PlayCardMsg.hpp"
 #include "DiscardMsgType.hpp"
 #include "DiscardMsg.hpp"
-#include "ChatMsg.hpp"
 #include "GameErrorType.hpp"
 #include "GameError.hpp"
 #include "RedirectType.hpp"

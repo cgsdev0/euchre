@@ -9,7 +9,14 @@ namespace API {
 }
 
 namespace API {
+    /**
+     * Start a new game.
+     */
 
+
+    /**
+     * Start a new game.
+     */
     struct RestartMsg {
 std::string toString() const;
 void fromString(const std::string &str);

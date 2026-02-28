@@ -9,7 +9,14 @@ namespace API {
 }
 
 namespace API {
+    /**
+     * Change your display name.
+     */
 
+
+    /**
+     * Change your display name.
+     */
     struct UpdateNameMsg {
 std::string toString() const;
 void fromString(const std::string &str);

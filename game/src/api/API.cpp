@@ -43,9 +43,6 @@ void to_json(json & j, const PlayCardMsg & x);
 void from_json(const json & j, DiscardMsg & x);
 void to_json(json & j, const DiscardMsg & x);
 
-void from_json(const json & j, ChatMsg & x);
-void to_json(json & j, const ChatMsg & x);
-
 void from_json(const json & j, GameError & x);
 void to_json(json & j, const GameError & x);
 
@@ -187,10 +184,9 @@ namespace API {
     }
 
     inline void from_json(const json & j, ClientMsg& x) {
-        x.msg = get_stack_optional<std::string>(j, "msg");
-        x.type = j.at("type").get<ClientMsgType>();
         x.card = get_stack_optional<Card>(j, "card");
-        x.id = get_stack_optional<int64_t>(j, "id");
+        x.id = j.at("id").get<int64_t>();
+        x.type = j.at("type").get<ClientMsgType>();
         x.suit = get_stack_optional<int64_t>(j, "suit");
         x.table_talk = get_stack_optional<int64_t>(j, "table_talk");
         x.name = get_stack_optional<std::string>(j, "name");
@@ -198,16 +194,11 @@ namespace API {
 
     inline void to_json(json & j, const ClientMsg & x) {
         j = json::object();
-        if (x.msg) {
-            j["msg"] = x.msg;
-        }
-        j["type"] = x.type;
         if (x.card) {
             j["card"] = x.card;
         }
-        if (x.id) {
-            j["id"] = x.id;
-        }
+        j["id"] = x.id;
+        j["type"] = x.type;
         if (x.suit) {
             j["suit"] = x.suit;
         }
@@ -387,16 +378,14 @@ namespace API {
     }
 
     inline void from_json(const json & j, OrderMsg& x) {
-        x.id = get_stack_optional<int64_t>(j, "id");
+        x.id = j.at("id").get<int64_t>();
         x.suit = get_stack_optional<int64_t>(j, "suit");
         x.type = j.at("type").get<OrderMsgType>();
     }
 
     inline void to_json(json & j, const OrderMsg & x) {
         j = json::object();
-        if (x.id) {
-            j["id"] = x.id;
-        }
+        j["id"] = x.id;
         if (x.suit) {
             j["suit"] = x.suit;
         }
@@ -426,17 +415,6 @@ namespace API {
         j = json::object();
         j["card"] = x.card;
         j["id"] = x.id;
-        j["type"] = x.type;
-    }
-
-    inline void from_json(const json & j, ChatMsg& x) {
-        x.msg = j.at("msg").get<std::string>();
-        x.type = j.at("type").get<Suit>();
-    }
-
-    inline void to_json(json & j, const ChatMsg & x) {
-        j = json::object();
-        j["msg"] = x.msg;
         j["type"] = x.type;
     }
 
@@ -698,8 +676,7 @@ namespace API {
     }
 
     inline void from_json(const json & j, ClientMsgType & x) {
-        if (j == "chat") x = ClientMsgType::CHAT;
-        else if (j == "discard") x = ClientMsgType::DISCARD;
+        if (j == "discard") x = ClientMsgType::DISCARD;
         else if (j == "id") x = ClientMsgType::ID;
         else if (j == "order") x = ClientMsgType::ORDER;
         else if (j == "pass") x = ClientMsgType::PASS;
@@ -713,7 +690,6 @@ namespace API {
 
     inline void to_json(json & j, const ClientMsgType & x) {
         switch (x) {
-            case ClientMsgType::CHAT: j = "chat"; break;
             case ClientMsgType::DISCARD: j = "discard"; break;
             case ClientMsgType::ID: j = "id"; break;
             case ClientMsgType::ORDER: j = "order"; break;
@@ -1087,15 +1063,6 @@ to_json(j, *this);
 return j.dump();
 }
 void Card::fromString(const std::string &s) {
-auto j = json::parse(s);
-from_json(j, *this);
-}
-std::string ChatMsg::toString() const {
-json j;
-to_json(j, *this);
-return j.dump();
-}
-void ChatMsg::fromString(const std::string &s) {
 auto j = json::parse(s);
 from_json(j, *this);
 }

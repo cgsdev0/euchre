@@ -9,7 +9,14 @@ namespace API {
 }
 
 namespace API {
+    /**
+     * Use the quick-chat feature.
+     */
 
+
+    /**
+     * Use the quick-chat feature.
+     */
     struct TableTalkMsg {
 std::string toString() const;
 void fromString(const std::string &str);

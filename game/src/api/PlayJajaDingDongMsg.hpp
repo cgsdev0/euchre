@@ -9,7 +9,14 @@ namespace API {
 }
 
 namespace API {
+    /**
+     * Self-explanatory.
+     */
 
+
+    /**
+     * Self-explanatory.
+     */
     struct PlayJajaDingDongMsg {
 std::string toString() const;
 void fromString(const std::string &str);

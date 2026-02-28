@@ -11,7 +11,14 @@ namespace API {
 }
 
 namespace API {
+    /**
+     * Dealer chooses a card to discard.
+     */
 
+
+    /**
+     * Dealer chooses a card to discard.
+     */
     struct DiscardMsg {
 std::string toString() const;
 void fromString(const std::string &str);
