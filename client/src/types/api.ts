@@ -16,6 +16,8 @@ export type ClientMsg =
   | UpdateNameMsg
   | RestartMsg;
 
+export type Suit = "clubs" | "diamonds" | "hearts" | "spades";
+
 export type ServerMsg =
   | WelcomeMsg
   | PassMsg
@@ -45,7 +47,7 @@ export interface DiscardMsg {
 }
 
 export interface Card {
-  suit: "chat";
+  suit: Suit;
   illegal?: boolean;
   rank: "nine" | "ten" | "jack" | "queen" | "king" | "ace";
 }
@@ -73,7 +75,7 @@ export interface PassMsg {
 export interface OrderMsg {
   type: "order" | "id";
   id: number;
-  suit?: number;
+  suit?: Suit;
 }
 /**
  * Use the quick-chat feature.
@@ -114,7 +116,7 @@ export interface WelcomeMsg {
   type: "welcome";
   id: number;
   played_cards: Card[];
-  trump: "hearts" | "diamonds" | "spades" | "clubs";
+  trump: Suit;
   your_cards: Card[];
   trick: number[];
   scores: number[];
@@ -176,7 +178,7 @@ export interface UpdateMsg {
   turn: number;
   dealer: number;
   phase: "lobby" | "vote_round1" | "vote_round2" | "discarding" | "playing" | "ended";
-  trump: "hearts" | "diamonds" | "spades" | "clubs";
+  trump: Suit;
   scores: number[];
 }
 
@@ -202,7 +204,7 @@ export interface GameState {
   players: ServerPlayer[];
   kitty?: Card[];
   played_cards: Card[];
-  trump: "hearts" | "diamonds" | "spades" | "clubs";
+  trump: Suit;
   trick: number[];
   scores: number[];
   rich_chat_log: RichTextMsg[];

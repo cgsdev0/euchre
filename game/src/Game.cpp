@@ -18,6 +18,8 @@ Game::Game() {
     this->state.turn = 0;
     this->state.private_session = true;
     this->state.players.reserve(MAX_PLAYERS);
+    this->state.scores = {0, 0};
+    this->deck.shuffle();
 }
 
 Game::~Game() {
@@ -161,11 +163,39 @@ void Game::play_jaja_ding_dong(const HandlerArgs &server, const API::PlayJajaDin
 void Game::table_talk(const HandlerArgs &server, const API::TableTalkMsg &msg) {
 };
 
+static void sendUpdate(const HandlerArgs &server, const API::GameState &state) {
+    API::UpdateMsg msg;
+    msg.phase = state.phase;
+    msg.dealer = state.dealer;
+    msg.turn = state.turn;
+    msg.trump = state.trump;
+    msg.scores = state.scores;
+    server.broadcast(msg.toString());
+}
+
+void Game::dealCards(const HandlerArgs &server) {
+    state.top_card = deck.deal(1)[0];
+    std::cout << "Dealt the top card: " << (int)state.top_card->suit << " " << (int)state.top_card->rank << std::endl;
+    for (auto &player : state.players) {
+        auto cards = deck.deal(5);
+        API::DealCardsMsg hand;
+        hand.your_cards = std::vector(cards.begin(), cards.end());
+        hand.top_card = *state.top_card;
+        server.dm(player.session, hand.toString());
+    }
+}
+
 void Game::restart(const HandlerArgs &server, const API::RestartMsg &msg) {
-    if (state.players.empty())
-        throw API::GameError({.error = "uhhh this should never happen"});
-    if (state.phase != API::Phase::ENDED)
-        throw API::GameError({.error = "game still in progress"});
+    if (state.players.size() < MAX_PLAYERS)
+        throw API::GameError({.error = "not enough players"});
+    if (state.phase != API::Phase::ENDED && state.phase != API::Phase::LOBBY)
+        throw API::GameError({.error = "not in a start-able phase"});
+    state.phase = API::Phase::VOTE_ROUND1;
+    state.dealer = (state.dealer + 1) % MAX_PLAYERS;
+    std::cout << "First we send the update" << std::endl;
+    sendUpdate(server, state);
+    std::cout << "Then we deal the cards" << std::endl;
+    this->dealCards(server);
 }
 
 void Game::update_name(const HandlerArgs &server, const API::UpdateNameMsg &msg) {

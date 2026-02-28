@@ -8,7 +8,7 @@
 #include "RichTextChunk.hpp"
 
 namespace API {
-    enum class Suit : int;
+    enum class RichTextMsgType : int;
 }
 
 namespace API {
@@ -17,6 +17,6 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         std::vector<Msg> msg;
-        Suit type;
+        RichTextMsgType type = static_cast<RichTextMsgType>(0);
     };
 }

@@ -2,6 +2,7 @@
 #define INCLUDE_GAME_H
 
 #include "Consts.h"
+#include "Deck.h"
 #include "RichTextStream.h"
 
 #include <chrono>
@@ -11,11 +12,13 @@
 
 #include <vector>
 
-typedef std::function<void(std::string)> SendFunc;
+typedef std::function<void(const std::string &)> SendFunc;
+typedef std::function<void(const std::string &, const std::string &)> DmFunc;
 
 class GameCoordinator;
 struct HandlerArgs {
     SendFunc broadcast;
+    DmFunc dm;
     SendFunc send;
     std::string &session;
 };
@@ -52,6 +55,7 @@ class Game {
     bool isPlayerConnected(std::string id) const;
 
     void advanceTurn();
+    void dealCards(const HandlerArgs &server);
 
     std::chrono::system_clock::time_point getUpdated() { return this->updated; }
 
@@ -101,6 +105,7 @@ class Game {
         }
         return stream.str();
     }
+    Deck deck;
     std::chrono::system_clock::time_point updated = std::chrono::system_clock::now();
     std::chrono::system_clock::time_point turn_start_time = std::chrono::system_clock::now();
     std::string turn_token;

@@ -6,7 +6,7 @@
 
 namespace API {
     enum class Phase : int;
-    enum class Trump : int;
+    enum class Suit : int;
     enum class UpdateMsgType : int;
 }
 
@@ -25,7 +25,7 @@ void fromString(const std::string &str);
         int64_t dealer;
         Phase phase;
         std::vector<int64_t> scores;
-        Trump trump;
+        Suit trump;
         int64_t turn;
         UpdateMsgType type = static_cast<UpdateMsgType>(0);
     };

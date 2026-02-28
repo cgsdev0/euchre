@@ -5,6 +5,7 @@
 #include <variant>
 
 namespace API {
+    enum class Suit : int;
     enum class OrderMsgType : int;
 }
 
@@ -21,7 +22,7 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         int64_t id;
-        std::optional<int64_t> suit;
+        std::optional<Suit> suit;
         OrderMsgType type = static_cast<OrderMsgType>(0);
     };
 }

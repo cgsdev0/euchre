@@ -157,7 +157,7 @@
           "type": "integer"
         },
         "suit": {
-          "type": "integer"
+          "$ref": "#/definitions/Suit"
         }
       },
       "additionalProperties": false,
@@ -220,11 +220,7 @@
       "type": "object",
       "properties": {
         "suit": {
-          "type": "string",
-          "default": "chat",
-          "enum": [
-            "chat"
-          ]
+          "$ref": "#/definitions/Suit"
         },
         "illegal": {
           "type": "boolean"
@@ -313,6 +309,15 @@
         "type"
       ]
     },
+    "Suit": {
+      "default": "hearts",
+      "enum": [
+        "clubs",
+        "diamonds",
+        "hearts",
+        "spades"
+      ]
+    },
     "Redirect": {
       "type": "object",
       "properties": {
@@ -362,14 +367,7 @@
           }
         },
         "trump": {
-          "type": "string",
-          "default": "hearts",
-          "enum": [
-            "hearts",
-            "diamonds",
-            "spades",
-            "clubs"
-          ]
+          "$ref": "#/definitions/Suit"
         },
         "trick": {
           "type": "array",
@@ -475,14 +473,7 @@
           }
         },
         "trump": {
-          "type": "string",
-          "default": "hearts",
-          "enum": [
-            "hearts",
-            "diamonds",
-            "spades",
-            "clubs"
-          ]
+          "$ref": "#/definitions/Suit"
         },
         "your_cards": {
           "type": "array",
@@ -769,14 +760,7 @@
           ]
         },
         "trump": {
-          "type": "string",
-          "default": "hearts",
-          "enum": [
-            "hearts",
-            "diamonds",
-            "spades",
-            "clubs"
-          ]
+          "$ref": "#/definitions/Suit"
         },
         "scores": {
           "type": "array",

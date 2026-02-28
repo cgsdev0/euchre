@@ -74,6 +74,18 @@ echo "}" >> API.cpp
 sed -i '1s/^/#include <vector>\n/' API.hpp
 sed -i '1s/^/#include <memory>\n/' API.hpp
 
+sed -i 's/DIAMONDS/DIAMONDS=0/' Suit.hpp
+sed -i 's/CLUBS/CLUBS=1/'       Suit.hpp
+sed -i 's/SPADES/SPADES=2/'     Suit.hpp
+sed -i 's/HEARTS/HEARTS=3/'     Suit.hpp
+
+sed -i 's/NINE/NINE=0/'         Rank.hpp
+sed -i 's/TEN/TEN=1/'           Rank.hpp
+sed -i 's/JACK/JACK=2/'         Rank.hpp
+sed -i 's/QUEEN/QUEEN=3/'       Rank.hpp
+sed -i 's/KING/KING=4/'         Rank.hpp
+sed -i 's/ACE/ACE=5/'           Rank.hpp
+
 popd &> /dev/null
 
 

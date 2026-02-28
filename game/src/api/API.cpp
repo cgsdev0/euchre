@@ -100,8 +100,8 @@ void to_json(json & j, const RichTextChunkType & x);
 void from_json(const json & j, Phase & x);
 void to_json(json & j, const Phase & x);
 
-void from_json(const json & j, Trump & x);
-void to_json(json & j, const Trump & x);
+void from_json(const json & j, RichTextMsgType & x);
+void to_json(json & j, const RichTextMsgType & x);
 
 void from_json(const json & j, ServerMsgType & x);
 void to_json(json & j, const ServerMsgType & x);
@@ -184,7 +184,7 @@ namespace API {
         x.card = get_stack_optional<Card>(j, "card");
         x.id = j.at("id").get<int64_t>();
         x.type = j.at("type").get<ClientMsgType>();
-        x.suit = get_stack_optional<int64_t>(j, "suit");
+        x.suit = get_stack_optional<Suit>(j, "suit");
         x.table_talk = get_stack_optional<int64_t>(j, "table_talk");
         x.name = get_stack_optional<std::string>(j, "name");
     }
@@ -247,7 +247,7 @@ namespace API {
 
     inline void from_json(const json & j, RichTextMsg& x) {
         x.msg = j.at("msg").get<std::vector<Msg>>();
-        x.type = j.at("type").get<Suit>();
+        x.type = j.at("type").get<RichTextMsgType>();
     }
 
     inline void to_json(json & j, const RichTextMsg & x) {
@@ -267,11 +267,11 @@ namespace API {
         x.scores = get_stack_optional<std::vector<int64_t>>(j, "scores");
         x.top_card = get_stack_optional<Card>(j, "top_card");
         x.trick = get_stack_optional<std::vector<int64_t>>(j, "trick");
-        x.trump = get_stack_optional<Trump>(j, "trump");
+        x.trump = get_stack_optional<Suit>(j, "trump");
         x.turn = get_stack_optional<int64_t>(j, "turn");
         x.type = get_stack_optional<ServerMsgType>(j, "type");
         x.your_cards = get_stack_optional<std::vector<Card>>(j, "your_cards");
-        x.suit = get_stack_optional<int64_t>(j, "suit");
+        x.suit = get_stack_optional<Suit>(j, "suit");
         x.table_talk = get_stack_optional<int64_t>(j, "table_talk");
         x.card = get_stack_optional<Card>(j, "card");
         x.name = get_stack_optional<std::string>(j, "name");
@@ -376,7 +376,7 @@ namespace API {
 
     inline void from_json(const json & j, OrderMsg& x) {
         x.id = j.at("id").get<int64_t>();
-        x.suit = get_stack_optional<int64_t>(j, "suit");
+        x.suit = get_stack_optional<Suit>(j, "suit");
         x.type = j.at("type").get<OrderMsgType>();
     }
 
@@ -465,7 +465,7 @@ namespace API {
         x.scores = j.at("scores").get<std::vector<int64_t>>();
         x.top_card = get_stack_optional<Card>(j, "top_card");
         x.trick = j.at("trick").get<std::vector<int64_t>>();
-        x.trump = j.at("trump").get<Trump>();
+        x.trump = j.at("trump").get<Suit>();
         x.turn = j.at("turn").get<int64_t>();
         x.type = j.at("type").get<GameStateType>();
     }
@@ -517,7 +517,7 @@ namespace API {
         x.scores = j.at("scores").get<std::vector<int64_t>>();
         x.top_card = get_stack_optional<Card>(j, "top_card");
         x.trick = j.at("trick").get<std::vector<int64_t>>();
-        x.trump = j.at("trump").get<Trump>();
+        x.trump = j.at("trump").get<Suit>();
         x.turn = j.at("turn").get<int64_t>();
         x.type = j.at("type").get<WelcomeMsgType>();
         x.your_cards = j.at("your_cards").get<std::vector<Card>>();
@@ -608,7 +608,7 @@ namespace API {
         x.dealer = j.at("dealer").get<int64_t>();
         x.phase = j.at("phase").get<Phase>();
         x.scores = j.at("scores").get<std::vector<int64_t>>();
-        x.trump = j.at("trump").get<Trump>();
+        x.trump = j.at("trump").get<Suit>();
         x.turn = j.at("turn").get<int64_t>();
         x.type = j.at("type").get<UpdateMsgType>();
     }
@@ -646,13 +646,19 @@ namespace API {
     }
 
     inline void from_json(const json & j, Suit & x) {
-        if (j == "chat") x = Suit::CHAT;
+        if (j == "clubs") x = Suit::CLUBS;
+        else if (j == "diamonds") x = Suit::DIAMONDS;
+        else if (j == "hearts") x = Suit::HEARTS;
+        else if (j == "spades") x = Suit::SPADES;
         else { throw std::runtime_error("Input JSON does not conform to schema!"); }
     }
 
     inline void to_json(json & j, const Suit & x) {
         switch (x) {
-            case Suit::CHAT: j = "chat"; break;
+            case Suit::CLUBS: j = "clubs"; break;
+            case Suit::DIAMONDS: j = "diamonds"; break;
+            case Suit::HEARTS: j = "hearts"; break;
+            case Suit::SPADES: j = "spades"; break;
             default: throw std::runtime_error("This should not happen");
         }
     }
@@ -755,20 +761,14 @@ namespace API {
         }
     }
 
-    inline void from_json(const json & j, Trump & x) {
-        if (j == "clubs") x = Trump::CLUBS;
-        else if (j == "diamonds") x = Trump::DIAMONDS;
-        else if (j == "hearts") x = Trump::HEARTS;
-        else if (j == "spades") x = Trump::SPADES;
+    inline void from_json(const json & j, RichTextMsgType & x) {
+        if (j == "chat") x = RichTextMsgType::CHAT;
         else { throw std::runtime_error("Input JSON does not conform to schema!"); }
     }
 
-    inline void to_json(json & j, const Trump & x) {
+    inline void to_json(json & j, const RichTextMsgType & x) {
         switch (x) {
-            case Trump::CLUBS: j = "clubs"; break;
-            case Trump::DIAMONDS: j = "diamonds"; break;
-            case Trump::HEARTS: j = "hearts"; break;
-            case Trump::SPADES: j = "spades"; break;
+            case RichTextMsgType::CHAT: j = "chat"; break;
             default: throw std::runtime_error("This should not happen");
         }
     }

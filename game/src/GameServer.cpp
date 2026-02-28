@@ -63,6 +63,7 @@ void connectNewPlayer(uWS::App *app, uWS::WebSocket<false, true, PerSocketData> 
         auto msg = g->toWelcomeMsg(userData->session);
         ws->send(msg.toString(), uWS::OpCode::TEXT);
         ws->subscribe(userData->room);
+        ws->subscribe(userData->room + "-dm-" + userData->session);
     } else {
         // Connecting to a non-existant room
         // let's migrate them to a new room
@@ -134,7 +135,8 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                             Game *g = it->second;
                             g->handleMessage(
                                 {
-                                    .broadcast = [ws, room, app](auto s) { app->publish(room, s, uWS::OpCode::TEXT); },
+                                    .broadcast = [app, room](auto s) { app->publish(room, s, uWS::OpCode::TEXT); },
+                                    .dm = [app, room](const std::string &session, auto s) { app->publish(room + "-dm-" + session, s, uWS::OpCode::TEXT); },
                                     .send =
                                         [ws](auto s) { ws->send(s, uWS::OpCode::TEXT); },
                                     .session = session,
@@ -235,7 +237,7 @@ int main(int argc, char **argv) {
                res->end(coordinator.createRoom(isPrivate));
            }
        })
-        .ws<PerSocketData>("/ws/:room", makeWebsocketBehavior(&app, coordinator))
+        .ws<PerSocketData>("/ws/room/:room", makeWebsocketBehavior(&app, coordinator))
         // This 1 makes it so that the port is not reusable
         // because it SUCKS ASS when the port is reusable and you
         // don't realize the port is reusable and then you have a bad day

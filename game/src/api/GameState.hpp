@@ -10,7 +10,7 @@ namespace API {
     enum class Phase : int;
     struct ServerPlayer;
     struct RichTextMsg;
-    enum class Trump : int;
+    enum class Suit : int;
     enum class GameStateType : int;
 }
 
@@ -29,7 +29,7 @@ void fromString(const std::string &str);
         std::vector<int64_t> scores;
         std::optional<Card> top_card;
         std::vector<int64_t> trick;
-        Trump trump;
+        Suit trump;
         int64_t turn;
         GameStateType type = static_cast<GameStateType>(0);
     };

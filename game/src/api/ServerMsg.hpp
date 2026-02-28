@@ -12,7 +12,7 @@ namespace API {
     enum class Phase : int;
     struct Player;
     struct RichTextMsg;
-    enum class Trump : int;
+    enum class Suit : int;
     enum class ServerMsgType : int;
 }
 
@@ -62,11 +62,11 @@ void fromString(const std::string &str);
         std::optional<std::vector<int64_t>> scores;
         std::optional<Card> top_card;
         std::optional<std::vector<int64_t>> trick;
-        std::optional<Trump> trump;
+        std::optional<Suit> trump;
         std::optional<int64_t> turn;
         std::optional<ServerMsgType> type;
         std::optional<std::vector<Card>> your_cards;
-        std::optional<int64_t> suit;
+        std::optional<Suit> suit;
         std::optional<int64_t> table_talk;
         std::optional<Card> card;
         std::optional<std::string> name;
