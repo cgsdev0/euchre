@@ -6,6 +6,8 @@
 #include <optional>
 #include <variant>
 
+#include "ClientMsgType.hpp"
+#include "ClientMsg.hpp"
 #include "Alignment.hpp"
 #include "Modifier.hpp"
 #include "RichTextChunkType.hpp"
@@ -16,6 +18,19 @@
 #include "RichTextMsg.hpp"
 #include "ServerMsgType.hpp"
 #include "ServerMsg.hpp"
+#include "PassMsgType.hpp"
+#include "PassMsg.hpp"
+#include "PlayJajaDingDongMsgType.hpp"
+#include "PlayJajaDingDongMsg.hpp"
+#include "TableTalkMsgType.hpp"
+#include "TableTalkMsg.hpp"
+#include "OrderMsgType.hpp"
+#include "OrderMsg.hpp"
+#include "PlayCardMsgType.hpp"
+#include "PlayCardMsg.hpp"
+#include "DiscardMsgType.hpp"
+#include "DiscardMsg.hpp"
+#include "ChatMsg.hpp"
 #include "GameErrorType.hpp"
 #include "GameError.hpp"
 #include "RedirectType.hpp"

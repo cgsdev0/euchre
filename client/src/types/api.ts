@@ -6,11 +6,26 @@
  */
 
 
+export type ClientMsg =
+  | ChatMsg
+  | DiscardMsg
+  | PlayCardMsg
+  | ObjectObject
+  | OrderMsg
+  | TableTalkMsg
+  | ObjectObject1
+  | UpdateNameMsg
+  | RestartMsg;
+
 export type ServerMsg =
   | WelcomeMsg
+  | ObjectObject
+  | OrderMsg
+  | TableTalkMsg
+  | PlayCardMsg
+  | ObjectObject1
   | DealCardsMsg
   | UpdateNameMsg
-  | RestartMsg
   | JoinMsg
   | DisconnectMsg
   | ReconnectMsg
@@ -19,6 +34,53 @@ export type ServerMsg =
 
 export interface Schema {
   [k: string]: unknown;
+}
+
+export interface ChatMsg {
+  type: "chat";
+  msg: string;
+}
+
+export interface DiscardMsg {
+  type: "discard";
+  card: number;
+}
+
+export interface PlayCardMsg {
+  type: "play_card";
+  id?: number;
+  card: number;
+}
+
+export interface ObjectObject {
+  type: "pass";
+}
+
+export interface OrderMsg {
+  type: "order";
+  id?: number;
+  suit?: number;
+}
+
+export interface TableTalkMsg {
+  type: "table_talk";
+  id?: number;
+  table_talk: number;
+}
+
+export interface ObjectObject1 {
+  type: "play_jaja_ding_dong";
+}
+
+export interface UpdateNameMsg {
+  type: "update_name";
+  name: string;
+  id: number;
+}
+
+export interface RestartMsg {
+  type: "restart";
+  id: number;
 }
 
 export interface WelcomeMsg {
@@ -60,17 +122,6 @@ export interface DealCardsMsg {
   type?: "deal";
   your_cards: number[];
   top_card: number;
-}
-
-export interface UpdateNameMsg {
-  type: "update_name";
-  name: string;
-  id: number;
-}
-
-export interface RestartMsg {
-  type: "restart";
-  id: number;
 }
 
 export interface JoinMsg {
