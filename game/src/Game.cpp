@@ -273,6 +273,10 @@ void Game::endHand(const HandlerArgs &server) {
     state.scores[winner] += winnings;
     turn_token = state.players[state.turn].session;
     server.broadcast(msg.toString());
+    for (auto &player : state.players) {
+        player.tricks = 0;
+        player.sitting_out = false;
+    }
     deck.shuffle();
     if (state.scores[winner] >= 10) {
         endGame(server, winner);
@@ -302,18 +306,20 @@ static int scoreCard(const Card &card, Suit trump, Suit led) {
 }
 
 void Game::endTrick(const HandlerArgs &server) {
-    // TODO: think about what state needs to get reset here
     WinTrickMsg msg;
-    int starter = (state.turn + MAX_PLAYERS + 1) % MAX_PLAYERS;
-    int winner = 0; // assume first player won the trick
     Suit led = effectiveSuit(state.trick[0], state.trump);
     int best = 0;
+    int winner = trick_leader;
+    int current = trick_leader;
     for (size_t i = 0; i < state.trick.size(); ++i) {
         int score = scoreCard(state.trick[i], state.trump, led);
         if (score > best) {
             best = score;
-            winner = i;
+            winner = current;
         }
+        do {
+            current = (current + 1) % MAX_PLAYERS;
+        } while (state.players[current].sitting_out);
     }
     state.trick.clear();
     msg.id = winner;
@@ -354,12 +360,19 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
             }
         }
     }
+    if (state.trick.empty()) {
+        trick_leader = state.turn;
+    }
     state.trick.push_back(msg.card);
     state.played_cards.push_back(server_copy);
 
     msg.id = state.turn;
     server.broadcast(msg.toString()); // let everyone know
-    if (state.trick.size() == MAX_PLAYERS) {
+    size_t active_players = 0;
+    for (const auto &p : state.players) {
+        if (!p.sitting_out) active_players++;
+    }
+    if (state.trick.size() == active_players) {
         endTrick(server);
     } else {
         advanceTurn();
@@ -411,6 +424,10 @@ void Game::restart(const HandlerArgs &server, RestartMsg &msg) {
         throw GameError({.error = "not enough players"});
     if (state.phase != Phase::ENDED && state.phase != Phase::LOBBY)
         throw GameError({.error = "not in a start-able phase"});
+    for (auto &player : state.players) {
+        player.tricks = 0;
+        player.sitting_out = false;
+    }
     deck.shuffle();
     state.phase = Phase::VOTE_ROUND1;
     state.dealer = (state.dealer + 1) % MAX_PLAYERS;

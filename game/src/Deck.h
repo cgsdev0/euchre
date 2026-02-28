@@ -1,7 +1,9 @@
 #ifndef DECK_H
 #define DECK_H
 #include "api/API.hpp"
+#include <algorithm>
 #include <cassert>
+#include <random>
 
 #define CARDS_IN_DECK 24
 struct Deck {
@@ -14,7 +16,8 @@ struct Deck {
     }
 
     void shuffle() {
-        // TODO: actually shuffle
+        static std::mt19937 rng(std::random_device{}());
+        std::shuffle(this->cards, this->cards + CARDS_IN_DECK, rng);
         this->deal_ptr = 0;
     }
 
