@@ -4,19 +4,17 @@
 #include <optional>
 #include <variant>
 
-#include "Msg.hpp"
-#include "RichTextChunk.hpp"
-
 namespace API {
+    enum class Rank : int;
     enum class Suit : int;
 }
 
 namespace API {
 
-    struct RichTextMsg {
+    struct Card {
 std::string toString() const;
 void fromString(const std::string &str);
-        std::vector<Msg> msg;
-        Suit type;
+        std::optional<Rank> rank;
+        std::optional<Suit> suit;
     };
 }

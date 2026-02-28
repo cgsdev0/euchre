@@ -6,6 +6,9 @@
 #include <optional>
 #include <variant>
 
+#include "Rank.hpp"
+#include "Suit.hpp"
+#include "Card.hpp"
 #include "ClientMsgType.hpp"
 #include "ClientMsg.hpp"
 #include "Alignment.hpp"
@@ -13,9 +16,10 @@
 #include "RichTextChunkType.hpp"
 #include "RichTextChunk.hpp"
 #include "Msg.hpp"
+#include "Phase.hpp"
 #include "Player.hpp"
-#include "RichTextMsgType.hpp"
 #include "RichTextMsg.hpp"
+#include "Trump.hpp"
 #include "ServerMsgType.hpp"
 #include "ServerMsg.hpp"
 #include "PassMsgType.hpp"

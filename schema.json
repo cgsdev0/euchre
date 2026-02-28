@@ -173,7 +173,7 @@
           "type": "integer"
         },
         "card": {
-          "type": "integer"
+          "$ref": "#/definitions/Card"
         }
       },
       "additionalProperties": false,
@@ -193,7 +193,7 @@
           ]
         },
         "card": {
-          "type": "integer"
+          "$ref": "#/definitions/Card"
         }
       },
       "additionalProperties": false,
@@ -221,6 +221,30 @@
         "msg",
         "type"
       ]
+    },
+    "Card": {
+      "type": "object",
+      "properties": {
+        "suit": {
+          "type": "string",
+          "default": "chat",
+          "enum": [
+            "chat"
+          ]
+        },
+        "rank": {
+          "type": "string",
+          "default": "nine",
+          "enum": [
+            "nine",
+            "ten",
+            "jack",
+            "queen",
+            "king",
+            "ace"
+          ]
+        }
+      }
     },
     "Player": {
       "type": "object",
@@ -256,7 +280,7 @@
         "cards": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "$ref": "#/definitions/Card"
           }
         }
       },
@@ -471,11 +495,11 @@
         "your_cards": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "$ref": "#/definitions/Card"
           }
         },
         "top_card": {
-          "type": "integer"
+          "$ref": "#/definitions/Card"
         }
       },
       "additionalProperties": false,
@@ -500,13 +524,23 @@
         "played_cards": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "$ref": "#/definitions/Card"
           }
+        },
+        "trump": {
+          "type": "string",
+          "default": "hearts",
+          "enum": [
+            "hearts",
+            "diamonds",
+            "spades",
+            "clubs"
+          ]
         },
         "your_cards": {
           "type": "array",
           "items": {
-            "type": "integer"
+            "$ref": "#/definitions/Card"
           }
         },
         "trick": {
@@ -540,10 +574,19 @@
           "type": "integer"
         },
         "phase": {
-          "type": "integer"
+          "type": "string",
+          "default": "lobby",
+          "enum": [
+            "lobby",
+            "vote_round1",
+            "vote_round2",
+            "discarding",
+            "playing",
+            "ended"
+          ]
         },
         "top_card": {
-          "type": "integer"
+          "$ref": "#/definitions/Card"
         },
         "private_session": {
           "type": "boolean"
@@ -554,6 +597,7 @@
         "rich_chat_log",
         "played_cards",
         "your_cards",
+        "trump",
         "trick",
         "scores",
         "your_id",
@@ -767,10 +811,26 @@
           "type": "integer"
         },
         "phase": {
-          "type": "integer"
+          "type": "string",
+          "default": "lobby",
+          "enum": [
+            "lobby",
+            "vote_round1",
+            "vote_round2",
+            "discarding",
+            "playing",
+            "ended"
+          ]
         },
         "trump": {
-          "type": "integer"
+          "type": "string",
+          "default": "hearts",
+          "enum": [
+            "hearts",
+            "diamonds",
+            "spades",
+            "clubs"
+          ]
         },
         "scores": {
           "type": "array",

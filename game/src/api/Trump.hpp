@@ -6,5 +6,5 @@
 
 namespace API {
 
-    enum class RichTextMsgType : int { CHAT };
+    enum class Trump : int { CLUBS, DIAMONDS, HEARTS, SPADES };
 }

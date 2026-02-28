@@ -43,13 +43,19 @@ export interface ChatMsg {
 
 export interface DiscardMsg {
   type: "discard";
-  card: number;
+  card: Card;
+}
+
+export interface Card {
+  suit?: "chat";
+  rank?: "nine" | "ten" | "jack" | "queen" | "king" | "ace";
+  [k: string]: unknown;
 }
 
 export interface PlayCardMsg {
   type: "play_card";
   id?: number;
-  card: number;
+  card: Card;
 }
 
 export interface ObjectObject {
@@ -86,16 +92,17 @@ export interface RestartMsg {
 export interface WelcomeMsg {
   type: "welcome";
   your_id: number;
-  played_cards: number[];
-  your_cards: number[];
+  played_cards: Card[];
+  trump: "hearts" | "diamonds" | "spades" | "clubs";
+  your_cards: Card[];
   trick: number[];
   scores: number[];
   players: Player[];
   rich_chat_log: RichTextMsg[];
   turn: number;
   dealer: number;
-  phase: number;
-  top_card?: number;
+  phase: "lobby" | "vote_round1" | "vote_round2" | "discarding" | "playing" | "ended";
+  top_card?: Card;
   private_session: boolean;
 }
 
@@ -120,8 +127,8 @@ export interface RichTextChunk {
 
 export interface DealCardsMsg {
   type?: "deal";
-  your_cards: number[];
-  top_card: number;
+  your_cards: Card[];
+  top_card: Card;
 }
 
 export interface JoinMsg {
@@ -148,8 +155,8 @@ export interface UpdateMsg {
   type: "update";
   turn: number;
   dealer: number;
-  phase: number;
-  trump: number;
+  phase: "lobby" | "vote_round1" | "vote_round2" | "discarding" | "playing" | "ended";
+  trump: "hearts" | "diamonds" | "spades" | "clubs";
   scores: number[];
 }
 
@@ -157,7 +164,7 @@ export interface ServerPlayer {
   session: string;
   connected: boolean;
   name?: string;
-  cards: number[];
+  cards: Card[];
 }
 
 export interface GameError {

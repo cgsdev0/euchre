@@ -5,7 +5,7 @@
 #include <variant>
 
 namespace API {
-    enum class RichTextMsgType : int;
+    enum class Suit : int;
 }
 
 namespace API {
@@ -14,6 +14,6 @@ namespace API {
 std::string toString() const;
 void fromString(const std::string &str);
         std::string msg;
-        RichTextMsgType type;
+        Suit type;
     };
 }
