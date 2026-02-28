@@ -1,0 +1,22 @@
+{
+  "name": "euchre",
+  "version": "1.0.0",
+  "description": "<h1 align=\"center\">Euchre</h1>",
+  "dependencies": {
+    "nocache": "^3.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cgsdev0/euchre.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cgsdev0/euchre/issues"
+  },
+  "homepage": "https://github.com/cgsdev0/euchre#readme",
+  "devDependencies": {
+    "json-schema-to-typescript": "^13.0.2",
+    "quicktype": "23.0.64"
+  }
+}

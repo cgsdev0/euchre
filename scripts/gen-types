@@ -3,9 +3,7 @@
 cd "${0%/*}/.."
 
 mkdir -p game/src/api
-mkdir -p ssh-gateway/api
 rm game/src/api/*
-rm ssh-gateway/api/generated.go
 
 ./node_modules/.bin/quicktype \
   -o game/src/api/API.hpp \
@@ -15,11 +13,6 @@ rm ssh-gateway/api/generated.go
   --lang c++ \
   --hide-null-optional \
   --namespace API \
-  --src-lang schema "./schema.json#/definitions/"
-
-./node_modules/.bin/quicktype \
-  -o ssh-gateway/api/generated.go \
-  --lang golang \
   --src-lang schema "./schema.json#/definitions/"
 
 # it turns out quicktype is not good at most things
@@ -89,9 +82,4 @@ sed -i '/^ \* This interface was referenced by /d' api.ts
 sed -i '/^ \* via the `definition` /d' api.ts
 # quick and easy sed loop mechanism
 sed -i ':a;N;$!ba;s/\/\*\*\n \*\///g' api.ts
-
-
 popd &> /dev/null
-
-pushd ssh-gateway/api &> /dev/null
-sed -i 's/package main/package api/' generated.go
