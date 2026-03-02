@@ -13,6 +13,8 @@ namespace API {
 
 namespace API {
     /**
+     * Alternative to sending your cookie as a header.
+     *
      * Dealer chooses a card to discard.
      *
      * Choose a card to play for the current trick.
@@ -32,6 +34,8 @@ namespace API {
 
 
     /**
+     * Alternative to sending your cookie as a header.
+     *
      * Dealer chooses a card to discard.
      *
      * Choose a card to play for the current trick.
@@ -51,9 +55,10 @@ namespace API {
     struct ClientMsg {
 std::string toString() const;
 void fromString(const std::string &str);
+        std::optional<std::string> session;
+        ClientMsgType type = static_cast<ClientMsgType>(0);
         std::optional<Card> card;
         std::optional<int64_t> id;
-        ClientMsgType type = static_cast<ClientMsgType>(0);
         std::optional<bool> alone;
         std::optional<Suit> suit;
         std::optional<int64_t> table_talk;

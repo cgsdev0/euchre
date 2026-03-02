@@ -9,11 +9,11 @@
 #include "RichTextChunk.hpp"
 
 namespace API {
+    enum class ServerMsgType : int;
     enum class Phase : int;
     struct Player;
     struct RichTextMsg;
     enum class Suit : int;
-    enum class ServerMsgType : int;
 }
 
 namespace API {
@@ -52,6 +52,9 @@ namespace API {
     struct ServerMsg {
 std::string toString() const;
 void fromString(const std::string &str);
+        std::optional<std::string> error;
+        ServerMsgType type = static_cast<ServerMsgType>(0);
+        std::optional<std::string> room;
         std::optional<int64_t> dealer;
         std::optional<int64_t> id;
         std::optional<Phase> phase;
@@ -64,7 +67,6 @@ void fromString(const std::string &str);
         std::optional<std::vector<Card>> trick;
         std::optional<Suit> trump;
         std::optional<int64_t> turn;
-        ServerMsgType type = static_cast<ServerMsgType>(0);
         std::optional<std::vector<Card>> your_cards;
         std::optional<bool> alone;
         std::optional<Suit> suit;

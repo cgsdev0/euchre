@@ -7,6 +7,7 @@
 
 
 export type ClientMsg =
+  | CookieMsg
   | DiscardMsg
   | PlayCardMsg
   | PassMsg
@@ -19,6 +20,8 @@ export type ClientMsg =
 export type Suit = "clubs" | "diamonds" | "hearts" | "spades";
 
 export type ServerMsg =
+  | GameError
+  | Redirect
   | WelcomeMsg
   | PassMsg
   | OrderMsg
@@ -35,6 +38,14 @@ export type ServerMsg =
 
 export interface Schema {
   [k: string]: unknown;
+}
+/**
+ * Alternative to sending your cookie as a header.
+ *
+ */
+export interface CookieMsg {
+  type: "cookie";
+  session: string;
 }
 /**
  * Dealer chooses a card to discard.
@@ -113,6 +124,16 @@ export interface RestartMsg {
   id?: number;
 }
 
+export interface GameError {
+  type: "error";
+  error: string;
+}
+
+export interface Redirect {
+  type: "redirect";
+  room: string;
+}
+
 export interface WelcomeMsg {
   type: "welcome";
   id: number;
@@ -152,7 +173,7 @@ export interface RichTextChunk {
 }
 
 export interface DealCardsMsg {
-  type?: "deal";
+  type: "deal";
   your_cards: Card[];
   top_card: Card;
 }
@@ -216,16 +237,6 @@ export interface ServerPlayer {
   connected: boolean;
   name?: string;
   cards: Card[];
-}
-
-export interface GameError {
-  type: "error";
-  error: string;
-}
-
-export interface Redirect {
-  type: "redirect";
-  room: string;
 }
 
 export interface GameState {

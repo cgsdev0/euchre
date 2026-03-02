@@ -4,6 +4,9 @@
       "type": "object",
       "oneOf": [
         {
+          "$ref": "#/definitions/CookieMsg"
+        },
+        {
           "$ref": "#/definitions/DiscardMsg"
         },
         {
@@ -32,6 +35,12 @@
     "ServerMsg": {
       "type": "object",
       "oneOf": [
+        {
+          "$ref": "#/definitions/GameError"
+        },
+        {
+          "$ref": "#/definitions/Redirect"
+        },
         {
           "$ref": "#/definitions/WelcomeMsg"
         },
@@ -249,6 +258,27 @@
       "required": [
         "type",
         "id"
+      ]
+    },
+    "CookieMsg": {
+      "description": "Alternative to sending your cookie as a header.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "cookie",
+          "enum": [
+            "cookie"
+          ]
+        },
+        "session": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "session"
       ]
     },
     "DiscardMsg": {

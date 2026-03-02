@@ -6,5 +6,5 @@
 
 namespace API {
 
-    enum class ClientMsgType : int { DISCARD, ORDER, PASS, PLAY_CARD, PLAY_JAJA_DING_DONG, RESTART, TABLE_TALK, UPDATE_NAME };
+    enum class ClientMsgType : int { COOKIE, DISCARD, ORDER, PASS, PLAY_CARD, PLAY_JAJA_DING_DONG, RESTART, TABLE_TALK, UPDATE_NAME };
 }

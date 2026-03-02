@@ -38,6 +38,8 @@
 #include "WinHandMsg.hpp"
 #include "WinGameMsgType.hpp"
 #include "WinGameMsg.hpp"
+#include "CookieMsgType.hpp"
+#include "CookieMsg.hpp"
 #include "DiscardMsgType.hpp"
 #include "DiscardMsg.hpp"
 #include "GameErrorType.hpp"
