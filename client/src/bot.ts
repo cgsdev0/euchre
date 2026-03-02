@@ -4,6 +4,11 @@ import { WebSocket } from "ws";
 const room = process.argv[2];
 const bots = Number.parseInt(process.argv[3]);
 
+function pick_random<T>(arr: Array<T>): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+let suits = ["hearts", "diamonds", "clubs", "spades"];
 interface BotState extends WelcomeMsg {}
 type State = Omit<BotState, "type">;
 const initial_state: State = {
@@ -21,6 +26,10 @@ const initial_state: State = {
   private_session: false,
 };
 const startBot = (room: string, cookie: string) => {
+  function log(...args: any[]) {
+    if (state.id !== 0) return;
+    console.log(...args);
+  }
   let state: State = JSON.parse(JSON.stringify(initial_state)) as State;
   const setupWs = () => {
     const ws = new WebSocket(`ws://localhost:3001/ws/room/${room}`, {
@@ -28,17 +37,44 @@ const startBot = (room: string, cookie: string) => {
     });
 
     ws.addEventListener("open", () => {
-      console.log("opened", room);
+      log("opened", room);
+      send("update_name", { name: cookie });
     });
 
     ws.addEventListener("error", () => {
-      console.log("error!");
+      log("error!");
     });
     return ws;
   };
 
   let ws = setupWs();
 
+  const send = (type: string, msg?: object) => {
+    ws.send(JSON.stringify({ ...{ type }, ...(msg || {}) }));
+  };
+  const perform = () => {
+    if (state.turn !== state.id) {
+      return;
+    }
+    switch (state.phase) {
+      case "vote_round1":
+        send("pass");
+        break;
+      case "playing":
+        const card = state.your_cards.shift();
+        send("play_card", { card });
+        break;
+      case "vote_round2":
+        if (state.turn !== state.dealer) {
+          send("pass");
+        } else {
+          send("order", {
+            suit: pick_random(suits.filter((s) => s !== state.top_card.suit)),
+          });
+        }
+        break;
+    }
+  };
   const messageHandler = (e: WebSocket.MessageEvent) => {
     try {
       const data = JSON.parse(e.data.toString()) as string | ServerMsg;
@@ -46,14 +82,27 @@ const startBot = (room: string, cookie: string) => {
         console.error(data);
         return;
       }
-      console.log("[message]", data.type);
+      log("[message]", data.type);
       switch (data.type) {
+        // @ts-ignore
+        case "error":
+          console.error(data);
+          break;
+        case "deal":
+          state = { ...state, ...data };
+          log(data);
+          break;
+        case "update":
+          state = { ...state, ...data };
+          perform();
+          break;
         case "welcome":
           state = { ...state, ...data };
-          if (state.players.length === 4) {
+          if (state.phase === "lobby" && state.players.length === 4) {
             ws.send(JSON.stringify({ type: "restart" }));
           }
-          console.log(state);
+          log(state);
+          perform();
           break;
         // @ts-ignore
         case "redirect":
@@ -71,7 +120,7 @@ const startBot = (room: string, cookie: string) => {
   };
   const closeHandler = (e: WebSocket.CloseEvent) => {
     if (e.code === 4242) return;
-    console.log("closed, reopening...");
+    log("closed, reopening...");
     setTimeout(() => {
       ws = setupWs();
       ws.addEventListener("message", messageHandler);
