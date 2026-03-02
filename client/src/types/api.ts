@@ -21,6 +21,7 @@ export type Suit = "clubs" | "diamonds" | "hearts" | "spades";
 
 export type ServerMsg =
   | GameError
+  | ServerDiscardMsg
   | Redirect
   | WelcomeMsg
   | PassMsg
@@ -127,6 +128,14 @@ export interface RestartMsg {
 export interface GameError {
   type: "error";
   error: string;
+}
+/**
+ * Dealer discarded something.
+ *
+ */
+export interface ServerDiscardMsg {
+  type: "discarded";
+  id: number;
 }
 
 export interface Redirect {
@@ -242,6 +251,8 @@ export interface ServerPlayer {
 export interface GameState {
   type: "game_state";
   players: ServerPlayer[];
+  trick_leader: number;
+  caller: number;
   kitty?: Card[];
   played_cards: Card[];
   trump: Suit;

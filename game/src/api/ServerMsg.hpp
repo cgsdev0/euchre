@@ -18,6 +18,8 @@ namespace API {
 
 namespace API {
     /**
+     * Dealer discarded something.
+     *
      * Pass during the voting rounds.
      *
      * Order up a particular suit as trump.
@@ -35,6 +37,8 @@ namespace API {
 
 
     /**
+     * Dealer discarded something.
+     *
      * Pass during the voting rounds.
      *
      * Order up a particular suit as trump.
@@ -54,9 +58,9 @@ std::string toString() const;
 void fromString(const std::string &str);
         std::optional<std::string> error;
         ServerMsgType type = static_cast<ServerMsgType>(0);
+        std::optional<int64_t> id;
         std::optional<std::string> room;
         std::optional<int64_t> dealer;
-        std::optional<int64_t> id;
         std::optional<Phase> phase;
         std::optional<std::vector<Card>> played_cards;
         std::optional<std::vector<Player>> players;

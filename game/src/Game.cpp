@@ -170,7 +170,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
             sitting_out = (state.turn + 2) % MAX_PLAYERS;
             state.players[sitting_out].sitting_out = true;
         }
-        caller = state.turn;
+        state.caller = state.turn;
         msg.id = state.turn;
         server.broadcast(msg.toString());
         if (sitting_out == state.dealer) {
@@ -181,6 +181,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
             advanceTurn();
         } else {
             state.phase = Phase::DISCARDING;
+            state.turn = state.dealer;
             state.trump = state.top_card->suit;
             state.players[state.dealer].cards.push_back(*state.top_card);
         }
@@ -195,7 +196,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
             state.players[(state.turn + 2) % MAX_PLAYERS].sitting_out = true;
         }
         state.trump = *msg.suit;
-        caller = state.turn;
+        state.caller = state.turn;
         msg.id = state.turn;
         server.broadcast(msg.toString());
         state.phase = Phase::PLAYING;
@@ -259,7 +260,7 @@ void Game::endHand(const HandlerArgs &server) {
     int t1 = state.players[1].tricks + state.players[3].tricks;
     int winner = t0 > t1 ? 0 : 1;
     bool alone = state.players[0 + winner].sitting_out || state.players[2 + winner].sitting_out;
-    int caller_team = caller % 2;
+    int caller_team = state.caller % 2;
     int mag = std::max(t0, t1);
     int winnings = 1;
     // sweep || euchre'd
@@ -295,11 +296,11 @@ static int scoreCard(const Card &card, Suit trump, Suit led) {
         return trump == card.suit ? 1000 : 999; // right : left
 
     if (card.suit == trump) {
-        return ((int)card.rank) * 10; // trump gets super-charged
+        return (((int)card.rank) + 1) * 10; // trump gets super-charged
     }
 
     if (card.suit == led) {
-        return (int)card.rank; // in-order
+        return ((int)card.rank) + 1; // in-order
     }
 
     return 0; // actually worthless
@@ -309,8 +310,8 @@ void Game::endTrick(const HandlerArgs &server) {
     WinTrickMsg msg;
     Suit led = effectiveSuit(state.trick[0], state.trump);
     int best = 0;
-    int winner = trick_leader;
-    int current = trick_leader;
+    int winner = state.trick_leader;
+    int current = state.trick_leader;
     for (size_t i = 0; i < state.trick.size(); ++i) {
         int score = scoreCard(state.trick[i], state.trump, led);
         if (score > best) {
@@ -361,7 +362,7 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
         }
     }
     if (state.trick.empty()) {
-        trick_leader = state.turn;
+        state.trick_leader = state.turn;
     }
     state.trick.push_back(msg.card);
     state.played_cards.push_back(server_copy);
@@ -389,8 +390,9 @@ void Game::discard(const HandlerArgs &server, DiscardMsg &msg) {
         throw GameError({.error = "you just picked that up..."});
     if (!std::erase(state.players[state.dealer].cards, msg.card))
         throw GameError({.error = "you don't have that card"});
-    msg.id = state.turn;
-    server.broadcast(msg.toString());
+    ServerDiscardMsg new_msg;
+    new_msg.id = state.turn;
+    server.broadcast(new_msg.toString());
     state.phase = Phase::PLAYING;
     state.turn = state.dealer;
     advanceTurn();

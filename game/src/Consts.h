@@ -24,6 +24,7 @@ struct PerSocketData {
     string room;
     string display_name;
     bool dedupe_conns;
+    bool has_session;
 };
 
 #endif

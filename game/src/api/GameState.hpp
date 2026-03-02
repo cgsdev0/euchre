@@ -19,6 +19,7 @@ namespace API {
     struct GameState {
 std::string toString() const;
 void fromString(const std::string &str);
+        int64_t caller;
         int64_t dealer;
         std::optional<std::vector<Card>> kitty;
         Phase phase;
@@ -29,6 +30,7 @@ void fromString(const std::string &str);
         std::vector<int64_t> scores;
         std::optional<Card> top_card;
         std::vector<Card> trick;
+        int64_t trick_leader;
         Suit trump;
         int64_t turn;
         GameStateType type = static_cast<GameStateType>(0);

@@ -40,6 +40,8 @@
 #include "WinGameMsg.hpp"
 #include "CookieMsgType.hpp"
 #include "CookieMsg.hpp"
+#include "ServerDiscardMsgType.hpp"
+#include "ServerDiscardMsg.hpp"
 #include "DiscardMsgType.hpp"
 #include "DiscardMsg.hpp"
 #include "GameErrorType.hpp"

@@ -119,10 +119,6 @@ class Game {
     std::string turn_token;
     API::GameState state;
     bool was_persisted = false;
-    // Who ordered up trump?
-    int caller;
-    // Who led the current trick?
-    int trick_leader;
     friend GameCoordinator;
 };
 

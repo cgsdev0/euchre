@@ -52,6 +52,9 @@ void to_json(json & j, const WinGameMsg & x);
 void from_json(const json & j, CookieMsg & x);
 void to_json(json & j, const CookieMsg & x);
 
+void from_json(const json & j, ServerDiscardMsg & x);
+void to_json(json & j, const ServerDiscardMsg & x);
+
 void from_json(const json & j, DiscardMsg & x);
 void to_json(json & j, const DiscardMsg & x);
 
@@ -144,6 +147,9 @@ void to_json(json & j, const WinGameMsgType & x);
 
 void from_json(const json & j, CookieMsgType & x);
 void to_json(json & j, const CookieMsgType & x);
+
+void from_json(const json & j, ServerDiscardMsgType & x);
+void to_json(json & j, const ServerDiscardMsgType & x);
 
 void from_json(const json & j, DiscardMsgType & x);
 void to_json(json & j, const DiscardMsgType & x);
@@ -297,9 +303,9 @@ namespace API {
     inline void from_json(const json & j, ServerMsg& x) {
         x.error = get_stack_optional<std::string>(j, "error");
         x.type = j.at("type").get<ServerMsgType>();
+        x.id = get_stack_optional<int64_t>(j, "id");
         x.room = get_stack_optional<std::string>(j, "room");
         x.dealer = get_stack_optional<int64_t>(j, "dealer");
-        x.id = get_stack_optional<int64_t>(j, "id");
         x.phase = get_stack_optional<Phase>(j, "phase");
         x.played_cards = get_stack_optional<std::vector<Card>>(j, "played_cards");
         x.players = get_stack_optional<std::vector<Player>>(j, "players");
@@ -325,14 +331,14 @@ namespace API {
             j["error"] = x.error;
         }
         j["type"] = x.type;
+        if (x.id) {
+            j["id"] = x.id;
+        }
         if (x.room) {
             j["room"] = x.room;
         }
         if (x.dealer) {
             j["dealer"] = x.dealer;
-        }
-        if (x.id) {
-            j["id"] = x.id;
         }
         if (x.phase) {
             j["phase"] = x.phase;
@@ -508,6 +514,17 @@ namespace API {
         j["type"] = x.type;
     }
 
+    inline void from_json(const json & j, ServerDiscardMsg& x) {
+        x.id = j.at("id").get<int64_t>();
+        x.type = j.at("type").get<ServerDiscardMsgType>();
+    }
+
+    inline void to_json(json & j, const ServerDiscardMsg & x) {
+        j = json::object();
+        j["id"] = x.id;
+        j["type"] = x.type;
+    }
+
     inline void from_json(const json & j, DiscardMsg& x) {
         x.card = j.at("card").get<Card>();
         x.id = get_stack_optional<int64_t>(j, "id");
@@ -567,6 +584,7 @@ namespace API {
     }
 
     inline void from_json(const json & j, GameState& x) {
+        x.caller = j.at("caller").get<int64_t>();
         x.dealer = j.at("dealer").get<int64_t>();
         x.kitty = get_stack_optional<std::vector<Card>>(j, "kitty");
         x.phase = j.at("phase").get<Phase>();
@@ -577,6 +595,7 @@ namespace API {
         x.scores = j.at("scores").get<std::vector<int64_t>>();
         x.top_card = get_stack_optional<Card>(j, "top_card");
         x.trick = j.at("trick").get<std::vector<Card>>();
+        x.trick_leader = j.at("trick_leader").get<int64_t>();
         x.trump = j.at("trump").get<Suit>();
         x.turn = j.at("turn").get<int64_t>();
         x.type = j.at("type").get<GameStateType>();
@@ -584,6 +603,7 @@ namespace API {
 
     inline void to_json(json & j, const GameState & x) {
         j = json::object();
+        j["caller"] = x.caller;
         j["dealer"] = x.dealer;
         if (x.kitty) {
             j["kitty"] = x.kitty;
@@ -598,6 +618,7 @@ namespace API {
             j["top_card"] = x.top_card;
         }
         j["trick"] = x.trick;
+        j["trick_leader"] = x.trick_leader;
         j["trump"] = x.trump;
         j["turn"] = x.turn;
         j["type"] = x.type;
@@ -888,28 +909,35 @@ namespace API {
     }
 
     inline void from_json(const json & j, ServerMsgType & x) {
-        if (j == "chat") x = ServerMsgType::CHAT;
-        else if (j == "deal") x = ServerMsgType::DEAL;
-        else if (j == "disconnect") x = ServerMsgType::DISCONNECT;
-        else if (j == "error") x = ServerMsgType::ERROR;
-        else if (j == "join") x = ServerMsgType::JOIN;
-        else if (j == "order") x = ServerMsgType::ORDER;
-        else if (j == "pass") x = ServerMsgType::PASS;
-        else if (j == "play_card") x = ServerMsgType::PLAY_CARD;
-        else if (j == "play_jaja_ding_dong") x = ServerMsgType::PLAY_JAJA_DING_DONG;
-        else if (j == "reconnect") x = ServerMsgType::RECONNECT;
-        else if (j == "redirect") x = ServerMsgType::REDIRECT;
-        else if (j == "table_talk") x = ServerMsgType::TABLE_TALK;
-        else if (j == "update") x = ServerMsgType::UPDATE;
-        else if (j == "update_name") x = ServerMsgType::UPDATE_NAME;
-        else if (j == "welcome") x = ServerMsgType::WELCOME;
-        else { throw std::runtime_error("Input JSON does not conform to schema!"); }
+        static std::unordered_map<std::string, ServerMsgType> enumValues {
+            {"chat", ServerMsgType::CHAT},
+            {"deal", ServerMsgType::DEAL},
+            {"discarded", ServerMsgType::DISCARDED},
+            {"disconnect", ServerMsgType::DISCONNECT},
+            {"error", ServerMsgType::ERROR},
+            {"join", ServerMsgType::JOIN},
+            {"order", ServerMsgType::ORDER},
+            {"pass", ServerMsgType::PASS},
+            {"play_card", ServerMsgType::PLAY_CARD},
+            {"play_jaja_ding_dong", ServerMsgType::PLAY_JAJA_DING_DONG},
+            {"reconnect", ServerMsgType::RECONNECT},
+            {"redirect", ServerMsgType::REDIRECT},
+            {"table_talk", ServerMsgType::TABLE_TALK},
+            {"update", ServerMsgType::UPDATE},
+            {"update_name", ServerMsgType::UPDATE_NAME},
+            {"welcome", ServerMsgType::WELCOME},
+        };
+        auto iter = enumValues.find(j.get<std::string>());
+        if (iter != enumValues.end()) {
+            x = iter->second;
+        }
     }
 
     inline void to_json(json & j, const ServerMsgType & x) {
         switch (x) {
             case ServerMsgType::CHAT: j = "chat"; break;
             case ServerMsgType::DEAL: j = "deal"; break;
+            case ServerMsgType::DISCARDED: j = "discarded"; break;
             case ServerMsgType::DISCONNECT: j = "disconnect"; break;
             case ServerMsgType::ERROR: j = "error"; break;
             case ServerMsgType::JOIN: j = "join"; break;
@@ -1031,6 +1059,18 @@ namespace API {
     inline void to_json(json & j, const CookieMsgType & x) {
         switch (x) {
             case CookieMsgType::COOKIE: j = "cookie"; break;
+            default: throw std::runtime_error("This should not happen");
+        }
+    }
+
+    inline void from_json(const json & j, ServerDiscardMsgType & x) {
+        if (j == "discarded") x = ServerDiscardMsgType::DISCARDED;
+        else { throw std::runtime_error("Input JSON does not conform to schema!"); }
+    }
+
+    inline void to_json(json & j, const ServerDiscardMsgType & x) {
+        switch (x) {
+            case ServerDiscardMsgType::DISCARDED: j = "discarded"; break;
             default: throw std::runtime_error("This should not happen");
         }
     }
@@ -1369,6 +1409,15 @@ to_json(j, *this);
 return j.dump();
 }
 void RichTextMsg::fromString(const std::string &s) {
+auto j = json::parse(s);
+from_json(j, *this);
+}
+std::string ServerDiscardMsg::toString() const {
+json j;
+to_json(j, *this);
+return j.dump();
+}
+void ServerDiscardMsg::fromString(const std::string &s) {
 auto j = json::parse(s);
 from_json(j, *this);
 }

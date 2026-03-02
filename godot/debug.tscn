@@ -1,12 +1,192 @@
 [gd_scene format=3 uid="uid://b804xi0831ok1"]
 
 [ext_resource type="Script" uid="uid://do237ipp2ysff" path="res://client.gd" id="1_1uwqr"]
+[ext_resource type="Script" uid="uid://b7a55lp1v875n" path="res://debug_ui/phase.gd" id="2_lvjdj"]
+[ext_resource type="Script" uid="uid://dmipg8vo71sxi" path="res://debug_ui/top_card.gd" id="3_16g7q"]
+[ext_resource type="PackedScene" uid="uid://d1d20jcghwr3j" path="res://debug_ui/player_row.tscn" id="3_rdi1l"]
+[ext_resource type="Script" uid="uid://b3rnlmjjci50s" path="res://debug_ui/trump.gd" id="4_obyai"]
+[ext_resource type="Script" uid="uid://bs1onu10q70se" path="res://debug_ui/player_list.gd" id="5_e0a3d"]
+[ext_resource type="Script" uid="uid://bjlx0tyrlggtx" path="res://debug_ui/cards.gd" id="7_jwave"]
+[ext_resource type="PackedScene" uid="uid://cjy0gh83hs0h7" path="res://debug_ui/card.tscn" id="8_jwave"]
+[ext_resource type="Script" uid="uid://dbthvag5344cy" path="res://debug_ui/trick.gd" id="9_pk40j"]
+[ext_resource type="Script" uid="uid://bk1i1hhr6cw5v" path="res://debug_ui/button_bar.gd" id="10_6xqm2"]
 
-[node name="Control" type="Control" unique_id=292537479]
+[node name="Node" type="Node" unique_id=134761314]
+
+[node name="Client" type="Node" parent="." unique_id=611017506]
+unique_name_in_owner = true
+script = ExtResource("1_1uwqr")
+room = "tJBgH4"
+
+[node name="Control" type="Control" parent="." unique_id=1614369635]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_1uwqr")
+
+[node name="Trick" type="VBoxContainer" parent="Control" unique_id=705278934]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.8333333
+anchor_top = 0.25
+anchor_right = 0.8333333
+anchor_bottom = 0.75
+offset_left = -64.0
+offset_top = -48.0
+offset_bottom = 48.0
+grow_horizontal = 0
+grow_vertical = 2
+theme_override_constants/separation = -55
+script = ExtResource("9_pk40j")
+metadata/_edit_use_anchors_ = true
+
+[node name="Card" parent="Control/Trick" unique_id=1409770142 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Card2" parent="Control/Trick" unique_id=435974598 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Card3" parent="Control/Trick" unique_id=1901603166 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Card4" parent="Control/Trick" unique_id=356599370 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control" unique_id=1963202664]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Phase" type="Label" parent="Control/VBoxContainer" unique_id=1060710152]
+layout_mode = 2
+text = "Phase: "
+script = ExtResource("2_lvjdj")
+
+[node name="TopCard" type="Label" parent="Control/VBoxContainer" unique_id=870206164]
+layout_mode = 2
+text = "Up Card:"
+script = ExtResource("3_16g7q")
+
+[node name="Trump" type="Label" parent="Control/VBoxContainer" unique_id=2032735257]
+layout_mode = 2
+text = "Trump: "
+script = ExtResource("4_obyai")
+
+[node name="PlayersLabel" type="Label" parent="Control/VBoxContainer" unique_id=2016452229]
+layout_mode = 2
+text = "Players"
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/VBoxContainer" unique_id=1829816797]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 555
+
+[node name="PlayerList" type="VBoxContainer" parent="Control/VBoxContainer/MarginContainer" unique_id=770881472]
+layout_mode = 2
+script = ExtResource("5_e0a3d")
+
+[node name="PlayerRow" parent="Control/VBoxContainer/MarginContainer/PlayerList" unique_id=1251821099 instance=ExtResource("3_rdi1l")]
+layout_mode = 2
+
+[node name="PlayerRow2" parent="Control/VBoxContainer/MarginContainer/PlayerList" unique_id=2073586252 instance=ExtResource("3_rdi1l")]
+layout_mode = 2
+
+[node name="PlayerRow3" parent="Control/VBoxContainer/MarginContainer/PlayerList" unique_id=167643299 instance=ExtResource("3_rdi1l")]
+layout_mode = 2
+
+[node name="PlayerRow4" parent="Control/VBoxContainer/MarginContainer/PlayerList" unique_id=571747005 instance=ExtResource("3_rdi1l")]
+layout_mode = 2
+
+[node name="YourCards" type="HBoxContainer" parent="Control/VBoxContainer" unique_id=2097489256]
+layout_mode = 2
+theme_override_constants/separation = 25
+script = ExtResource("7_jwave")
+
+[node name="Card" parent="Control/VBoxContainer/YourCards" unique_id=416339414 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Card2" parent="Control/VBoxContainer/YourCards" unique_id=1896969081 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Card3" parent="Control/VBoxContainer/YourCards" unique_id=1660553618 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Card4" parent="Control/VBoxContainer/YourCards" unique_id=826839195 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Card5" parent="Control/VBoxContainer/YourCards" unique_id=347387571 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Card6" parent="Control/VBoxContainer/YourCards" unique_id=1762099733 instance=ExtResource("8_jwave")]
+layout_mode = 2
+
+[node name="Buttons" type="MarginContainer" parent="Control/VBoxContainer" unique_id=1691815142]
+layout_mode = 2
+theme_override_constants/margin_left = 44
+theme_override_constants/margin_top = 242
+
+[node name="Lobby" type="HBoxContainer" parent="Control/VBoxContainer/Buttons" unique_id=25092956]
+layout_mode = 2
+script = ExtResource("10_6xqm2")
+phase = "lobby"
+
+[node name="Start" type="Button" parent="Control/VBoxContainer/Buttons/Lobby" unique_id=857330329]
+layout_mode = 2
+text = "START"
+
+[node name="Ended" type="HBoxContainer" parent="Control/VBoxContainer/Buttons" unique_id=1391936462]
+layout_mode = 2
+script = ExtResource("10_6xqm2")
+phase = "ended"
+
+[node name="Start" type="Button" parent="Control/VBoxContainer/Buttons/Ended" unique_id=1453181420]
+layout_mode = 2
+text = "RESTART"
+
+[node name="VoteRound1" type="HBoxContainer" parent="Control/VBoxContainer/Buttons" unique_id=2094824828]
+layout_mode = 2
+script = ExtResource("10_6xqm2")
+
+[node name="Pass" type="Button" parent="Control/VBoxContainer/Buttons/VoteRound1" unique_id=1956695153]
+layout_mode = 2
+text = "PASS"
+
+[node name="Order" type="Button" parent="Control/VBoxContainer/Buttons/VoteRound1" unique_id=281516613]
+layout_mode = 2
+text = "ORDER"
+
+[node name="VoteRound2" type="HBoxContainer" parent="Control/VBoxContainer/Buttons" unique_id=681045509]
+layout_mode = 2
+script = ExtResource("10_6xqm2")
+phase = "vote_round2"
+
+[node name="Pass" type="Button" parent="Control/VBoxContainer/Buttons/VoteRound2" unique_id=447427463]
+layout_mode = 2
+text = "PASS"
+
+[node name="PickHearts" type="Button" parent="Control/VBoxContainer/Buttons/VoteRound2" unique_id=2024507949]
+layout_mode = 2
+text = "PICK HEARTS"
+
+[node name="PickClubs" type="Button" parent="Control/VBoxContainer/Buttons/VoteRound2" unique_id=1216232717]
+layout_mode = 2
+text = "PICK CLUBS"
+
+[node name="PickSpades" type="Button" parent="Control/VBoxContainer/Buttons/VoteRound2" unique_id=902403768]
+layout_mode = 2
+text = "PICK SPADES"
+
+[node name="PickDiamonds" type="Button" parent="Control/VBoxContainer/Buttons/VoteRound2" unique_id=407525548]
+layout_mode = 2
+text = "PICK DIAMONDS"
+
+[node name="Alone" type="CheckButton" parent="Control/VBoxContainer" unique_id=9990917]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Alone"

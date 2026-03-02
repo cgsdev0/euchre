@@ -98,6 +98,13 @@ const startBot = (room: string, cookie: string) => {
           state = { ...state, ...data };
           log(data);
           break;
+        case "order":
+          if (state.phase === "vote_round1") {
+            if (state.id === state.dealer) {
+              state.your_cards.push(state.top_card);
+            }
+          }
+          break;
         case "update":
           state = { ...state, ...data };
           perform();

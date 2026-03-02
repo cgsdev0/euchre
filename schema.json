@@ -39,6 +39,9 @@
           "$ref": "#/definitions/GameError"
         },
         {
+          "$ref": "#/definitions/ServerDiscardMsg"
+        },
+        {
           "$ref": "#/definitions/Redirect"
         },
         {
@@ -281,6 +284,27 @@
         "session"
       ]
     },
+    "ServerDiscardMsg": {
+      "description": "Dealer discarded something.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "discarded",
+          "enum": [
+            "discarded"
+          ]
+        },
+        "id": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "id"
+      ]
+    },
     "DiscardMsg": {
       "description": "Dealer chooses a card to discard.",
       "type": "object",
@@ -459,6 +483,12 @@
             "$ref": "#/definitions/ServerPlayer"
           }
         },
+        "trick_leader": {
+          "type": "integer"
+        },
+        "caller": {
+          "type": "integer"
+        },
         "kitty": {
           "type": "array",
           "items": {
@@ -519,6 +549,8 @@
       },
       "additionalProperties": false,
       "required": [
+        "trick_leader",
+        "caller",
         "rich_chat_log",
         "played_cards",
         "trump",

@@ -82,10 +82,14 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
             .upgrade =
                 [&, app](auto *res, auto *req, auto *context) {
                     std::string session = getSession(req);
+                    bool has_session = true;
+                    if (session == "guest:") {
+                        has_session = false;
+                    }
                     std::string room = std::string(req->getParameter(0));
                     bool dedupe_conns = false;
                     auto it = coordinator.games.find(room);
-                    if (it != coordinator.games.end()) {
+                    if (has_session && it != coordinator.games.end()) {
                         // Connecting to a valid game
                         Game *g = it->second;
                         if (g->isPlayerConnected(session)) {
@@ -96,7 +100,8 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         {.session = session,
                          .room = room,
                          .display_name = "",
-                         .dedupe_conns = dedupe_conns},
+                         .dedupe_conns = dedupe_conns,
+                         .has_session = has_session},
                         req->getHeader("sec-websocket-key"),
                         req->getHeader("sec-websocket-protocol"),
                         req->getHeader("sec-websocket-extensions"),
@@ -107,14 +112,14 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                     PerSocketData *userData =
                         (PerSocketData *)ws->getUserData();
 
-                    if (userData->session == "guest:") {
-                        ws->send("cookie", uWS::OpCode::TEXT);
+                    if (!userData->has_session) {
+                        auto resp = API::GameError({.error = "cookie"});
+                        ws->send(resp.toString(), uWS::OpCode::TEXT);
                         return;
                     }
                     if (userData->dedupe_conns) {
-                        json resp;
-                        resp["error"] = "already connected";
-                        ws->send(resp.dump(), uWS::OpCode::TEXT);
+                        auto resp = API::GameError({.error = "already connected"});
+                        ws->send(resp.toString(), uWS::OpCode::TEXT);
                         return;
                     }
                     connectNewPlayer(app, ws, userData, coordinator);
@@ -125,6 +130,36 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         (PerSocketData *)ws->getUserData();
 
                     if (userData->dedupe_conns) return;
+                    if (!userData->has_session) {
+                        try {
+                            auto data = json::parse(message);
+                            if (!data["type"].is_string()) return;
+                            const auto type = data["type"].get<std::string>();
+                            if (type != "cookie") return;
+                            if (!data["session"].is_string()) return;
+                            const auto session = data["session"].get<std::string>();
+                            if (session.length() == 0) return;
+                            userData->has_session = true;
+                            userData->session = "guest:" + session;
+                            // look for the room they were trying to connect to
+                            auto it = coordinator.games.find(userData->room);
+                            if (userData->has_session && it != coordinator.games.end()) {
+                                // Connecting to a valid game
+                                Game *g = it->second;
+                                if (g->isPlayerConnected(userData->session)) {
+                                    userData->dedupe_conns = true;
+                                    json resp;
+                                    resp["error"] = "already connected";
+                                    ws->send(resp.dump(), uWS::OpCode::TEXT);
+                                    return;
+                                }
+                            }
+                            // they made it in!
+                            connectNewPlayer(app, ws, userData, coordinator);
+                        } catch (nlohmann::detail::exception &e) {
+                        }
+                        return;
+                    }
 
                     std::string room = userData->room;
                     std::string session = userData->session;
@@ -147,30 +182,7 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                         }
                     } catch (API::GameError &e) {
                         response = e.toString();
-                    } catch (nlohmann::detail::parse_error &e) {
-                        std::cout << "RECEIVED BAD JSON (parse_error): " << message
-                                  << "\n"
-                                  << e.what() << std::endl;
-                        response = API::GameError({.error = e.what()}).toString();
-                    } catch (nlohmann::detail::type_error &e) {
-                        std::cout << "HANDLED BAD JSON (type_error): " << message
-                                  << "\n"
-                                  << e.what() << std::endl;
-                        response = API::GameError({.error = e.what()}).toString();
-                    } catch (nlohmann::detail::invalid_iterator &e) {
-                        std::cout << "HANDLED BAD JSON (invalid_iterator): " << message
-                                  << "\n"
-                                  << e.what() << std::endl;
-                        response = API::GameError({.error = e.what()}).toString();
-                    } catch (nlohmann::detail::out_of_range &e) {
-                        std::cout << "HANDLED BAD JSON (out_of_range): " << message
-                                  << "\n"
-                                  << e.what() << std::endl;
-                        response = API::GameError({.error = e.what()}).toString();
-                    } catch (nlohmann::detail::other_error &e) {
-                        std::cout << "HANDLED BAD JSON (other_error): " << message
-                                  << "\n"
-                                  << e.what() << std::endl;
+                    } catch (nlohmann::detail::exception &e) {
                         response = API::GameError({.error = e.what()}).toString();
                     }
                     if (response.length())
