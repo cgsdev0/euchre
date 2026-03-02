@@ -60,6 +60,12 @@ const startBot = (room: string, cookie: string) => {
       case "vote_round1":
         send("pass");
         break;
+      case "discarding":
+        {
+          const card = state.your_cards.shift();
+          send("discard", { card });
+        }
+        break;
       case "playing":
         const card = state.your_cards.shift();
         send("play_card", { card });
