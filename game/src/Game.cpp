@@ -430,6 +430,9 @@ void Game::restart(const HandlerArgs &server, RestartMsg &msg) {
         player.tricks = 0;
         player.sitting_out = false;
     }
+    if (state.phase == Phase::ENDED) {
+        state.scores = {0, 0};
+    }
     deck.shuffle();
     state.phase = Phase::VOTE_ROUND1;
     state.dealer = (state.dealer + 1) % MAX_PLAYERS;
