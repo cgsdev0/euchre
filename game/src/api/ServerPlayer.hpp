@@ -18,6 +18,7 @@ void fromString(const std::string &str);
         std::optional<std::string> name;
         std::string session;
         bool sitting_out;
+        bool is_bot;
         int64_t tricks;
     };
 }

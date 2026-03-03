@@ -7,6 +7,9 @@
 #include "Loop.h"
 #include "StringUtils.h"
 #include <json.hpp>
+
+#include "Bot.hpp"
+
 using json = nlohmann::json;
 using namespace std::chrono_literals;
 
@@ -141,10 +144,12 @@ void Game::handleMessage(const HandlerArgs &server, const std::string_view messa
         msg.fromString(std::string(message));       \
         this->name(server, msg);                    \
         updated = std::chrono::system_clock::now(); \
+        handleBotUpdates(server);                   \
         return;                                     \
     }
 #include "Handlers.def"
 #undef X
+
 
     throw GameError({.error = "Unknown action type"});
 }
@@ -422,8 +427,8 @@ void Game::dealCards(const HandlerArgs &server) {
 }
 
 void Game::restart(const HandlerArgs &server, RestartMsg &msg) {
-    if (state.players.size() < MAX_PLAYERS)
-        throw GameError({.error = "not enough players"});
+    if (state.players.size() < MAX_PLAYERS) // add bot players to fill up the game
+        fillWithBots(server);
     if (state.phase != Phase::ENDED && state.phase != Phase::LOBBY)
         throw GameError({.error = "not in a start-able phase"});
     for (auto &player : state.players) {
@@ -439,8 +444,9 @@ void Game::restart(const HandlerArgs &server, RestartMsg &msg) {
     state.turn = state.dealer;
     advanceTurn();
 
-    sendUpdate(server, state);
     this->dealCards(server);
+
+    sendUpdate(server, state);
 }
 
 void Game::update_name(const HandlerArgs &server, UpdateNameMsg &msg) {
@@ -452,6 +458,59 @@ void Game::update_name(const HandlerArgs &server, UpdateNameMsg &msg) {
             res.id = i;
             server.broadcast(res.toString());
             return;
+        }
+    }
+}
+
+void Game::fillWithBots(const HandlerArgs &server) {
+    int bot_number = 1;
+    while (state.players.size() < MAX_PLAYERS) {
+        auto &player = state.players.emplace_back();
+        int curr = bot_number++;
+        player.connected = false;
+        player.session = "bot:" + std::to_string(curr);
+        player.name = std::optional("Bot " + std::to_string(curr));
+        player.is_bot = true;
+    }
+}
+
+void Game::handleBotUpdates(const HandlerArgs &server) {
+    while (state.players[state.turn].is_bot) {
+
+        // NOTE TEMPORARY We just play the first card in the bot's hand.
+        auto &player = state.players[state.turn];
+        API::Card card = player.cards[0];
+        player.cards.erase(player.cards.begin());
+
+        PlayCardMsg msg = {
+            .card = card,
+            .id = 0,
+        };
+
+        play_card(server, msg);
+
+        switch (state.phase) {
+            case Phase::DISCARDING: {
+                // discard(server, msg);
+                break;
+            }
+
+            case Phase::LOBBY:
+            case Phase::ENDED: {
+                break;
+            }
+
+            case Phase::PLAYING: {
+                break;
+            }
+
+            case Phase::VOTE_ROUND1: {
+                break;
+            }
+
+            case Phase::VOTE_ROUND2: {
+                break;
+            }
         }
     }
 }
