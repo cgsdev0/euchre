@@ -19,6 +19,7 @@ void fromString(const std::string &str);
         std::vector<Card> premoves;
         std::string session;
         bool sitting_out;
+        bool is_bot;
         int64_t tricks;
     };
 }
