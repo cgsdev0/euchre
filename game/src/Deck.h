@@ -21,10 +21,14 @@ struct Deck {
         this->deal_ptr = 0;
     }
 
-    const std::span<API::Card> deal(std::size_t n) {
+    const std::vector<API::Card> deal(std::size_t n) {
         this->deal_ptr += n;
         assert(this->deal_ptr <= CARDS_IN_DECK);
-        return std::span<API::Card>(this->cards + this->deal_ptr - n, n);
+        std::vector<API::Card> cards(
+            this->cards + this->deal_ptr - n,
+            this->cards + this->deal_ptr
+        );
+        return cards;
     }
 
   private:
