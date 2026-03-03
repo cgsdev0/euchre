@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://ccvivlyd0r85r"]
+
+[ext_resource type="PackedScene" uid="uid://d1bpg4emrfeqr" path="res://chars/Character_31.fbx" id="1_7sxdf"]
+
+[node name="Character_31" unique_id=1431485647 instance=ExtResource("1_7sxdf")]
+
+[node name="Skeleton3D" parent="." index="0" unique_id=438922219]
+bones/0/position = Vector3(0.00022095442, 2.4667993, 0.0026335097)
+bones/0/rotation = Quaternion(-0.0006335543, -0.7070873, -0.00063313346, 0.7071258)
+bones/1/rotation = Quaternion(0.0008928677, -8.683206e-05, 0.06665064, 0.99777603)
+bones/7/rotation = Quaternion(0.013718097, -0.67067724, 0.74160904, 0.00446103)
+bones/8/rotation = Quaternion(-0.012133278, 0.9984405, -0.0503352, -0.020875644)
+bones/9/rotation = Quaternion(8.488502e-08, 0.0036197281, 7.291965e-08, 0.9999935)
+bones/10/rotation = Quaternion(9.8247765e-09, -0.00021766717, 1.3799989e-07, 1)
+bones/11/rotation = Quaternion(-4.7071016e-08, -0.0023597998, -2.7817808e-07, 0.99999726)
+bones/12/rotation = Quaternion(0.0562537, -1.5215232e-07, 0.1254266, 0.9905069)
+bones/13/rotation = Quaternion(-0.034849055, -0.0016896402, -0.09229096, 0.99512064)
+bones/15/rotation = Quaternion(0.7333792, -0.03425513, 0.06546383, 0.67579293)
+bones/16/rotation = Quaternion(-0.03519805, 0.054330215, -0.0734243, 0.9951976)
+bones/17/rotation = Quaternion(-4.196148e-07, -0.0028143788, -2.911111e-08, 0.9999961)
+bones/18/rotation = Quaternion(2.030773e-07, -0.0006667798, 2.5329066e-07, 0.9999999)
+bones/19/rotation = Quaternion(-1.6522419e-08, -0.007674866, 2.2276072e-07, 0.99997056)
+bones/20/rotation = Quaternion(-0.113931164, 1.8747613e-08, 0.10217769, 0.98822033)
+bones/21/rotation = Quaternion(-0.09291987, 0.014903211, 0.02025047, 0.9953561)
+bones/23/rotation = Quaternion(0.0004102202, -0.005444778, 0.99991715, -0.011664514)
+bones/24/rotation = Quaternion(0.009056689, 0.0004706299, -0.053527173, 0.9985253)
+bones/25/rotation = Quaternion(0.3484057, -0.63534445, 0.38572136, 0.571113)
+bones/28/rotation = Quaternion(-0.0004575439, 0.0036754329, 0.99998, -0.005138848)
+bones/29/rotation = Quaternion(-0.009096422, -0.00036279048, -0.040543865, 0.99913627)
+bones/30/rotation = Quaternion(0.37930098, -0.5748501, 0.34085268, 0.63992)

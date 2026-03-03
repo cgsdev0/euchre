@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://kjxnhwra00jj"]
+
+[ext_resource type="PackedScene" uid="uid://ceywlhbya7b01" path="res://chars/bill.tscn" id="1_ig7tw"]
+[ext_resource type="PackedScene" uid="uid://bf6uqcd430jha" path="res://scenes/card.tscn" id="2_0xm2m"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_ig7tw"]
+sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+
+[sub_resource type="Sky" id="Sky_0xm2m"]
+sky_material = SubResource("ProceduralSkyMaterial_ig7tw")
+
+[sub_resource type="Environment" id="Environment_h2yge"]
+background_mode = 2
+sky = SubResource("Sky_0xm2m")
+tonemap_mode = 2
+
+[node name="Node3D" type="Node3D" unique_id=162213161]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2101531417]
+environment = SubResource("Environment_h2yge")
+
+[node name="Character_29" parent="." unique_id=1324661739 instance=ExtResource("1_ig7tw")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="Character_30" parent="." unique_id=823384225 instance=ExtResource("1_ig7tw")]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2, 0, 8.742278e-08)
+
+[node name="Character_31" parent="." unique_id=794632755 instance=ExtResource("1_ig7tw")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.7484555e-07, 0, 2)
+
+[node name="Character_32" parent="." unique_id=2083612014 instance=ExtResource("1_ig7tw")]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2, 0, 2.3849761e-08)
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=1884469458]
+transform = Transform3D(-0.99976313, 2.7939677e-08, 0.021762459, 0.0069712345, 0.9473053, 0.32025608, -0.020615686, 0.32033193, -0.947081, -1.6949843e-07, 4.184538, -1.9388361)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="." unique_id=618008539]
+transform = Transform3D(0.9250705, 0, 0.37979522, 0, 1, 0, -0.37979522, 0, 0.9250705, 0, 2.742799, 0)
+radius = 1.589
+height = 0.146
+
+[node name="Card" parent="." unique_id=528731295 instance=ExtResource("2_0xm2m")]
+transform = Transform3D(2.1855694e-08, 0.5, 4.3711385e-08, -2.1855694e-08, 4.3711385e-08, -0.5, -0.5, 2.185569e-08, 2.1855692e-08, -0.8895274, 2.850641, -0.116171695)
+
+[node name="Card2" parent="." unique_id=142477489 instance=ExtResource("2_0xm2m")]
+transform = Transform3D(2.1855694e-08, 0.5, 4.3711385e-08, -2.1855694e-08, 4.3711385e-08, -0.5, -0.5, 2.185569e-08, 2.1855692e-08, 1.1104727, 2.8506413, -0.116171606)
+
+[node name="Card3" parent="." unique_id=207041493 instance=ExtResource("2_0xm2m")]
+transform = Transform3D(0.49960104, -0.019969976, 4.371138e-08, 4.4549417e-08, 2.0092422e-08, -0.5, 0.019969976, 0.49960104, 2.1855692e-08, 0.261746, 2.8506413, 0.8974228)

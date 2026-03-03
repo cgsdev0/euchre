@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://cfcyvfafp6qyc"]
+
+[ext_resource type="PackedScene" uid="uid://c4t4vm0nwybmb" path="res://chars/Character_31_Female.fbx" id="1_4enir"]
+
+[node name="Character_31_Female" unique_id=1326859459 instance=ExtResource("1_4enir")]
+
+[node name="Skeleton3D" parent="." index="0" unique_id=487042657]
+bones/0/position = Vector3(3.7252903e-09, 2.437603, -0.018623233)
+bones/7/rotation = Quaternion(0.0025819237, -0.65227777, 0.757975, 0.0009932006)
+bones/8/rotation = Quaternion(-0.0026784819, 0.99719965, -0.074733354, 0.00089061836)
+bones/9/rotation = Quaternion(2.8676206e-07, -5.3487354e-05, 4.2536268e-08, 1)
+bones/10/rotation = Quaternion(-3.1577082e-07, -0.0021150946, -4.5038178e-08, 0.9999978)
+bones/11/rotation = Quaternion(-4.6424574e-07, -0.003332961, -3.6333228e-07, 0.99999446)
+bones/12/rotation = Quaternion(0.12831257, -6.2812724e-08, 0.1001361, 0.9866654)
+bones/13/rotation = Quaternion(-0.051208314, -0.008078881, -0.07017977, 0.9961864)
+bones/15/rotation = Quaternion(0.757971, -0.0010805952, 0.0027438668, 0.6522816)
+bones/16/rotation = Quaternion(-0.07472832, 0.00064295274, -0.0028403853, 0.9971997)
+bones/17/rotation = Quaternion(-2.8080046e-07, 1.6101703e-05, 1.515643e-07, 1)
+bones/18/rotation = Quaternion(-2.757858e-08, 0.0026703817, 2.370216e-07, 0.9999964)
+bones/19/rotation = Quaternion(-2.462189e-07, 0.0011898883, 5.289985e-08, 0.9999993)
+bones/20/rotation = Quaternion(-0.14605513, 4.5914463e-09, 0.13550568, 0.9799521)
+bones/21/rotation = Quaternion(0.07584705, -0.042978194, 0.06785201, 0.9938794)
+bones/23/rotation = Quaternion(-6.321034e-05, -0.005759821, 0.99997276, -0.004623724)
+bones/24/rotation = Quaternion(0.011668888, -0.00044885406, -0.04246032, 0.9990299)
+bones/25/rotation = Quaternion(0.32322055, -0.634803, 0.33916026, 0.61442983)
+bones/28/rotation = Quaternion(8.668863e-05, 0.0057625817, 0.9999554, -0.0074931146)
+bones/29/rotation = Quaternion(-0.011668945, 0.00047557498, -0.045194637, 0.99890995)
+bones/30/rotation = Quaternion(0.34113815, -0.6135071, 0.32529584, 0.6335744)
