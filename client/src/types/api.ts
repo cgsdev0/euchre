@@ -299,6 +299,7 @@ export interface ServerPlayer {
   premoves: Card[];
   connected: boolean;
   name?: string;
+  bot_enum: number;
   cards: Card[];
 }
 

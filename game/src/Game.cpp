@@ -12,6 +12,7 @@ using json = nlohmann::json;
 using namespace std::chrono_literals;
 
 using namespace API;
+using namespace Bot;
 
 Game::Game() {
     this->state.phase = Phase::LOBBY;
@@ -667,12 +668,12 @@ void Game::fillWithBots(const HandlerArgs &server) {
         player.connected = false;
         player.session = "bot:" + std::to_string(curr);
         player.name = std::optional("Bot " + std::to_string(curr));
-        player.is_bot = true;
+        player.bot_enum = BotName::BOT_NONE;
     }
 }
 
 void Game::handleBotUpdates(const HandlerArgs &server) {
-    while (state.players[state.turn].is_bot) {
+    while (state.players[state.turn].bot_enum == BotName::BOT_NONE) {
 
         // NOTE TEMPORARY We just play the first card in the bot's hand.
         auto &player = state.players[state.turn];
@@ -685,6 +686,15 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
         };
 
         play_card(server, msg);
+
+        BotDecisionState decision_state = {
+            .name  = (BotName)player.bot_enum,
+            .phase = state.phase,
+            .trump = state.trump,
+            .hand  = player.cards,
+            .stack = state.played_cards,
+            .top_card = state.top_card,
+        };
 
         switch (state.phase) {
             case Phase::DISCARDING: {
