@@ -563,6 +563,7 @@ namespace API {
     }
 
     inline void from_json(const json & j, ServerPlayer& x) {
+        x.bot_enum = j.at("bot_enum").get<int64_t>();
         x.cards = j.at("cards").get<std::vector<Card>>();
         x.connected = j.at("connected").get<bool>();
         x.name = get_stack_optional<std::string>(j, "name");
@@ -573,6 +574,7 @@ namespace API {
 
     inline void to_json(json & j, const ServerPlayer & x) {
         j = json::object();
+        j["bot_enum"] = x.bot_enum;
         j["cards"] = x.cards;
         j["connected"] = x.connected;
         if (x.name) {

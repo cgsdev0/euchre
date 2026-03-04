@@ -402,6 +402,9 @@
         "name": {
           "type": "string"
         },
+        "bot_enum": {
+          "type": "integer"
+        },
         "cards": {
           "type": "array",
           "items": {
@@ -413,6 +416,7 @@
       "required": [
         "session",
         "tricks",
+        "bot_enum",
         "sitting_out",
         "connected",
         "cards"

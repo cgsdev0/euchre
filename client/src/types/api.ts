@@ -245,6 +245,7 @@ export interface ServerPlayer {
   sitting_out: boolean;
   connected: boolean;
   name?: string;
+  bot_enum: number;
   cards: Card[];
 }
 
