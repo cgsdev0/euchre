@@ -49,8 +49,9 @@ namespace Bot {
 }
 
 namespace Bot {
-    bool goAlone(BotDecisionState &state);
-    bool pickItUp(BotDecisionState &state);
+    bool orderTrump(BotDecisionState &state, std::optional<Suit> &suit, bool &go_alone);
+    Card discard(BotDecisionState state);
+    Card playCard(BotDecisionState state);
 }
 
 #endif // BOT_H
