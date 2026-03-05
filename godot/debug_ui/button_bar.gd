@@ -9,22 +9,22 @@ func _ready():
 func on_press(s: String):
 	match s:
 		"Pass":
-			%Client.send({ "type": "pass" })
+			Client.send({ "type": "pass" })
 		"Order":
-			%Client.send({ "type": "order", "alone": %Alone.button_pressed })
+			Client.send({ "type": "order", "alone": %Alone.button_pressed })
 		"Start":
-			%Client.send({ "type": "restart" })
+			Client.send({ "type": "restart" })
 		"PickHearts":
-			%Client.send({ "type": "order", "suit": "hearts" })
+			Client.send({ "type": "order", "suit": "hearts" })
 		"PickDiamonds":
-			%Client.send({ "type": "order", "suit": "diamonds" })
+			Client.send({ "type": "order", "suit": "diamonds" })
 		"PickClubs":
-			%Client.send({ "type": "order", "suit": "clubs" })
+			Client.send({ "type": "order", "suit": "clubs" })
 		"PickSpades":
-			%Client.send({ "type": "order", "suit": "spades" })
+			Client.send({ "type": "order", "suit": "spades" })
 			
 func _process(delta: float) -> void:
-	if phase != "lobby" and phase != "ended" and %Client.state.turn != %Client.state.id:
+	if phase != "lobby" and phase != "ended" and Client.state.turn != Client.state.id:
 		hide()
 		return
-	visible = %Client.state.phase == phase
+	visible = Client.state.phase == phase

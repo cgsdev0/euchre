@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://bghkjy6dkp2ch"]
+
+[ext_resource type="Texture2D" uid="uid://bvseyaounuyhw" path="res://debug_ui/cards/Empty 1.png" id="1_y6c05"]
+[ext_resource type="Texture2D" uid="uid://bplq23gca543y" path="res://debug_ui/cards/Card Back 1.png" id="2_65u3x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_y6c05"]
+size = Vector3(0.4189453, 0.66381836, 0.059570313)
+
+[node name="Card" type="RigidBody3D" unique_id=1539242775]
+
+[node name="Front" type="Sprite3D" parent="." unique_id=276152436]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742276e-08, 0, -1, 0, 0, 0)
+shaded = true
+double_sided = false
+texture_filter = 0
+texture = ExtResource("1_y6c05")
+
+[node name="Back" type="Sprite3D" parent="." unique_id=1066609984]
+shaded = true
+double_sided = false
+texture_filter = 0
+texture = ExtResource("2_65u3x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1887664915]
+shape = SubResource("BoxShape3D_y6c05")

@@ -1,9 +1,316 @@
 [gd_scene format=3 uid="uid://ceywlhbya7b01"]
 
 [ext_resource type="PackedScene" uid="uid://seb3wnxb6kgw" path="res://chars/Character_29.fbx" id="1_45ekl"]
+[ext_resource type="Script" uid="uid://dggfi2ntkc3tp" path="res://scripts/char.gd" id="2_fu57s"]
 [ext_resource type="PackedScene" uid="uid://bf6uqcd430jha" path="res://scenes/card.tscn" id="2_ut82k"]
+[ext_resource type="Script" uid="uid://d2jqefg4ygqkf" path="res://scenes/throwable.gd" id="3_f5ddd"]
+
+[sub_resource type="Animation" id="Animation_ut82k"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LHTarget:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.45582932, 2.8999267, 0.4711156)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("LHpole:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(3.048327, -5.3408966, -2.4962463)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("LHRotation:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-1.4979944, -2.7675323, -0.5513202)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("BoneAttachment3D/Card:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="Animation" id="Animation_rafyf"]
+resource_name = "mixamo_com"
+length = 0.033333335
+tracks/0/type = "position_3d"
+tracks/0/imported = true
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D:mixamorig_Hips")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = PackedFloat32Array(0, 1, -3.9497656e-05, 2.4848244, 0.008225709)
+tracks/1/type = "rotation_3d"
+tracks/1/imported = true
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton3D:mixamorig_Hips")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = PackedFloat32Array(0, 1, 0.00011500909, -0.7071103, 0.0001129307, 0.70710325)
+tracks/2/type = "rotation_3d"
+tracks/2/imported = true
+tracks/2/enabled = true
+tracks/2/path = NodePath("Skeleton3D:mixamorig_Spine")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = PackedFloat32Array(0, 1, -0.00015989372, 1.5990496e-05, 0.0685983, 0.99764436)
+tracks/3/type = "rotation_3d"
+tracks/3/imported = true
+tracks/3/enabled = true
+tracks/3/path = NodePath("Skeleton3D:mixamorig_LeftUpLeg")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = PackedFloat32Array(0, 1, 0.0003557003, -0.004726806, 0.99998504, 0.0027399436)
+tracks/4/type = "rotation_3d"
+tracks/4/imported = true
+tracks/4/enabled = true
+tracks/4/path = NodePath("Skeleton3D:mixamorig_RightUpLeg")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = PackedFloat32Array(0, 1, -0.00033469693, 0.0050484054, 0.99998015, 0.0037537538)
+tracks/5/type = "rotation_3d"
+tracks/5/imported = true
+tracks/5/enabled = true
+tracks/5/path = NodePath("Skeleton3D:mixamorig_LeftLeg")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = PackedFloat32Array(0, 1, 0.009778782, 0.00014730764, -0.024114747, 0.9996614)
+tracks/6/type = "rotation_3d"
+tracks/6/imported = true
+tracks/6/enabled = true
+tracks/6/path = NodePath("Skeleton3D:mixamorig_RightLeg")
+tracks/6/interp = 1
+tracks/6/loop_wrap = true
+tracks/6/keys = PackedFloat32Array(0, 1, -0.009779528, -0.00015207865, -0.023723593, 0.9996707)
+tracks/7/type = "rotation_3d"
+tracks/7/imported = true
+tracks/7/enabled = true
+tracks/7/path = NodePath("Skeleton3D:mixamorig_LeftFoot")
+tracks/7/interp = 1
+tracks/7/loop_wrap = true
+tracks/7/keys = PackedFloat32Array(0, 1, 0.3389694, -0.6387794, 0.37416205, 0.58057165)
+tracks/8/type = "rotation_3d"
+tracks/8/imported = true
+tracks/8/enabled = true
+tracks/8/path = NodePath("Skeleton3D:mixamorig_RightFoot")
+tracks/8/interp = 1
+tracks/8/loop_wrap = true
+tracks/8/keys = PackedFloat32Array(0, 1, 0.3735347, -0.5806656, 0.33824515, 0.6394447)
+tracks/9/type = "rotation_3d"
+tracks/9/imported = true
+tracks/9/enabled = true
+tracks/9/path = NodePath("Skeleton3D:mixamorig_LeftShoulder")
+tracks/9/interp = 1
+tracks/9/loop_wrap = true
+tracks/9/keys = PackedFloat32Array(0, 1, 0.011517568, -0.6704309, 0.7418764, 0.0030163773)
+tracks/10/type = "rotation_3d"
+tracks/10/imported = true
+tracks/10/enabled = true
+tracks/10/path = NodePath("Skeleton3D:mixamorig_RightShoulder")
+tracks/10/interp = 1
+tracks/10/loop_wrap = true
+tracks/10/keys = PackedFloat32Array(0, 1, 0.7424867, -0.00026929413, 0.005838295, 0.66983527)
+tracks/11/type = "rotation_3d"
+tracks/11/imported = true
+tracks/11/enabled = true
+tracks/11/path = NodePath("Skeleton3D:mixamorig_LeftArm")
+tracks/11/interp = 1
+tracks/11/loop_wrap = true
+tracks/11/keys = PackedFloat32Array(0, 1, -0.009133581, 0.9982615, -0.050738487, -0.028567426)
+tracks/12/type = "rotation_3d"
+tracks/12/imported = true
+tracks/12/enabled = true
+tracks/12/path = NodePath("Skeleton3D:mixamorig_RightArm")
+tracks/12/interp = 1
+tracks/12/loop_wrap = true
+tracks/12/keys = PackedFloat32Array(0, 1, -0.051482778, -0.035283167, -0.002703904, 0.99804676)
+tracks/13/type = "rotation_3d"
+tracks/13/imported = true
+tracks/13/enabled = true
+tracks/13/path = NodePath("Skeleton3D:mixamorig_LeftForeArm")
+tracks/13/interp = 1
+tracks/13/loop_wrap = true
+tracks/13/keys = PackedFloat32Array(0, 1, -1.646389e-07, 0.003885468, 2.6088887e-08, 0.99999243)
+tracks/14/type = "rotation_3d"
+tracks/14/imported = true
+tracks/14/enabled = true
+tracks/14/path = NodePath("Skeleton3D:mixamorig_RightForeArm")
+tracks/14/interp = 1
+tracks/14/loop_wrap = true
+tracks/14/keys = PackedFloat32Array(0, 1, -2.3249979e-07, -0.0036476601, 2.5779593e-07, 0.9999933)
+tracks/15/type = "rotation_3d"
+tracks/15/imported = true
+tracks/15/enabled = true
+tracks/15/path = NodePath("Skeleton3D:mixamorig_LeftHand")
+tracks/15/interp = 1
+tracks/15/loop_wrap = true
+tracks/15/keys = PackedFloat32Array(0, 1, 1.6234461e-10, 0.0002960536, -3.7410277e-07, 0.99999994)
+tracks/16/type = "rotation_3d"
+tracks/16/imported = true
+tracks/16/enabled = true
+tracks/16/path = NodePath("Skeleton3D:mixamorig_RightHand")
+tracks/16/interp = 1
+tracks/16/loop_wrap = true
+tracks/16/keys = PackedFloat32Array(0, 1, -8.011215e-08, -3.9288127e-05, 1.9206112e-07, 1)
+tracks/17/type = "rotation_3d"
+tracks/17/imported = true
+tracks/17/enabled = true
+tracks/17/path = NodePath("Skeleton3D:mixamorig_LeftHandIndex1")
+tracks/17/interp = 1
+tracks/17/loop_wrap = true
+tracks/17/keys = PackedFloat32Array(0, 1, 4.1315428e-07, 0.0053833094, -2.326815e-07, 0.9999855)
+tracks/18/type = "rotation_3d"
+tracks/18/imported = true
+tracks/18/enabled = true
+tracks/18/path = NodePath("Skeleton3D:mixamorig_RightHandIndex1")
+tracks/18/interp = 1
+tracks/18/loop_wrap = true
+tracks/18/keys = PackedFloat32Array(0, 1, -4.2739295e-08, -0.0015548754, -2.3364045e-07, 0.9999988)
+tracks/19/type = "rotation_3d"
+tracks/19/imported = true
+tracks/19/enabled = true
+tracks/19/path = NodePath("Skeleton3D:mixamorig_LeftHandIndex2")
+tracks/19/interp = 1
+tracks/19/loop_wrap = true
+tracks/19/keys = PackedFloat32Array(0, 1, 0.090879776, -1.6499133e-07, 0.12864287, 0.987518)
+tracks/20/type = "rotation_3d"
+tracks/20/imported = true
+tracks/20/enabled = true
+tracks/20/path = NodePath("Skeleton3D:mixamorig_RightHandIndex2")
+tracks/20/interp = 1
+tracks/20/loop_wrap = true
+tracks/20/keys = PackedFloat32Array(0, 1, -0.0676641, -2.207585e-08, 0.10288286, 0.9923894)
+tracks/21/type = "rotation_3d"
+tracks/21/imported = true
+tracks/21/enabled = true
+tracks/21/path = NodePath("Skeleton3D:mixamorig_LeftHandIndex3")
+tracks/21/interp = 1
+tracks/21/loop_wrap = true
+tracks/21/keys = PackedFloat32Array(0, 1, 0.04800078, -0.0032876069, 0.050538816, 0.9975625)
+tracks/22/type = "rotation_3d"
+tracks/22/imported = true
+tracks/22/enabled = true
+tracks/22/path = NodePath("Skeleton3D:mixamorig_RightHandIndex3")
+tracks/22/interp = 1
+tracks/22/loop_wrap = true
+tracks/22/keys = PackedFloat32Array(0, 1, -0.045581345, 0.0072124647, 0.017229656, 0.998786)
+
+[sub_resource type="Animation" id="Animation_f5ddd"]
+resource_name = "play_card"
+length = 2.0
+step = 0.05
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("LHTarget:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.3, 0.6, 0.7, 0.8, 1.15, 1.3, 1.4499999, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.45582932, 2.8999267, 0.4711156), Vector3(0.8321605, 3.5966015, 0.47678736), Vector3(0.007, 3.916, 0.69), Vector3(0.0069999993, 4.034206, 0.69), Vector3(0.007, 4.044, 1.065), Vector3(0.241, 3.248, 0.675), Vector3(0.316, 3.1, 1), Vector3(0.241, 3.15, 0.675), Vector3(0.45582932, 2.8999267, 0.4711156)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("LHpole:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.6, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(3.048327, -5.3408966, -2.4962463), Vector3(13.765568, -5.3408966, -2.4962463), Vector3(3.048327, -5.3408966, -2.4962463)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("LHRotation:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.7, 0.9, 1.1, 1.55, 1.95, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(-1.4979944, -2.7675323, -0.5513202), Vector3(-1.4979944, -2.7675323, -0.5513202), Vector3(-1.4979944, -2.7675323, -0.5513202), Vector3(-3.1817353, -3.0421088, -0.55152404), Vector3(-2.86234, -2.6319566, -0.55152404), Vector3(-4.1887903, -2.4958208, -2.2671826), Vector3(-4.1887903, -2.4958208, -2.2671826), Vector3(-4.1887903, -2.4958208, -2.2671826), Vector3(-1.4979944, -2.7675323, -0.5513202), Vector3(-1.4979944, -2.7675323, -0.5513202)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("BoneAttachment3D/Card:visible")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.6, 1.3, 2),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [false, true, false, false]
+}
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("BoneAttachment3D/Card")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(1.3),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"throw"
+}]
+}
+tracks/5/type = "method"
+tracks/5/imported = false
+tracks/5/enabled = true
+tracks/5/path = NodePath(".")
+tracks/5/interp = 1
+tracks/5/loop_wrap = true
+tracks/5/keys = {
+"times": PackedFloat32Array(0.6),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [null],
+"method": &"hide_card"
+}]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dcxyk"]
+_data = {
+&"RESET": SubResource("Animation_ut82k"),
+&"mixamo_com": SubResource("Animation_rafyf"),
+&"play_card": SubResource("Animation_f5ddd")
+}
 
 [node name="Character_29" unique_id=1324661739 instance=ExtResource("1_45ekl")]
+script = ExtResource("2_fu57s")
 
 [node name="Skeleton3D" parent="." index="0" unique_id=288099358]
 bones/0/position = Vector3(-3.9499253e-05, 2.4848244, 0.008225709)
@@ -13,7 +320,7 @@ bones/7/rotation = Quaternion(0.011517565, -0.6704309, 0.7418764, 0.0030163755)
 bones/8/rotation = Quaternion(-0.009133583, 0.9982615, -0.050738513, -0.02856743)
 bones/9/rotation = Quaternion(-1.6643705e-07, 0.003885469, 4.359754e-08, 0.99999255)
 bones/10/rotation = Quaternion(7.0510353e-10, 0.00029605362, -3.7360724e-07, 1)
-bones/11/rotation = Quaternion(4.1384433e-07, 0.00538331, -2.3393659e-07, 0.9999856)
+bones/11/position = Vector3(0, 0.15250356, 3.330669e-16)
 bones/12/rotation = Quaternion(0.09087978, -1.6499135e-07, 0.12864289, 0.98751813)
 bones/13/rotation = Quaternion(0.04800078, -0.0032876069, 0.050538816, 0.9975625)
 bones/15/rotation = Quaternion(0.7424867, -0.00026929379, 0.005838296, 0.6698353)
@@ -116,37 +423,68 @@ settings/0/end_bone = 30
 settings/0/use_virtual_end = false
 settings/0/extend_end_bone = false
 
-[node name="RHTarget" type="Marker3D" parent="." index="2" unique_id=1151350534]
+[node name="AnimationPlayer" parent="." index="1" unique_id=602364889]
+active = false
+
+[node name="AnimationPlayer2" type="AnimationPlayer" parent="." index="2" unique_id=1042008154]
+libraries/ = SubResource("AnimationLibrary_dcxyk")
+
+[node name="RHTarget" type="Marker3D" parent="." index="3" unique_id=1151350534]
 transform = Transform3D(0.937365, 0.34612522, -0.039296534, -0.34550193, 0.9381626, 0.021893824, 0.044444542, -0.006945476, 0.99898773, -0.27238953, 3.304521, 0.6775309)
 
-[node name="RHPole" type="Marker3D" parent="." index="3" unique_id=1587313455]
+[node name="RHPole" type="Marker3D" parent="." index="4" unique_id=1587313455]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.3052893, -5.3408966, 5.3011756)
 
-[node name="RHRotation" type="Marker3D" parent="." index="4" unique_id=1636150641]
+[node name="RHRotation" type="Marker3D" parent="." index="5" unique_id=1636150641]
 transform = Transform3D(-0.7880383, 0.37650883, -0.05349507, 0.34426242, 0.75858164, 0.26769835, 0.16156696, 0.22004597, -0.8313244, 0, 0, 0)
 
-[node name="LHTarget" type="Marker3D" parent="." index="5" unique_id=313389704]
-transform = Transform3D(0.937365, 0.34612522, -0.039296534, -0.34550193, 0.9381626, 0.021893824, 0.044444542, -0.006945476, 0.99898773, 0.45582932, 2.8999267, 0.4711156)
+[node name="BoneAttachment3D" type="BoneAttachment3D" parent="." index="6" unique_id=153220694]
+physics_interpolation_mode = 1
+transform = Transform3D(-0.8742601, 0.024919514, -0.025936175, -0.021331783, 0.14877003, 0.86199576, 0.028958932, 0.86189973, -0.14803682, 0.43218938, 2.9081948, 0.60218483)
+bone_name = "mixamorig_LeftHandIndex1"
+bone_idx = 11
+use_external_skeleton = true
+external_skeleton = NodePath("../Skeleton3D")
 
-[node name="LHpole" type="Marker3D" parent="." index="6" unique_id=1721048151]
+[node name="Card" parent="BoneAttachment3D" index="0" unique_id=528731295 instance=ExtResource("2_ut82k")]
+transform = Transform3D(0.6, 0, -2.3283064e-09, 0, 0.6000001, 0, 1.3969839e-09, -2.2351742e-08, 0.59999996, 0, 0.2576368, -0.032136917)
+visible = false
+script = ExtResource("3_f5ddd")
+
+[node name="LHTarget" type="Marker3D" parent="." index="7" unique_id=313389704]
+transform = Transform3D(-0.9986295, 0, 0.05233605, 0, 1, 0, -0.05233605, 0, -0.9986295, 0.45582932, 2.8999267, 0.4711156)
+
+[node name="LHpole" type="Marker3D" parent="." index="8" unique_id=1721048151]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.048327, -5.3408966, -2.4962463)
 
-[node name="LHRotation" type="Marker3D" parent="." index="7" unique_id=727667908]
-transform = Transform3D(-0.86084545, -0.15501267, -0.023255944, -0.0333381, 0.05421508, 0.8726818, -0.15316123, 0.8594514, -0.05924405, 0, 0, 0)
+[node name="LHRotation" type="Marker3D" parent="." index="9" unique_id=727667908]
+transform = Transform3D(-0.8608453, -0.15501289, -0.023255888, -0.033338234, 0.0542153, 0.8726817, -0.1531613, 0.85945123, -0.059244387, 0, 0, 0)
 
-[node name="LLTarget" type="Marker3D" parent="." index="8" unique_id=396256178]
+[node name="LLTarget" type="Marker3D" parent="." index="10" unique_id=396256178]
 transform = Transform3D(0.937365, 0.34612522, -0.039296534, -0.34550193, 0.9381626, 0.021893824, 0.044444542, -0.006945476, 0.99898773, 0.37673223, 1.1466386, 0.8598695)
 
-[node name="LLPole" type="Marker3D" parent="." index="9" unique_id=190974380]
+[node name="LLPole" type="Marker3D" parent="." index="11" unique_id=190974380]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7783204, 2.8074474, 2.3736854)
 
-[node name="RLTarget" type="Marker3D" parent="." index="10" unique_id=443410275]
+[node name="RLTarget" type="Marker3D" parent="." index="12" unique_id=443410275]
 transform = Transform3D(0.937365, 0.34612522, -0.039296534, -0.34550193, 0.9381626, 0.021893824, 0.044444542, -0.006945476, 0.99898773, -0.43261743, 1.1466386, 0.8598695)
 
-[node name="RLPole" type="Marker3D" parent="." index="11" unique_id=1885520472]
+[node name="RLPole" type="Marker3D" parent="." index="13" unique_id=1885520472]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6866422, 2.8074474, 2.3736854)
 
-[node name="Cards" type="Node3D" parent="." index="12" unique_id=1738586476]
+[node name="Cards" type="Node3D" parent="." index="14" unique_id=1738586476]
 transform = Transform3D(0.5, 0, 0, 0, 0.49359322, -0.07978553, 0, 0.07978553, 0.49359322, -0.106160164, 3.6916451, 0.73444)
 
-[node name="Card" parent="Cards" index="0" unique_id=528731295 instance=ExtResource("2_ut82k")]
+[node name="Card4" parent="Cards" index="0" unique_id=1644335535 instance=ExtResource("2_ut82k")]
+
+[node name="Card2" parent="Cards" index="1" unique_id=1156706373 instance=ExtResource("2_ut82k")]
+transform = Transform3D(0.9659258, 0.25550264, -0.041300032, -0.25550246, 0.9667934, 0.0053675175, 0.041300014, 0.0053675026, 0.9991325, 0.080382705, -0.03916788, -0.011964321)
+
+[node name="Card5" parent="Cards" index="2" unique_id=815957356 instance=ExtResource("2_ut82k")]
+transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881886, 0.9659258, 0, 1.1175871e-08, 0, 1, -0.13016641, -0.03456354, 0.018156648)
+
+[node name="Card6" parent="Cards" index="3" unique_id=2046279246 instance=ExtResource("2_ut82k")]
+transform = Transform3D(0.86688375, -0.4967966, 0.041300036, 0.49702087, 0.86772186, 0.0053675473, -0.03850352, 0.015873924, 0.9991325, -0.24229687, -0.09786701, 0.043196917)
+
+[node name="Card3" parent="Cards" index="4" unique_id=731538242 instance=ExtResource("2_ut82k")]
+transform = Transform3D(0.8660254, 0.49359322, -0.07978557, -0.49359304, 0.8694368, 0.021104425, 0.079785526, 0.02110444, 0.9965889, 0.16134459, -0.115222454, -0.018800974)

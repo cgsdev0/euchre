@@ -1,6 +1,5 @@
 [gd_scene format=3 uid="uid://b804xi0831ok1"]
 
-[ext_resource type="Script" uid="uid://do237ipp2ysff" path="res://client.gd" id="1_1uwqr"]
 [ext_resource type="Script" uid="uid://b7a55lp1v875n" path="res://debug_ui/phase.gd" id="2_lvjdj"]
 [ext_resource type="Script" uid="uid://dmipg8vo71sxi" path="res://debug_ui/top_card.gd" id="3_16g7q"]
 [ext_resource type="PackedScene" uid="uid://d1d20jcghwr3j" path="res://debug_ui/player_row.tscn" id="3_rdi1l"]
@@ -12,11 +11,6 @@
 [ext_resource type="Script" uid="uid://bk1i1hhr6cw5v" path="res://debug_ui/button_bar.gd" id="10_6xqm2"]
 
 [node name="Node" type="Node" unique_id=134761314]
-
-[node name="Client" type="Node" parent="." unique_id=611017506]
-unique_name_in_owner = true
-script = ExtResource("1_1uwqr")
-room = "tJBgH4"
 
 [node name="Control" type="Control" parent="." unique_id=1614369635]
 layout_mode = 3

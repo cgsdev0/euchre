@@ -7,6 +7,7 @@ extends Node
 var socket = WebSocketPeer.new()
 
 var reconnecting = false
+var cooling_down = false
 var initial_state = {
   "id": 0,
   "played_cards": [],
@@ -29,16 +30,11 @@ var queue = []
 func send(data: Variant):
 	socket.send_text(JSON.stringify(data))
 
-var timer
-var cooling_down = false
 func _ready():
-	timer = Timer.new()
-	timer.one_shot = true
-	add_child(timer)
-	timer.timeout.connect(on_timeout)
+	self.resume.connect(on_resume)
 	connect_ws()
-
-func on_timeout():
+	
+func on_resume():
 	cooling_down = false
 	
 func connect_ws():
@@ -72,24 +68,29 @@ func intify_dict(data: Dictionary):
 func merge(a, b):
 	for key in b:
 		a[key] = b[key]
-		
+
+signal play_card(id, card)
+signal welcome
+signal resume
+signal deal
+
 func apply_queued_action():
 	if queue.is_empty() || cooling_down:
 		return
 	var action = queue.pop_front()
-	if action.type != "update":
-		cooling_down = true
-		timer.start(0.5)
 	print("Applying ", action.type)
 	match action.type:
+		"join":
+			state.players.push_back({ "tricks": 0, "card_count": 0 })
 		"update_name":
-			state.players[action.id].name = action.name
+			state.players[action.id]['name'] = action.name
 		"disconnect":
 			state.players[action.id].connected = false
 		"reconnect":
 			state.players[action.id].connected = true
 		"welcome":
 			merge(state, action)
+			self.welcome.emit()
 			print(state)
 		"update":
 			merge(state, action)
@@ -98,6 +99,8 @@ func apply_queued_action():
 			for player in state.players:
 				player.card_count = 5
 			merge(state, action)
+			cooling_down = true
+			self.deal.emit()
 			print(state)
 		"order":
 			if state.dealer == state.id and state.phase == "vote_round1":
@@ -118,6 +121,8 @@ func apply_queued_action():
 				player.sitting_out = false
 				player.tricks = 0
 		"play_card":
+			cooling_down = true
+			play_card.emit(action.id, action.card)
 			state.players[action.id].card_count -= 1
 			state.trick.push_back(action.card)
 			state.played_cards.push_back(action.card)

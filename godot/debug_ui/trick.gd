@@ -17,10 +17,10 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	for i in get_child_count():
 		var child = get_child(i)
-		if i >= %Client.state.trick.size():
+		if i >= Client.state.trick.size():
 			child.hide()
 			continue
 		child.show()
 		child.scale = Vector2(2.0, 2.0)
-		var card = %Client.state.trick[i]
+		var card = Client.state.trick[i]
 		child.texture = cache[card.rank + "_" + card.suit]

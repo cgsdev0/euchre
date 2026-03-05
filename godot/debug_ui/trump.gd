@@ -8,9 +8,9 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	var phase = %Client.state.phase
+	var phase = Client.state.phase
 	if phase != "playing" and phase != "discarding":
 		hide()
 	else:
 		show()
-	text = "Trump: " + %Client.state.trump.to_upper()
+	text = "Trump: " + Client.state.trump.to_upper()

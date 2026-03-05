@@ -8,8 +8,8 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
-	if not "top_card" in %Client.state:
+	if not "top_card" in Client.state:
 		visible = false
 		return
 	visible = true
-	text = "Up Card: " + %Client.state.top_card.rank + " of " + %Client.state.top_card.suit
+	text = "Up Card: " + Client.state.top_card.rank + " of " + Client.state.top_card.suit

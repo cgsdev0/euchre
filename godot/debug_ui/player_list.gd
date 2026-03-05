@@ -10,17 +10,17 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	for i in get_child_count():
 		var child = get_child(i)
-		if i >= %Client.state.players.size():
+		if i >= Client.state.players.size():
 			child.hide()
 			continue
 		child.show()
-		if i == %Client.state.turn:
+		if i == Client.state.turn:
 			child.modulate = Color.YELLOW
 		else:
 			child.modulate = Color.WHITE
-		var info = %Client.state.players[i]
+		var info = Client.state.players[i]
 		child.display_name = info.get("name", "Player " + str(i))
-		child.dealer = %Client.state.dealer == i
+		child.dealer = Client.state.dealer == i
 		child.cards = info.card_count
 		child.connected = info.connected
 		child.tricks = info.tricks
