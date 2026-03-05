@@ -1,9 +1,12 @@
 #ifndef DECK_H
 #define DECK_H
 #include "api/API.hpp"
+#include "api/Card.hpp"
 #include <algorithm>
 #include <cassert>
 #include <random>
+
+using namespace API;
 
 #define CARDS_IN_DECK 24
 struct Deck {

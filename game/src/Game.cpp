@@ -596,18 +596,7 @@ void Game::fillWithBots(const HandlerArgs &server) {
 
 void Game::handleBotUpdates(const HandlerArgs &server) {
     while (state.players[state.turn].bot_enum == BotName::BOT_NONE) {
-
-        // NOTE TEMPORARY We just play the first card in the bot's hand.
         auto &player = state.players[state.turn];
-        API::Card card = player.cards[0];
-        player.cards.erase(player.cards.begin());
-
-        PlayCardMsg msg = {
-            .card = card,
-            .id = 0,
-        };
-
-        play_card(server, msg);
 
         BotDecisionState decision_state = {
             .name  = (BotName)player.bot_enum,
@@ -618,26 +607,41 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
             .top_card = state.top_card,
         };
 
+        // NOTE Each handler funciton is designed to call `advanceTurn()` itself, so we don't need
+        // to do that here.
+
         switch (state.phase) {
             case Phase::DISCARDING: {
-                // discard(server, msg);
+                Card card = Bot::discard(decision_state);
+                DiscardMsg msg = { .card = card, .id = std::nullopt };
+                discard(server, msg);
                 break;
             }
 
             case Phase::LOBBY:
             case Phase::ENDED: {
+                assert(false); // WARN bots probably don't need to do anything here...
                 break;
             }
 
             case Phase::PLAYING: {
+                Card card = Bot::playCard(decision_state);
+                PlayCardMsg msg = { .card = card, .id = std::nullopt };
+                play_card(server, msg);
                 break;
             }
 
-            case Phase::VOTE_ROUND1: {
-                break;
-            }
-
+            case Phase::VOTE_ROUND1:
             case Phase::VOTE_ROUND2: {
+                bool go_alone = false;
+                std::optional<Suit> suit = std::nullopt;
+                if (orderTrump(decision_state, suit, go_alone)) {
+                    OrderMsg msg = { .alone = go_alone, .id = std::nullopt, .suit = suit };
+                    order(server, msg);
+                } else {
+                    PassMsg msg = { .id = std::nullopt };
+                    pass(server, msg);
+                }
                 break;
             }
         }
