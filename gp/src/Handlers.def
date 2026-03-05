@@ -1,0 +1,12 @@
+// Handlers.def
+// X(type, Msg)
+
+X(discard,      DiscardMsg)
+X(play_card,    PlayCardMsg)
+X(pass,         PassMsg)
+X(order,        OrderMsg)
+X(table_talk,   TableTalkMsg)
+X(update_name,  UpdateNameMsg)
+X(restart,      RestartMsg)
+
+X(play_jaja_ding_dong, PlayJajaDingDongMsg)
