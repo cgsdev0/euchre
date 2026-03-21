@@ -160,7 +160,8 @@ static void sendUpdate(const HandlerArgs &server, const GameState &state) {
 }
 
 static bool premoveAvailable(const GameState &state) {
-    return !state.players[state.turn].premoves.empty();
+    size_t total_cards = state.players[state.turn].cards.size() + state.players[state.turn].premoves.size();
+    return !state.players[state.turn].premoves.empty() && total_cards > 1;
 }
 
 void Game::cascadePremoves(const HandlerArgs &server) {
@@ -400,7 +401,7 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
     if (!cascading && turn_token != server.session)
         throw GameError({.error = "it's not your turn"});
     size_t total_cards = state.players[state.turn].cards.size() + state.players[state.turn].premoves.size();
-    if (total_cards == 1)
+    if (!cascading && total_cards == 1)
         throw GameError({.error = "nah nah the server can do that for you"});
     if (!cascading && !std::erase(state.players[state.turn].cards, msg.card))
         throw GameError({.error = "you don't have that card"});
@@ -439,7 +440,9 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
         advanceTurn();
     }
     sendUpdate(server, state);
-    cascadePremoves(server);
+    if (!cascading) {
+        cascadePremoves(server);
+    }
 }
 
 void Game::discard(const HandlerArgs &server, DiscardMsg &msg) {

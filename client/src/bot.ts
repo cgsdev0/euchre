@@ -25,11 +25,12 @@ const initial_state: State = {
   phase: "lobby",
   private_session: false,
 };
-const startBot = (room: string, cookie: string) => {
+const startBot = (room: string, i: number) => {
   function log(...args: any[]) {
     if (state.id !== 0) return;
     console.log(...args);
   }
+  let cookie = `bot${i}`;
   let state: State = JSON.parse(JSON.stringify(initial_state)) as State;
   const setupWs = () => {
     const ws = new WebSocket(`ws://localhost:3001/ws/room/${room}`, {
@@ -67,8 +68,17 @@ const startBot = (room: string, cookie: string) => {
         }
         break;
       case "playing":
-        const card = state.your_cards.shift();
-        send("play_card", { card });
+        if (i === 0) {
+          while (state.your_cards.length) {
+            const card = state.your_cards.shift();
+            send("premove", { card });
+          }
+        } else {
+          setTimeout(() => {
+            const card = state.your_cards.shift();
+            send("play_card", { card });
+          }, 1000);
+        }
         break;
       case "vote_round2":
         if (state.turn !== state.dealer) {
@@ -146,5 +156,5 @@ const startBot = (room: string, cookie: string) => {
 };
 
 for (let i = 0; i < bots; ++i) {
-  startBot(room, `bot${i}`);
+  startBot(room, i);
 }
