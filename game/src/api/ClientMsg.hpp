@@ -4,6 +4,7 @@
 #include <optional>
 #include <variant>
 
+#include "CardUnion.hpp"
 #include "Card.hpp"
 
 namespace API {
@@ -27,9 +28,13 @@ namespace API {
      *
      * Self-explanatory.
      *
-     * Change your display name.
+     * Update an individual player's state.
      *
      * Start a new game.
+     *
+     * Select a card to pre-move.
+     *
+     * Undo a premove action.
      */
 
 
@@ -48,20 +53,25 @@ namespace API {
      *
      * Self-explanatory.
      *
-     * Change your display name.
+     * Update an individual player's state.
      *
      * Start a new game.
+     *
+     * Select a card to pre-move.
+     *
+     * Undo a premove action.
      */
     struct ClientMsg {
 std::string toString() const;
 void fromString(const std::string &str);
         std::optional<std::string> session;
         ClientMsgType type = static_cast<ClientMsgType>(0);
-        std::optional<Card> card;
+        std::optional<CardUnion> card;
         std::optional<int64_t> id;
         std::optional<bool> alone;
         std::optional<Suit> suit;
         std::optional<int64_t> table_talk;
         std::optional<std::string> name;
+        std::optional<bool> premoved;
     };
 }

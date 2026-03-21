@@ -25,10 +25,16 @@
           "$ref": "#/definitions/PlayJajaDingDongMsg"
         },
         {
-          "$ref": "#/definitions/UpdateNameMsg"
+          "$ref": "#/definitions/PlayerUpdateMsg"
         },
         {
           "$ref": "#/definitions/RestartMsg"
+        },
+        {
+          "$ref": "#/definitions/PremoveMsg"
+        },
+        {
+          "$ref": "#/definitions/UndoPremoveMsg"
         }
       ]
     },
@@ -82,6 +88,9 @@
         },
         {
           "$ref": "#/definitions/UpdateMsg"
+        },
+        {
+          "$ref": "#/definitions/LastCardMsg"
         }
       ]
     },
@@ -174,6 +183,30 @@
       "additionalProperties": false,
       "required": [
         "type"
+      ]
+    },
+    "LastCardMsg": {
+      "description": "Auto-play the last card of the hand.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "last_card",
+          "enum": [
+            "last_card"
+          ]
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Card"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "cards"
       ]
     },
     "PlayCardMsg": {
@@ -369,6 +402,9 @@
         "sitting_out": {
           "type": "boolean"
         },
+        "premoved": {
+          "type": "boolean"
+        },
         "name": {
           "type": "string"
         },
@@ -379,6 +415,7 @@
       "additionalProperties": false,
       "required": [
         "sitting_out",
+        "premoved",
         "tricks",
         "connected",
         "card_count"
@@ -394,6 +431,9 @@
           "type": "integer"
         },
         "sitting_out": {
+          "type": "boolean"
+        },
+        "premoved": {
           "type": "boolean"
         },
         "connected": {
@@ -414,6 +454,7 @@
         "session",
         "tricks",
         "sitting_out",
+        "premoved",
         "connected",
         "cards"
       ]
@@ -685,6 +726,44 @@
         "dealer"
       ]
     },
+    "UndoPremoveMsg": {
+      "description": "Undo a premove action.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "undo_premove",
+          "enum": [
+            "undo_premove"
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ]
+    },
+    "PremoveMsg": {
+      "description": "Select a card to pre-move.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "premove",
+          "enum": [
+            "premove"
+          ]
+        },
+        "card": {
+          "type": "integer"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "card"
+      ]
+    },
     "RestartMsg": {
       "description": "Start a new game.",
       "type": "object",
@@ -855,6 +934,30 @@
         },
         "name": {
           "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "type"
+      ]
+    },
+    "PlayerUpdateMsg": {
+      "description": "Update an individual player's state.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "update_player",
+          "enum": [
+            "update_player"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "premoved": {
+          "type": "boolean"
         },
         "id": {
           "type": "integer"
@@ -862,7 +965,7 @@
       },
       "additionalProperties": false,
       "required": [
-        "name",
+        "id",
         "type"
       ]
     },

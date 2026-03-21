@@ -14,8 +14,10 @@ export type ClientMsg =
   | OrderMsg
   | TableTalkMsg
   | PlayJajaDingDongMsg
-  | UpdateNameMsg
-  | RestartMsg;
+  | PlayerUpdateMsg
+  | RestartMsg
+  | PremoveMsg
+  | UndoPremoveMsg;
 
 export type Suit = "clubs" | "diamonds" | "hearts" | "spades";
 
@@ -35,7 +37,8 @@ export type ServerMsg =
   | DisconnectMsg
   | ReconnectMsg
   | RichTextMsg
-  | UpdateMsg;
+  | UpdateMsg
+  | LastCardMsg;
 
 export interface Schema {
   [k: string]: unknown;
@@ -108,13 +111,14 @@ export interface PlayJajaDingDongMsg {
   id?: number;
 }
 /**
- * Change your display name.
+ * Update an individual player's state.
  *
  */
-export interface UpdateNameMsg {
-  type: "update_name";
-  name: string;
-  id?: number;
+export interface PlayerUpdateMsg {
+  type: "update_player";
+  name?: string;
+  premoved?: boolean;
+  id: number;
 }
 /**
  * Start a new game.
@@ -123,6 +127,21 @@ export interface UpdateNameMsg {
 export interface RestartMsg {
   type: "restart";
   id?: number;
+}
+/**
+ * Select a card to pre-move.
+ *
+ */
+export interface PremoveMsg {
+  type: "premove";
+  card: number;
+}
+/**
+ * Undo a premove action.
+ *
+ */
+export interface UndoPremoveMsg {
+  type: "undo_premove";
 }
 
 export interface GameError {
@@ -164,6 +183,7 @@ export interface Player {
   connected: boolean;
   tricks: number;
   sitting_out: boolean;
+  premoved: boolean;
   name?: string;
   card_count: number;
 }
@@ -185,6 +205,14 @@ export interface DealCardsMsg {
   type: "deal";
   your_cards: Card[];
   top_card: Card;
+}
+/**
+ * Change your display name.
+ *
+ */
+export interface UpdateNameMsg {
+  type: "update_name";
+  name: string;
 }
 
 export interface JoinMsg {
@@ -215,6 +243,14 @@ export interface UpdateMsg {
   scores: number[];
 }
 /**
+ * Auto-play the last card of the hand.
+ *
+ */
+export interface LastCardMsg {
+  type: "last_card";
+  cards: Card[];
+}
+/**
  * A player won a trick!
  *
  */
@@ -243,6 +279,7 @@ export interface ServerPlayer {
   session: string;
   tricks: number;
   sitting_out: boolean;
+  premoved: boolean;
   connected: boolean;
   name?: string;
   cards: Card[];

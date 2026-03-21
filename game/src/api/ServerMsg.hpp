@@ -33,6 +33,8 @@ namespace API {
      * Change your display name.
      *
      * Update everything
+     *
+     * Auto-play the last card of the hand.
      */
 
 
@@ -52,6 +54,8 @@ namespace API {
      * Change your display name.
      *
      * Update everything
+     *
+     * Auto-play the last card of the hand.
      */
     struct ServerMsg {
 std::string toString() const;
@@ -78,5 +82,6 @@ void fromString(const std::string &str);
         std::optional<Card> card;
         std::optional<std::string> name;
         std::optional<std::vector<Msg>> msg;
+        std::optional<std::vector<Card>> cards;
     };
 }
