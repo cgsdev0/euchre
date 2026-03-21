@@ -81,7 +81,7 @@ func apply_queued_action():
 	print("Applying ", action.type)
 	match action.type:
 		"join":
-			state.players.push_back({ "tricks": 0, "card_count": 0 })
+			state.players.push_back({ "tricks": 0, "card_count": 0, "connected": true })
 		"update_name":
 			state.players[action.id]['name'] = action.name
 		"disconnect":

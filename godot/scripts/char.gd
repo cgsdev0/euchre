@@ -7,6 +7,13 @@ func _ready() -> void:
 	Client.deal.connect(on_deal)
 
 func on_deal():
+	if get_index() == Client.state.id:
+		for i in Client.state.your_cards.size():
+			var c = Client.state.your_cards[i]
+			var card = $Cards.get_child(i)
+			card.suit = c.suit
+			card.rank = c.rank
+			
 	await get_tree().create_timer(0.2).timeout
 	card_count = 1
 	await get_tree().create_timer(0.2).timeout
