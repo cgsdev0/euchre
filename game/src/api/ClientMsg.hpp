@@ -4,7 +4,6 @@
 #include <optional>
 #include <variant>
 
-#include "CardUnion.hpp"
 #include "Card.hpp"
 
 namespace API {
@@ -66,12 +65,12 @@ std::string toString() const;
 void fromString(const std::string &str);
         std::optional<std::string> session;
         ClientMsgType type = static_cast<ClientMsgType>(0);
-        std::optional<CardUnion> card;
+        std::optional<Card> card;
         std::optional<int64_t> id;
         std::optional<bool> alone;
         std::optional<Suit> suit;
         std::optional<int64_t> table_talk;
         std::optional<std::string> name;
-        std::optional<bool> premoved;
+        std::optional<int64_t> premoves;
     };
 }

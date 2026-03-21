@@ -9,7 +9,6 @@
 #include "Rank.hpp"
 #include "Suit.hpp"
 #include "Card.hpp"
-#include "CardUnion.hpp"
 #include "ClientMsgType.hpp"
 #include "ClientMsg.hpp"
 #include "Alignment.hpp"

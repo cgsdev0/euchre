@@ -59,6 +59,7 @@ class Game {
     void endHand(const HandlerArgs &server);
     void endTrick(const HandlerArgs &server);
     void dealCards(const HandlerArgs &server);
+    void cascadePremoves(const HandlerArgs &server);
 
     std::chrono::system_clock::time_point getUpdated() { return this->updated; }
 
@@ -75,7 +76,7 @@ class Game {
     API::WelcomeMsg toWelcomeMsg(const std::string &session) {
         std::vector<API::Player> players;
         for (const auto &player : this->state.players) {
-            players.emplace_back(player.cards.size(), player.connected, player.name, player.sitting_out, player.tricks);
+            players.emplace_back(player.cards.size(), player.connected, player.name, player.premoves.size(), player.sitting_out, player.tricks);
         }
         auto id = this->getPlayerId(session);
         auto your_cards = this->state.players[id].cards;
@@ -119,6 +120,10 @@ class Game {
     std::string turn_token;
     API::GameState state;
     bool was_persisted = false;
+    // gavin said it was ok
+    // coleslawski approved the PR
+    // send all complaints to noreply@rollycubes.com
+    bool cascading = false;
     friend GameCoordinator;
 };
 

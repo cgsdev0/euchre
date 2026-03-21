@@ -213,12 +213,6 @@ void to_json(json & j, const UpdateMsgType & x);
 }
 namespace nlohmann {
 template <>
-struct adl_serializer<std::variant<API::Card, int64_t>> {
-    static void from_json(const json & j, std::variant<API::Card, int64_t> & x);
-    static void to_json(json & j, const std::variant<API::Card, int64_t> & x);
-};
-
-template <>
 struct adl_serializer<std::variant<API::RichTextChunk, std::string>> {
     static void from_json(const json & j, std::variant<API::RichTextChunk, std::string> & x);
     static void to_json(json & j, const std::variant<API::RichTextChunk, std::string> & x);
@@ -243,13 +237,13 @@ namespace API {
     inline void from_json(const json & j, ClientMsg& x) {
         x.session = get_stack_optional<std::string>(j, "session");
         x.type = j.at("type").get<ClientMsgType>();
-        x.card = get_stack_optional<std::variant<Card, int64_t>>(j, "card");
+        x.card = get_stack_optional<Card>(j, "card");
         x.id = get_stack_optional<int64_t>(j, "id");
         x.alone = get_stack_optional<bool>(j, "alone");
         x.suit = get_stack_optional<Suit>(j, "suit");
         x.table_talk = get_stack_optional<int64_t>(j, "table_talk");
         x.name = get_stack_optional<std::string>(j, "name");
-        x.premoved = get_stack_optional<bool>(j, "premoved");
+        x.premoves = get_stack_optional<int64_t>(j, "premoves");
     }
 
     inline void to_json(json & j, const ClientMsg & x) {
@@ -276,8 +270,8 @@ namespace API {
         if (x.name) {
             j["name"] = x.name;
         }
-        if (x.premoved) {
-            j["premoved"] = x.premoved;
+        if (x.premoves) {
+            j["premoves"] = x.premoves;
         }
     }
 
@@ -308,7 +302,7 @@ namespace API {
         x.card_count = j.at("card_count").get<int64_t>();
         x.connected = j.at("connected").get<bool>();
         x.name = get_stack_optional<std::string>(j, "name");
-        x.premoved = j.at("premoved").get<bool>();
+        x.premoved = j.at("premoved").get<int64_t>();
         x.sitting_out = j.at("sitting_out").get<bool>();
         x.tricks = j.at("tricks").get<int64_t>();
     }
@@ -617,7 +611,7 @@ namespace API {
         x.cards = j.at("cards").get<std::vector<Card>>();
         x.connected = j.at("connected").get<bool>();
         x.name = get_stack_optional<std::string>(j, "name");
-        x.premoved = j.at("premoved").get<bool>();
+        x.premoves = j.at("premoves").get<std::vector<Card>>();
         x.session = j.at("session").get<std::string>();
         x.sitting_out = j.at("sitting_out").get<bool>();
         x.tricks = j.at("tricks").get<int64_t>();
@@ -630,7 +624,7 @@ namespace API {
         if (x.name) {
             j["name"] = x.name;
         }
-        j["premoved"] = x.premoved;
+        j["premoves"] = x.premoves;
         j["session"] = x.session;
         j["sitting_out"] = x.sitting_out;
         j["tricks"] = x.tricks;
@@ -737,7 +731,7 @@ namespace API {
     }
 
     inline void from_json(const json & j, PremoveMsg& x) {
-        x.card = j.at("card").get<int64_t>();
+        x.card = j.at("card").get<Card>();
         x.type = j.at("type").get<PremoveMsgType>();
     }
 
@@ -811,7 +805,7 @@ namespace API {
     inline void from_json(const json & j, PlayerUpdateMsg& x) {
         x.id = j.at("id").get<int64_t>();
         x.name = get_stack_optional<std::string>(j, "name");
-        x.premoved = get_stack_optional<bool>(j, "premoved");
+        x.premoves = get_stack_optional<int64_t>(j, "premoves");
         x.type = j.at("type").get<PlayerUpdateMsgType>();
     }
 
@@ -821,8 +815,8 @@ namespace API {
         if (x.name) {
             j["name"] = x.name;
         }
-        if (x.premoved) {
-            j["premoved"] = x.premoved;
+        if (x.premoves) {
+            j["premoves"] = x.premoves;
         }
         j["type"] = x.type;
     }
@@ -1362,26 +1356,6 @@ namespace API {
     }
 }
 namespace nlohmann {
-    inline void adl_serializer<std::variant<API::Card, int64_t>>::from_json(const json & j, std::variant<API::Card, int64_t> & x) {
-        if (j.is_number_integer())
-            x = j.get<int64_t>();
-        else if (j.is_object())
-            x = j.get<API::Card>();
-        else throw std::runtime_error("Could not deserialise!");
-    }
-
-    inline void adl_serializer<std::variant<API::Card, int64_t>>::to_json(json & j, const std::variant<API::Card, int64_t> & x) {
-        switch (x.index()) {
-            case 0:
-                j = std::get<API::Card>(x);
-                break;
-            case 1:
-                j = std::get<int64_t>(x);
-                break;
-            default: throw std::runtime_error("Input JSON does not conform to schema!");
-        }
-    }
-
     inline void adl_serializer<std::variant<API::RichTextChunk, std::string>>::from_json(const json & j, std::variant<API::RichTextChunk, std::string> & x) {
         if (j.is_string())
             x = j.get<std::string>();

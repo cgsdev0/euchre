@@ -403,7 +403,7 @@
           "type": "boolean"
         },
         "premoved": {
-          "type": "boolean"
+          "type": "integer"
         },
         "name": {
           "type": "string"
@@ -433,8 +433,11 @@
         "sitting_out": {
           "type": "boolean"
         },
-        "premoved": {
-          "type": "boolean"
+        "premoves": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Card"
+          }
         },
         "connected": {
           "type": "boolean"
@@ -454,7 +457,7 @@
         "session",
         "tricks",
         "sitting_out",
-        "premoved",
+        "premoves",
         "connected",
         "cards"
       ]
@@ -755,7 +758,7 @@
           ]
         },
         "card": {
-          "type": "integer"
+          "$ref": "#/definitions/Card"
         }
       },
       "additionalProperties": false,
@@ -956,8 +959,8 @@
         "name": {
           "type": "string"
         },
-        "premoved": {
-          "type": "boolean"
+        "premoves": {
+          "type": "integer"
         },
         "id": {
           "type": "integer"

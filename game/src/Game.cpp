@@ -159,6 +159,20 @@ static void sendUpdate(const HandlerArgs &server, const GameState &state) {
     server.broadcast(msg.toString());
 }
 
+static bool premoveAvailable(const GameState &state) {
+    return !state.players[state.turn].premoves.empty();
+}
+
+void Game::cascadePremoves(const HandlerArgs &server) {
+    while (premoveAvailable(state)) {
+        cascading = true;
+        PlayCardMsg msg;
+        msg.card = *state.players[state.turn].premoves.erase(state.players[state.turn].premoves.begin());
+        play_card(server, msg);
+        cascading = false;
+    }
+}
+
 void Game::order(const HandlerArgs &server, OrderMsg &msg) {
     if (state.phase != Phase::VOTE_ROUND1 && state.phase != Phase::VOTE_ROUND2)
         throw GameError({.error = "it's not voting time"});
@@ -332,7 +346,50 @@ void Game::endTrick(const HandlerArgs &server) {
     for (const auto &player : state.players) {
         total_tricks += player.tricks;
     }
-    if (total_tricks == 5) {
+    if (total_tricks == 4) {
+        LastCardMsg last;
+
+        size_t active_players = 0;
+        for (const auto &p : state.players) {
+            if (!p.sitting_out) active_players++;
+        }
+        while (state.trick.size() < active_players) {
+            auto &player = state.players[state.turn];
+            Card card;
+            if (player.cards.size()) {
+                card = *player.cards.erase(player.cards.begin());
+            } else {
+                card = *player.premoves.erase(player.premoves.begin());
+            }
+            Card server_copy = card;
+            card.illegal = std::nullopt; // this is not up to the client
+            if (state.trick.size() > 0) {
+                // check what suit we need to follow
+                auto suit = effectiveSuit(state.trick[0], state.trump);
+                if (suit != effectiveSuit(card, state.trump)) {
+                    // ok we played an off-card, let's see if we cheated
+
+                    for (const auto &card : state.players[state.turn].cards) {
+                        if (suit == effectiveSuit(card, state.trump)) {
+                            // we have determined this player is definitely frank
+                            server_copy.illegal = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (state.trick.empty()) {
+                state.trick_leader = state.turn;
+            }
+            state.trick.push_back(card);
+            state.played_cards.push_back(server_copy);
+            last.cards.push_back(card);
+            advanceTurn();
+        }
+
+        server.broadcast(last.toString());
+        endTrick(server);
+    } else if (total_tricks == 5) {
         endHand(server);
     }
 }
@@ -340,9 +397,12 @@ void Game::endTrick(const HandlerArgs &server) {
 void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
     if (state.phase != Phase::PLAYING)
         throw GameError({.error = "not just yet"});
-    if (turn_token != server.session)
+    if (!cascading && turn_token != server.session)
         throw GameError({.error = "it's not your turn"});
-    if (!std::erase(state.players[state.turn].cards, msg.card))
+    size_t total_cards = state.players[state.turn].cards.size() + state.players[state.turn].premoves.size();
+    if (total_cards == 1)
+        throw GameError({.error = "nah nah the server can do that for you"});
+    if (!cascading && !std::erase(state.players[state.turn].cards, msg.card))
         throw GameError({.error = "you don't have that card"});
     Card server_copy = msg.card;
     msg.card.illegal = std::nullopt; // this is not up to the client
@@ -379,6 +439,7 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
         advanceTurn();
     }
     sendUpdate(server, state);
+    cascadePremoves(server);
 }
 
 void Game::discard(const HandlerArgs &server, DiscardMsg &msg) {
@@ -443,12 +504,66 @@ void Game::restart(const HandlerArgs &server, RestartMsg &msg) {
     this->dealCards(server);
 }
 
+void Game::undo_premove(const HandlerArgs &server, UndoPremoveMsg &msg) {
+    if (state.phase != Phase::PLAYING)
+        throw GameError({.error = "you can't do that right now"});
+    // undo all premoves
+    ServerPlayer *player = nullptr;
+    size_t i = 0;
+    for (i = 0; i < state.players.size(); ++i) {
+        if (state.players[i].session == server.session) {
+            player = &state.players[i];
+        }
+    }
+    if (player == nullptr)
+        throw GameError({.error = "unknown player"});
+    if (player->premoves.empty()) return;
+    for (auto &card : player->premoves) {
+        player->cards.push_back(card);
+    }
+    player->premoves.clear();
+    PlayerUpdateMsg res;
+    res.premoves = 0;
+    res.id = i;
+    server.broadcast(res.toString());
+}
+
+void Game::premove(const HandlerArgs &server, PremoveMsg &msg) {
+    if (state.phase != Phase::PLAYING)
+        throw GameError({.error = "you can't premove right now"});
+    if (turn_token == server.session) {
+        // just play the card
+        PlayCardMsg play_msg;
+        play_msg.card = msg.card;
+        this->play_card(server, play_msg);
+    } else {
+        // premove
+        ServerPlayer *player = nullptr;
+        size_t i = 0;
+        for (i = 0; i < state.players.size(); ++i) {
+            if (state.players[i].session == server.session) {
+                player = &state.players[i];
+            }
+        }
+        if (player == nullptr)
+            throw GameError({.error = "unknown player"});
+        if (!std::erase(player->cards, msg.card))
+            throw GameError({.error = "you don't have that card"});
+        player->premoves.push_back(msg.card);
+        PlayerUpdateMsg res;
+        res.premoves = player->premoves.size();
+        res.id = i;
+        server.broadcast(res.toString());
+    }
+}
+
 void Game::update_name(const HandlerArgs &server, UpdateNameMsg &msg) {
     std::string name = trimString(msg.name, MAX_PLAYER_NAME);
     for (uint i = 0; i < state.players.size(); ++i) {
         if (state.players[i].session == server.session) {
             state.players[i].name = std::optional<std::string>(name);
-            auto res = msg;
+            PlayerUpdateMsg res;
+            res.name = name;
             res.id = i;
             server.broadcast(res.toString());
             return;

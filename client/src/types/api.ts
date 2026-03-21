@@ -117,7 +117,7 @@ export interface PlayJajaDingDongMsg {
 export interface PlayerUpdateMsg {
   type: "update_player";
   name?: string;
-  premoved?: boolean;
+  premoves?: number;
   id: number;
 }
 /**
@@ -134,7 +134,7 @@ export interface RestartMsg {
  */
 export interface PremoveMsg {
   type: "premove";
-  card: number;
+  card: Card;
 }
 /**
  * Undo a premove action.
@@ -183,7 +183,7 @@ export interface Player {
   connected: boolean;
   tricks: number;
   sitting_out: boolean;
-  premoved: boolean;
+  premoved: number;
   name?: string;
   card_count: number;
 }
@@ -279,7 +279,7 @@ export interface ServerPlayer {
   session: string;
   tricks: number;
   sitting_out: boolean;
-  premoved: boolean;
+  premoves: Card[];
   connected: boolean;
   name?: string;
   cards: Card[];

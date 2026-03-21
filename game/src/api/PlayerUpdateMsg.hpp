@@ -22,7 +22,7 @@ std::string toString() const;
 void fromString(const std::string &str);
         int64_t id;
         std::optional<std::string> name;
-        std::optional<bool> premoved;
+        std::optional<int64_t> premoves;
         PlayerUpdateMsgType type = static_cast<PlayerUpdateMsgType>(0);
     };
 }

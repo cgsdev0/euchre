@@ -8,5 +8,7 @@ X(order,        OrderMsg)
 X(table_talk,   TableTalkMsg)
 X(update_name,  UpdateNameMsg)
 X(restart,      RestartMsg)
+X(premove,      PremoveMsg)
+X(undo_premove, UndoPremoveMsg)
 
 X(play_jaja_ding_dong, PlayJajaDingDongMsg)

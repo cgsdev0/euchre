@@ -4,6 +4,8 @@
 #include <optional>
 #include <variant>
 
+#include "Card.hpp"
+
 namespace API {
     enum class PremoveMsgType : int;
 }
@@ -20,7 +22,7 @@ namespace API {
     struct PremoveMsg {
 std::string toString() const;
 void fromString(const std::string &str);
-        int64_t card;
+        Card card;
         PremoveMsgType type = static_cast<PremoveMsgType>(0);
     };
 }

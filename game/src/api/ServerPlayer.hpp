@@ -16,7 +16,7 @@ void fromString(const std::string &str);
         std::vector<Card> cards;
         bool connected;
         std::optional<std::string> name;
-        bool premoved;
+        std::vector<Card> premoves;
         std::string session;
         bool sitting_out;
         int64_t tricks;
