@@ -83,7 +83,7 @@ class Game {
         auto played_cards_clean = this->state.played_cards;
         // hide the legality of the cards
         for (auto &card : played_cards_clean) {
-            card.illegal = std::nullopt;
+            card.card.illegal = std::nullopt;
         }
         return API::WelcomeMsg{
             .dealer = this->state.dealer,

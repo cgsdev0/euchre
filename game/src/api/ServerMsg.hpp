@@ -11,6 +11,7 @@
 namespace API {
     enum class ServerMsgType : int;
     enum class Phase : int;
+    struct TaggedCard;
     struct Player;
     struct RichTextMsg;
     enum class Suit : int;
@@ -66,7 +67,7 @@ void fromString(const std::string &str);
         std::optional<std::string> room;
         std::optional<int64_t> dealer;
         std::optional<Phase> phase;
-        std::optional<std::vector<Card>> played_cards;
+        std::optional<std::vector<TaggedCard>> played_cards;
         std::optional<std::vector<Player>> players;
         std::optional<bool> private_session;
         std::optional<std::vector<RichTextMsg>> rich_chat_log;
@@ -82,6 +83,6 @@ void fromString(const std::string &str);
         std::optional<Card> card;
         std::optional<std::string> name;
         std::optional<std::vector<Msg>> msg;
-        std::optional<std::vector<Card>> cards;
+        std::optional<std::vector<TaggedCard>> cards;
     };
 }

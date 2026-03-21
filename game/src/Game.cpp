@@ -383,8 +383,9 @@ void Game::endTrick(const HandlerArgs &server) {
                 state.trick_leader = state.turn;
             }
             state.trick.push_back(card);
-            state.played_cards.push_back(server_copy);
-            last.cards.push_back(card);
+            auto tagged = TaggedCard{.card = server_copy, .id = state.turn};
+            state.played_cards.push_back(tagged);
+            last.cards.push_back(tagged);
             advanceTurn();
         }
 
@@ -426,7 +427,7 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
         state.trick_leader = state.turn;
     }
     state.trick.push_back(msg.card);
-    state.played_cards.push_back(server_copy);
+    state.played_cards.push_back(TaggedCard{.card = server_copy, .id = state.turn});
 
     msg.id = state.turn;
     server.broadcast(msg.toString()); // let everyone know

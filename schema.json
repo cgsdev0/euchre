@@ -199,7 +199,7 @@
         "cards": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Card"
+            "$ref": "#/definitions/TaggedCard"
           }
         }
       },
@@ -359,6 +359,22 @@
       "additionalProperties": false,
       "required": [
         "type",
+        "card"
+      ]
+    },
+    "TaggedCard": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "card": {
+          "$ref": "#/definitions/Card"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "id",
         "card"
       ]
     },
@@ -542,7 +558,7 @@
         "played_cards": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Card"
+            "$ref": "#/definitions/TaggedCard"
           }
         },
         "trump": {
@@ -651,7 +667,7 @@
         "played_cards": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Card"
+            "$ref": "#/definitions/TaggedCard"
           }
         },
         "trump": {

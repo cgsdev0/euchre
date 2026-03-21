@@ -5,7 +5,7 @@
 #include <variant>
 
 namespace API {
-    struct Card;
+    struct TaggedCard;
     enum class LastCardMsgType : int;
 }
 
@@ -21,7 +21,7 @@ namespace API {
     struct LastCardMsg {
 std::string toString() const;
 void fromString(const std::string &str);
-        std::vector<Card> cards;
+        std::vector<TaggedCard> cards;
         LastCardMsgType type = static_cast<LastCardMsgType>(0);
     };
 }

@@ -8,6 +8,7 @@
 
 namespace API {
     enum class Phase : int;
+    struct TaggedCard;
     struct Player;
     struct RichTextMsg;
     enum class Suit : int;
@@ -22,7 +23,7 @@ void fromString(const std::string &str);
         int64_t dealer;
         int64_t id;
         Phase phase;
-        std::vector<Card> played_cards;
+        std::vector<TaggedCard> played_cards;
         std::vector<Player> players;
         bool private_session;
         std::vector<RichTextMsg> rich_chat_log;

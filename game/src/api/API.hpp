@@ -11,6 +11,7 @@
 #include "Card.hpp"
 #include "ClientMsgType.hpp"
 #include "ClientMsg.hpp"
+#include "TaggedCard.hpp"
 #include "Alignment.hpp"
 #include "Modifier.hpp"
 #include "RichTextChunkType.hpp"

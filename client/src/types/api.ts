@@ -165,7 +165,7 @@ export interface Redirect {
 export interface WelcomeMsg {
   type: "welcome";
   id: number;
-  played_cards: Card[];
+  played_cards: TaggedCard[];
   trump: Suit;
   your_cards: Card[];
   trick: Card[];
@@ -177,6 +177,11 @@ export interface WelcomeMsg {
   phase: "lobby" | "vote_round1" | "vote_round2" | "discarding" | "playing" | "ended";
   top_card?: Card;
   private_session: boolean;
+}
+
+export interface TaggedCard {
+  id: number;
+  card: Card;
 }
 
 export interface Player {
@@ -248,7 +253,7 @@ export interface UpdateMsg {
  */
 export interface LastCardMsg {
   type: "last_card";
-  cards: Card[];
+  cards: TaggedCard[];
 }
 /**
  * A player won a trick!
@@ -291,7 +296,7 @@ export interface GameState {
   trick_leader: number;
   caller: number;
   kitty?: Card[];
-  played_cards: Card[];
+  played_cards: TaggedCard[];
   trump: Suit;
   trick: Card[];
   scores: number[];

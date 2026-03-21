@@ -13,6 +13,9 @@ void to_json(json & j, const Card & x);
 void from_json(const json & j, ClientMsg & x);
 void to_json(json & j, const ClientMsg & x);
 
+void from_json(const json & j, TaggedCard & x);
+void to_json(json & j, const TaggedCard & x);
+
 void from_json(const json & j, RichTextChunk & x);
 void to_json(json & j, const RichTextChunk & x);
 
@@ -275,6 +278,17 @@ namespace API {
         }
     }
 
+    inline void from_json(const json & j, TaggedCard& x) {
+        x.card = j.at("card").get<Card>();
+        x.id = j.at("id").get<int64_t>();
+    }
+
+    inline void to_json(json & j, const TaggedCard & x) {
+        j = json::object();
+        j["card"] = x.card;
+        j["id"] = x.id;
+    }
+
     inline void from_json(const json & j, RichTextChunk& x) {
         x.alignment = get_stack_optional<Alignment>(j, "alignment");
         x.color = get_stack_optional<std::string>(j, "color");
@@ -337,7 +351,7 @@ namespace API {
         x.room = get_stack_optional<std::string>(j, "room");
         x.dealer = get_stack_optional<int64_t>(j, "dealer");
         x.phase = get_stack_optional<Phase>(j, "phase");
-        x.played_cards = get_stack_optional<std::vector<Card>>(j, "played_cards");
+        x.played_cards = get_stack_optional<std::vector<TaggedCard>>(j, "played_cards");
         x.players = get_stack_optional<std::vector<Player>>(j, "players");
         x.private_session = get_stack_optional<bool>(j, "private_session");
         x.rich_chat_log = get_stack_optional<std::vector<RichTextMsg>>(j, "rich_chat_log");
@@ -353,7 +367,7 @@ namespace API {
         x.card = get_stack_optional<Card>(j, "card");
         x.name = get_stack_optional<std::string>(j, "name");
         x.msg = get_stack_optional<std::vector<Msg>>(j, "msg");
-        x.cards = get_stack_optional<std::vector<Card>>(j, "cards");
+        x.cards = get_stack_optional<std::vector<TaggedCard>>(j, "cards");
     }
 
     inline void to_json(json & j, const ServerMsg & x) {
@@ -490,7 +504,7 @@ namespace API {
     }
 
     inline void from_json(const json & j, LastCardMsg& x) {
-        x.cards = j.at("cards").get<std::vector<Card>>();
+        x.cards = j.at("cards").get<std::vector<TaggedCard>>();
         x.type = j.at("type").get<LastCardMsgType>();
     }
 
@@ -635,7 +649,7 @@ namespace API {
         x.dealer = j.at("dealer").get<int64_t>();
         x.kitty = get_stack_optional<std::vector<Card>>(j, "kitty");
         x.phase = j.at("phase").get<Phase>();
-        x.played_cards = j.at("played_cards").get<std::vector<Card>>();
+        x.played_cards = j.at("played_cards").get<std::vector<TaggedCard>>();
         x.players = j.at("players").get<std::vector<ServerPlayer>>();
         x.private_session = j.at("private_session").get<bool>();
         x.rich_chat_log = j.at("rich_chat_log").get<std::vector<RichTextMsg>>();
@@ -688,7 +702,7 @@ namespace API {
         x.dealer = j.at("dealer").get<int64_t>();
         x.id = j.at("id").get<int64_t>();
         x.phase = j.at("phase").get<Phase>();
-        x.played_cards = j.at("played_cards").get<std::vector<Card>>();
+        x.played_cards = j.at("played_cards").get<std::vector<TaggedCard>>();
         x.players = j.at("players").get<std::vector<Player>>();
         x.private_session = j.at("private_session").get<bool>();
         x.rich_chat_log = j.at("rich_chat_log").get<std::vector<RichTextMsg>>();
@@ -1608,6 +1622,15 @@ to_json(j, *this);
 return j.dump();
 }
 void TableTalkMsg::fromString(const std::string &s) {
+auto j = json::parse(s);
+from_json(j, *this);
+}
+std::string TaggedCard::toString() const {
+json j;
+to_json(j, *this);
+return j.dump();
+}
+void TaggedCard::fromString(const std::string &s) {
 auto j = json::parse(s);
 from_json(j, *this);
 }
