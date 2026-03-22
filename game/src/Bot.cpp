@@ -164,7 +164,10 @@ namespace Bot {
     }
 
     static bool is_team_winning_hand(BotDecisionState &state) {
-        return false; // TODO
+        auto it = std::ranges::max_element(state.stack, {}, [&](const TaggedCard &c) {
+            return score_card(c.card, state.trump);
+        });
+        return played_by_partner(state, *it);
     }
 
     Card playCard(BotDecisionState state) {
@@ -182,7 +185,14 @@ namespace Bot {
             std::vector<Card> legal_cards_vec(legal_cards, state.hand.end());
 
             if (!legal_cards_vec.empty()) {
-                if (is_team_winning_hand(state)) {
+                if (is_team_winning_hand(state)) { // toss lowest card - partner for 1
+                    auto lowest_legal_card = std::ranges::min_element(legal_cards_vec, {}, [&](const Card &c) {
+                        return score_card(c, state.trump);
+                    });
+                    assert(lowest_legal_card != legal_cards_vec.end());
+                    return *lowest_legal_card;
+                } else {
+                    // TODO make a smarter decision about _which_ card to play
                 }
             } else {
             }
