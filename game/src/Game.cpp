@@ -137,7 +137,7 @@ void Game::handleMessage(const HandlerArgs &server, const std::string_view messa
 
     const auto type = data["type"].get<std::string>();
 
-#if 0 // BOT BRANCH
+#if 1 // BOT BRANCH
 #define X(name, Msg)                                \
     if (type == #name) {                            \
         Msg msg;                                    \
@@ -683,12 +683,12 @@ void Game::fillWithBots(const HandlerArgs &server) {
 }
 
 void Game::handleBotUpdates(const HandlerArgs &server) {
-    while (state.players[state.turn].bot_enum == BotName::BOT_NONE) {
+    while (state.players[state.turn].bot_enum != BotName::BOT_NONE) {
         auto &player = state.players[state.turn];
 
         BotDecisionState decision_state = {
             .id = (int)state.turn,
-            .name  = (BotName)player.bot_enum,
+            .name = (BotName)player.bot_enum,
             .phase = state.phase,
             .trump = state.trump,
             .hand = player.cards,
@@ -709,7 +709,7 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
 
         case Phase::LOBBY:
         case Phase::ENDED: {
-            assert(false); // WARN bots probably don't need to do anything here...
+            // assert(false); // WARN bots probably don't need to do anything here...
             break;
         }
 
