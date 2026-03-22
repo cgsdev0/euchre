@@ -712,8 +712,7 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
 
         case Phase::LOBBY:
         case Phase::ENDED: {
-            // assert(false); // WARN bots probably don't need to do anything here...
-            break;
+            return;
         }
 
         case Phase::PLAYING: {

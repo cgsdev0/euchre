@@ -1,6 +1,6 @@
 CXX=g++
 CPPFLAGS=-IuWebSockets/src -IuWebSockets/uSockets/src -Iincludes
-CXXFLAGS=-std=c++20 -W -g
+CXXFLAGS=-g3 -std=c++20 -W
 LDFLAGS=-lz -lpthread -lssl -lcrypto
 TARGET=GameServer
 
