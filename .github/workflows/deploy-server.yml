@@ -1,7 +1,8 @@
-name: Deploy Random
+name: Deploy Server
 
 on:
   workflow_dispatch:
+    {}
 
 defaults:
   run:
@@ -9,7 +10,7 @@ defaults:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}-random
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build:
@@ -31,18 +32,6 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
       with:
-        context: random
+        context: game
         push: true
         tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-    # Deploy it
-    - name: Install SSH key
-      uses: shimataro/ssh-key-action@v2
-      with:
-        key: ${{ secrets.DO_SSH_KEY }}
-        known_hosts: ${{ secrets.DO_KNOWN_HOSTS }}
-
-    - name: copy the random server
-      run: "scp -P 22222 random/docker-compose.yml root@${{ secrets.DO_SERVER_IP }}:/root/random"
-    - name: start the new server
-      run: "ssh -p 22222 root@${{ secrets.DO_SERVER_IP }} bash -c \"'docker-compose -f random/docker-compose.yml pull && docker-compose -f random/docker-compose.yml up -d'\""
