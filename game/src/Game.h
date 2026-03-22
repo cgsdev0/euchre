@@ -71,6 +71,9 @@ class Game {
 #include "Handlers.def"
 #undef X
 
+    void fillWithBots(const HandlerArgs &server);
+    void handleBotUpdates(const HandlerArgs &server);
+
     int connectedPlayerCount();
 
     API::WelcomeMsg toWelcomeMsg(const std::string &session) {
