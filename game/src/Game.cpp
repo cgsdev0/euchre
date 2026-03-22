@@ -5,6 +5,8 @@
 
 #define STRING_UTILS_IMPLEMENTATION
 #include "StringUtils.h"
+#define UTILS_IMPLEMENTATION
+#include "Utils.hpp"
 
 #include "Bot.hpp"
 
@@ -262,10 +264,6 @@ namespace API {
     }
 } // namespace API
 
-int color(const Suit suit) {
-    return suit == Suit::DIAMONDS || suit == Suit::HEARTS ? 0 : 1;
-}
-
 Suit effectiveSuit(const Card &card, const Suit trump) {
     if (card.rank != Rank::JACK)
         return card.suit;
@@ -319,35 +317,6 @@ void Game::endHand(const HandlerArgs &server) {
         advanceTurn();
         dealCards(server);
     }
-}
-
-static bool isLeft(const Card &card, Suit trump) {
-    bool isBauer = card.rank == Rank::JACK && color(trump) == color(card.suit);
-    return isBauer && trump != card.suit;
-}
-
-static bool isRight(const Card &card, Suit trump) {
-    return card.rank == Rank::JACK && trump == card.suit;
-}
-
-static bool isTrumpAce(const Card &card, Suit trump) {
-    return card.rank == Rank::ACE && trump == card.suit;
-}
-
-static int scoreCard(const Card &card, Suit trump, Suit led) {
-    bool isBauer = card.rank == Rank::JACK && color(trump) == color(card.suit);
-    if (isBauer)
-        return trump == card.suit ? 1000 : 999; // right : left
-
-    if (card.suit == trump) {
-        return (((int)card.rank) + 1) * 10; // trump gets super-charged
-    }
-
-    if (card.suit == led) {
-        return ((int)card.rank) + 1; // in-order
-    }
-
-    return 0; // actually worthless
 }
 
 void Game::endTrick(const HandlerArgs &server) {

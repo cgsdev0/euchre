@@ -165,7 +165,7 @@ TEST_F(DiscardTest, DiscardSingletonNotLowestRank) {
     EXPECT_EQ(result.suit, Suit::DIAMONDS);
 }
 
-TEST_F(PlayCardTest, LeadReturnsLowestScoringCard) {
+TEST_F(PlayCardTest, LeadReturnsHighestScoringCard) {
     auto hand = c({card(Rank::NINE, Suit::HEARTS),
                    card(Rank::TEN, Suit::HEARTS),
                    card(Rank::KING, Suit::HEARTS),
@@ -175,7 +175,7 @@ TEST_F(PlayCardTest, LeadReturnsLowestScoringCard) {
 
     Card result = playCard(state);
     EXPECT_EQ(result.suit, Suit::HEARTS);
-    EXPECT_EQ(result.rank, Rank::NINE);
+    EXPECT_EQ(result.rank, Rank::ACE);
 }
 
 TEST_F(PlayCardTest, LeadWithMixedSuitReturnsLowestScoring) {
@@ -187,8 +187,8 @@ TEST_F(PlayCardTest, LeadWithMixedSuitReturnsLowestScoring) {
     auto state = makeState(0, Phase::PLAYING, Suit::HEARTS, hand, {});
 
     Card result = playCard(state);
-    EXPECT_EQ(result.suit, Suit::SPADES);
-    EXPECT_EQ(result.rank, Rank::NINE);
+    EXPECT_EQ(result.suit, Suit::DIAMONDS);
+    EXPECT_EQ(result.rank, Rank::ACE);
 }
 
 TEST_F(PlayCardTest, FollowCannotWinTakesLowest) {
