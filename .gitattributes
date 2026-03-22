@@ -1,2 +1,3 @@
 game/uWebSockets/** linguist-vendored
 game/includes/** linguist-vendored
+game/googletest/** linguist-vendored

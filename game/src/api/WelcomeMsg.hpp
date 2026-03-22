@@ -34,5 +34,6 @@ void fromString(const std::string &str);
         int64_t turn;
         WelcomeMsgType type = static_cast<WelcomeMsgType>(0);
         std::vector<Card> your_cards;
+        std::vector<Card> your_premoves;
     };
 }

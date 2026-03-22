@@ -17,7 +17,8 @@ export type ClientMsg =
   | PlayerUpdateMsg
   | RestartMsg
   | PremoveMsg
-  | UndoPremoveMsg;
+  | UndoPremoveMsg
+  | LayDownMsg;
 
 export type Suit = "clubs" | "diamonds" | "hearts" | "spades";
 
@@ -38,7 +39,8 @@ export type ServerMsg =
   | ReconnectMsg
   | RichTextMsg
   | UpdateMsg
-  | LastCardMsg;
+  | LastCardMsg
+  | LayDownMsg;
 
 export interface Schema {
   [k: string]: unknown;
@@ -143,6 +145,15 @@ export interface PremoveMsg {
 export interface UndoPremoveMsg {
   type: "undo_premove";
 }
+/**
+ * End the hand with your ridiculous cards.
+ *
+ */
+export interface LayDownMsg {
+  type: "lay_down";
+  id?: number;
+  cards?: Card[];
+}
 
 export interface GameError {
   type: "error";
@@ -168,6 +179,7 @@ export interface WelcomeMsg {
   played_cards: TaggedCard[];
   trump: Suit;
   your_cards: Card[];
+  your_premoves: Card[];
   trick: Card[];
   scores: number[];
   players: Player[];

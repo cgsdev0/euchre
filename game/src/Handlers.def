@@ -10,5 +10,6 @@ X(update_name,  UpdateNameMsg)
 X(restart,      RestartMsg)
 X(premove,      PremoveMsg)
 X(undo_premove, UndoPremoveMsg)
+X(lay_down,     LayDownMsg)
 
 X(play_jaja_ding_dong, PlayJajaDingDongMsg)

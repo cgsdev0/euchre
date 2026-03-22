@@ -4,6 +4,7 @@ extends Node3D
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	Client.play_card.connect(on_play_card)
+	Client.last_card.connect(on_last_card)
 	Client.deal.connect(on_deal)
 
 func on_deal():
@@ -25,7 +26,15 @@ func on_deal():
 	await get_tree().create_timer(0.2).timeout
 	card_count = 5
 	Client.resume.emit()
-	
+
+func on_last_card(cards):
+	for i in cards.size():
+		if cards[i].id == get_index():
+			$AnimationPlayer2.play("play_card")
+			if i == 0:
+				await $AnimationPlayer2.animation_finished
+				Client.resume.emit()
+			
 func on_play_card(i, card):
 	if i == get_index():
 		$AnimationPlayer2.play("play_card")

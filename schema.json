@@ -35,6 +35,9 @@
         },
         {
           "$ref": "#/definitions/UndoPremoveMsg"
+        },
+        {
+          "$ref": "#/definitions/LayDownMsg"
         }
       ]
     },
@@ -91,6 +94,9 @@
         },
         {
           "$ref": "#/definitions/LastCardMsg"
+        },
+        {
+          "$ref": "#/definitions/LayDownMsg"
         }
       ]
     },
@@ -207,6 +213,32 @@
       "required": [
         "type",
         "cards"
+      ]
+    },
+    "LayDownMsg": {
+      "description": "End the hand with your ridiculous cards.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "default": "lay_down",
+          "enum": [
+            "lay_down"
+          ]
+        },
+        "id": {
+          "type": "integer"
+        },
+        "cards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Card"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
       ]
     },
     "PlayCardMsg": {
@@ -683,6 +715,12 @@
             "$ref": "#/definitions/Card"
           }
         },
+        "your_premoves": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Card"
+          }
+        },
         "trick": {
           "type": "array",
           "items": {
@@ -737,6 +775,7 @@
         "rich_chat_log",
         "played_cards",
         "your_cards",
+        "your_premoves",
         "id",
         "trump",
         "trick",

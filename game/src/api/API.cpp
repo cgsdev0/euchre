@@ -13,11 +13,14 @@ void to_json(json & j, const Card & x);
 void from_json(const json & j, ClientMsg & x);
 void to_json(json & j, const ClientMsg & x);
 
-void from_json(const json & j, TaggedCard & x);
-void to_json(json & j, const TaggedCard & x);
+void from_json(const json & j, CardElement & x);
+void to_json(json & j, const CardElement & x);
 
 void from_json(const json & j, RichTextChunk & x);
 void to_json(json & j, const RichTextChunk & x);
+
+void from_json(const json & j, TaggedCard & x);
+void to_json(json & j, const TaggedCard & x);
 
 void from_json(const json & j, Player & x);
 void to_json(json & j, const Player & x);
@@ -42,6 +45,9 @@ void to_json(json & j, const OrderMsg & x);
 
 void from_json(const json & j, LastCardMsg & x);
 void to_json(json & j, const LastCardMsg & x);
+
+void from_json(const json & j, LayDownMsg & x);
+void to_json(json & j, const LayDownMsg & x);
 
 void from_json(const json & j, PlayCardMsg & x);
 void to_json(json & j, const PlayCardMsg & x);
@@ -151,6 +157,9 @@ void to_json(json & j, const OrderMsgType & x);
 void from_json(const json & j, LastCardMsgType & x);
 void to_json(json & j, const LastCardMsgType & x);
 
+void from_json(const json & j, LayDownMsgType & x);
+void to_json(json & j, const LayDownMsgType & x);
+
 void from_json(const json & j, PlayCardMsgType & x);
 void to_json(json & j, const PlayCardMsgType & x);
 
@@ -247,6 +256,7 @@ namespace API {
         x.table_talk = get_stack_optional<int64_t>(j, "table_talk");
         x.name = get_stack_optional<std::string>(j, "name");
         x.premoves = get_stack_optional<int64_t>(j, "premoves");
+        x.cards = get_stack_optional<std::vector<Card>>(j, "cards");
     }
 
     inline void to_json(json & j, const ClientMsg & x) {
@@ -276,17 +286,36 @@ namespace API {
         if (x.premoves) {
             j["premoves"] = x.premoves;
         }
+        if (x.cards) {
+            j["cards"] = x.cards;
+        }
     }
 
-    inline void from_json(const json & j, TaggedCard& x) {
-        x.card = j.at("card").get<Card>();
-        x.id = j.at("id").get<int64_t>();
+    inline void from_json(const json & j, CardElement& x) {
+        x.card = get_stack_optional<Card>(j, "card");
+        x.id = get_stack_optional<int64_t>(j, "id");
+        x.illegal = get_stack_optional<bool>(j, "illegal");
+        x.rank = get_stack_optional<Rank>(j, "rank");
+        x.suit = get_stack_optional<Suit>(j, "suit");
     }
 
-    inline void to_json(json & j, const TaggedCard & x) {
+    inline void to_json(json & j, const CardElement & x) {
         j = json::object();
-        j["card"] = x.card;
-        j["id"] = x.id;
+        if (x.card) {
+            j["card"] = x.card;
+        }
+        if (x.id) {
+            j["id"] = x.id;
+        }
+        if (x.illegal) {
+            j["illegal"] = x.illegal;
+        }
+        if (x.rank) {
+            j["rank"] = x.rank;
+        }
+        if (x.suit) {
+            j["suit"] = x.suit;
+        }
     }
 
     inline void from_json(const json & j, RichTextChunk& x) {
@@ -310,6 +339,17 @@ namespace API {
         }
         j["text"] = x.text;
         j["type"] = x.type;
+    }
+
+    inline void from_json(const json & j, TaggedCard& x) {
+        x.card = j.at("card").get<Card>();
+        x.id = j.at("id").get<int64_t>();
+    }
+
+    inline void to_json(json & j, const TaggedCard & x) {
+        j = json::object();
+        j["card"] = x.card;
+        j["id"] = x.id;
     }
 
     inline void from_json(const json & j, Player& x) {
@@ -361,13 +401,14 @@ namespace API {
         x.trump = get_stack_optional<Suit>(j, "trump");
         x.turn = get_stack_optional<int64_t>(j, "turn");
         x.your_cards = get_stack_optional<std::vector<Card>>(j, "your_cards");
+        x.your_premoves = get_stack_optional<std::vector<Card>>(j, "your_premoves");
         x.alone = get_stack_optional<bool>(j, "alone");
         x.suit = get_stack_optional<Suit>(j, "suit");
         x.table_talk = get_stack_optional<int64_t>(j, "table_talk");
         x.card = get_stack_optional<Card>(j, "card");
         x.name = get_stack_optional<std::string>(j, "name");
         x.msg = get_stack_optional<std::vector<Msg>>(j, "msg");
-        x.cards = get_stack_optional<std::vector<TaggedCard>>(j, "cards");
+        x.cards = get_stack_optional<std::vector<CardElement>>(j, "cards");
     }
 
     inline void to_json(json & j, const ServerMsg & x) {
@@ -417,6 +458,9 @@ namespace API {
         }
         if (x.your_cards) {
             j["your_cards"] = x.your_cards;
+        }
+        if (x.your_premoves) {
+            j["your_premoves"] = x.your_premoves;
         }
         if (x.alone) {
             j["alone"] = x.alone;
@@ -511,6 +555,23 @@ namespace API {
     inline void to_json(json & j, const LastCardMsg & x) {
         j = json::object();
         j["cards"] = x.cards;
+        j["type"] = x.type;
+    }
+
+    inline void from_json(const json & j, LayDownMsg& x) {
+        x.cards = get_stack_optional<std::vector<Card>>(j, "cards");
+        x.id = get_stack_optional<int64_t>(j, "id");
+        x.type = j.at("type").get<LayDownMsgType>();
+    }
+
+    inline void to_json(json & j, const LayDownMsg & x) {
+        j = json::object();
+        if (x.cards) {
+            j["cards"] = x.cards;
+        }
+        if (x.id) {
+            j["id"] = x.id;
+        }
         j["type"] = x.type;
     }
 
@@ -715,6 +776,7 @@ namespace API {
         x.turn = j.at("turn").get<int64_t>();
         x.type = j.at("type").get<WelcomeMsgType>();
         x.your_cards = j.at("your_cards").get<std::vector<Card>>();
+        x.your_premoves = j.at("your_premoves").get<std::vector<Card>>();
     }
 
     inline void to_json(json & j, const WelcomeMsg & x) {
@@ -735,6 +797,7 @@ namespace API {
         j["turn"] = x.turn;
         j["type"] = x.type;
         j["your_cards"] = x.your_cards;
+        j["your_premoves"] = x.your_premoves;
     }
 
     inline void from_json(const json & j, UndoPremoveMsg& x) {
@@ -899,6 +962,7 @@ namespace API {
     inline void from_json(const json & j, ClientMsgType & x) {
         if (j == "cookie") x = ClientMsgType::COOKIE;
         else if (j == "discard") x = ClientMsgType::DISCARD;
+        else if (j == "lay_down") x = ClientMsgType::LAY_DOWN;
         else if (j == "order") x = ClientMsgType::ORDER;
         else if (j == "pass") x = ClientMsgType::PASS;
         else if (j == "play_card") x = ClientMsgType::PLAY_CARD;
@@ -915,6 +979,7 @@ namespace API {
         switch (x) {
             case ClientMsgType::COOKIE: j = "cookie"; break;
             case ClientMsgType::DISCARD: j = "discard"; break;
+            case ClientMsgType::LAY_DOWN: j = "lay_down"; break;
             case ClientMsgType::ORDER: j = "order"; break;
             case ClientMsgType::PASS: j = "pass"; break;
             case ClientMsgType::PLAY_CARD: j = "play_card"; break;
@@ -1019,6 +1084,7 @@ namespace API {
             {"error", ServerMsgType::ERROR},
             {"join", ServerMsgType::JOIN},
             {"last_card", ServerMsgType::LAST_CARD},
+            {"lay_down", ServerMsgType::LAY_DOWN},
             {"order", ServerMsgType::ORDER},
             {"pass", ServerMsgType::PASS},
             {"play_card", ServerMsgType::PLAY_CARD},
@@ -1045,6 +1111,7 @@ namespace API {
             case ServerMsgType::ERROR: j = "error"; break;
             case ServerMsgType::JOIN: j = "join"; break;
             case ServerMsgType::LAST_CARD: j = "last_card"; break;
+            case ServerMsgType::LAY_DOWN: j = "lay_down"; break;
             case ServerMsgType::ORDER: j = "order"; break;
             case ServerMsgType::PASS: j = "pass"; break;
             case ServerMsgType::PLAY_CARD: j = "play_card"; break;
@@ -1115,6 +1182,18 @@ namespace API {
     inline void to_json(json & j, const LastCardMsgType & x) {
         switch (x) {
             case LastCardMsgType::LAST_CARD: j = "last_card"; break;
+            default: throw std::runtime_error("This should not happen");
+        }
+    }
+
+    inline void from_json(const json & j, LayDownMsgType & x) {
+        if (j == "lay_down") x = LayDownMsgType::LAY_DOWN;
+        else { throw std::runtime_error("Input JSON does not conform to schema!"); }
+    }
+
+    inline void to_json(json & j, const LayDownMsgType & x) {
+        switch (x) {
+            case LayDownMsgType::LAY_DOWN: j = "lay_down"; break;
             default: throw std::runtime_error("This should not happen");
         }
     }
@@ -1393,6 +1472,15 @@ namespace nlohmann {
     }
 }
 namespace API {
+std::string CardElement::toString() const {
+json j;
+to_json(j, *this);
+return j.dump();
+}
+void CardElement::fromString(const std::string &s) {
+auto j = json::parse(s);
+from_json(j, *this);
+}
 std::string Card::toString() const {
 json j;
 to_json(j, *this);
@@ -1480,6 +1568,15 @@ to_json(j, *this);
 return j.dump();
 }
 void LastCardMsg::fromString(const std::string &s) {
+auto j = json::parse(s);
+from_json(j, *this);
+}
+std::string LayDownMsg::toString() const {
+json j;
+to_json(j, *this);
+return j.dump();
+}
+void LayDownMsg::fromString(const std::string &s) {
 auto j = json::parse(s);
 from_json(j, *this);
 }

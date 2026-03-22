@@ -83,6 +83,7 @@ class Game {
         }
         auto id = this->getPlayerId(session);
         auto your_cards = this->state.players[id].cards;
+        auto your_premoves = this->state.players[id].premoves;
         auto played_cards_clean = this->state.played_cards;
         // hide the legality of the cards
         for (auto &card : played_cards_clean) {
@@ -102,6 +103,7 @@ class Game {
             .trump = this->state.trump,
             .turn = this->state.turn,
             .your_cards = your_cards,
+            .your_premoves = your_premoves,
         };
     }
 

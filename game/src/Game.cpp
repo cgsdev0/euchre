@@ -1,12 +1,10 @@
-#include <algorithm>
-#include <iostream>
-#include <unordered_map>
-
-#include "Consts.h"
 #include "Game.h"
-#include "Loop.h"
-#include "StringUtils.h"
+#include "Consts.h"
+#include <algorithm>
 #include <json.hpp>
+
+#define STRING_UTILS_IMPLEMENTATION
+#include "StringUtils.h"
 
 #include "Bot.hpp"
 
@@ -196,6 +194,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
         server.broadcast(msg.toString());
         if (sitting_out == state.dealer) {
             // guess we can skip discard here
+            state.played_cards.clear();
             state.phase = Phase::PLAYING;
             state.trump = state.top_card->suit;
             state.turn = state.dealer;
@@ -220,6 +219,7 @@ void Game::order(const HandlerArgs &server, OrderMsg &msg) {
         state.caller = state.turn;
         msg.id = state.turn;
         server.broadcast(msg.toString());
+        state.played_cards.clear();
         state.phase = Phase::PLAYING;
         state.turn = state.dealer;
         advanceTurn();
@@ -275,7 +275,6 @@ void Game::endGame(const HandlerArgs &server, int winner) {
 
 void Game::endHand(const HandlerArgs &server) {
     // TODO: think about what state needs to get reset here
-    state.played_cards.clear();
     WinHandMsg msg;
     int t0 = state.players[0].tricks + state.players[2].tricks;
     int t1 = state.players[1].tricks + state.players[3].tricks;
@@ -293,7 +292,8 @@ void Game::endHand(const HandlerArgs &server) {
     }
     msg.id = winner;
     state.scores[winner] += winnings;
-    turn_token = state.players[state.turn].session;
+    // why was this here?
+    // turn_token = state.players[state.turn].session;
     server.broadcast(msg.toString());
     for (auto &player : state.players) {
         player.tricks = 0;
@@ -309,6 +309,19 @@ void Game::endHand(const HandlerArgs &server) {
         advanceTurn();
         dealCards(server);
     }
+}
+
+static bool isLeft(const Card &card, Suit trump) {
+    bool isBauer = card.rank == Rank::JACK && color(trump) == color(card.suit);
+    return isBauer && trump != card.suit;
+}
+
+static bool isRight(const Card &card, Suit trump) {
+    return card.rank == Rank::JACK && trump == card.suit;
+}
+
+static bool isTrumpAce(const Card &card, Suit trump) {
+    return card.rank == Rank::ACE && trump == card.suit;
 }
 
 static int scoreCard(const Card &card, Suit trump, Suit led) {
@@ -402,6 +415,70 @@ void Game::endTrick(const HandlerArgs &server) {
     }
 }
 
+void Game::lay_down(const HandlerArgs &server, LayDownMsg &msg) {
+    if (state.phase != Phase::PLAYING)
+        throw GameError({.error = "not just yet"});
+    if (turn_token != server.session)
+        throw GameError({.error = "it's not your turn"});
+    size_t total_cards = state.players[state.turn].cards.size();
+    if (total_cards != 5)
+        throw GameError({.error = "you gotta do that at the beginnin"});
+    size_t active_players = 0;
+    for (const auto &p : state.players) {
+        if (!p.sitting_out) active_players++;
+    }
+    size_t cards_played = state.trick.size();
+    bool ez_mode = (cards_played == 0 || cards_played == active_players - 1);
+
+    bool hasLeft = false;
+    bool hasRight = false;
+    bool hasAce = false;
+    for (const auto &card : state.players[state.turn].cards) {
+        if (effectiveSuit(card, state.trump) != state.trump) {
+            throw GameError({.error = "not enough trump!"});
+        }
+        if (isRight(card, state.trump)) hasRight = true;
+        if (isLeft(card, state.trump)) hasLeft = true;
+        if (isTrumpAce(card, state.trump)) hasAce = true;
+    }
+
+    if (!hasRight || !hasLeft) {
+        throw GameError({.error = "need both bauers"});
+    }
+    if (!hasAce && !ez_mode) {
+        throw GameError({.error = "need the ace, no ez mode for u"});
+    }
+
+    msg.cards = state.players[state.turn].cards;
+    server.broadcast(msg.toString());
+
+    WinHandMsg msg2;
+    deck.shuffle();
+    for (auto &player : state.players) {
+        player.tricks = 0;
+        player.sitting_out = false;
+    }
+    int winner = state.turn % 2;
+    int partner = (state.turn + 2) % 4;
+    int winnings = 2;
+    if (state.players[partner].sitting_out) {
+        winnings = 4;
+    }
+    msg2.id = winner;
+    server.broadcast(msg2.toString());
+    state.scores[winner] += winnings;
+    if (state.scores[winner] >= 10) {
+        endGame(server, winner);
+    } else {
+        state.phase = Phase::VOTE_ROUND1;
+        state.dealer = (state.dealer + 1) % MAX_PLAYERS;
+        state.turn = state.dealer;
+        advanceTurn();
+        dealCards(server);
+    }
+    sendUpdate(server, state);
+}
+
 void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
     if (state.phase != Phase::PLAYING)
         throw GameError({.error = "not just yet"});
@@ -464,6 +541,7 @@ void Game::discard(const HandlerArgs &server, DiscardMsg &msg) {
     ServerDiscardMsg new_msg;
     new_msg.id = state.turn;
     server.broadcast(new_msg.toString());
+    state.played_cards.clear();
     state.phase = Phase::PLAYING;
     state.turn = state.dealer;
     advanceTurn();
