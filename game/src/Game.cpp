@@ -677,6 +677,7 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
         auto &player = state.players[state.turn];
 
         BotDecisionState decision_state = {
+            .id = state.turn,
             .name  = (BotName)player.bot_enum,
             .phase = state.phase,
             .trump = state.trump,
