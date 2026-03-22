@@ -137,6 +137,7 @@ void Game::handleMessage(const HandlerArgs &server, const std::string_view messa
 
     const auto type = data["type"].get<std::string>();
 
+#if 0 // BOT BRANCH
 #define X(name, Msg)                                \
     if (type == #name) {                            \
         Msg msg;                                    \
@@ -146,6 +147,16 @@ void Game::handleMessage(const HandlerArgs &server, const std::string_view messa
         handleBotUpdates(server);                   \
         return;                                     \
     }
+#else
+#define X(name, Msg)                                \
+    if (type == #name) {                            \
+        Msg msg;                                    \
+        msg.fromString(std::string(message));       \
+        this->name(server, msg);                    \
+        updated = std::chrono::system_clock::now(); \
+        return;                                     \
+    }
+#endif
 #include "Handlers.def"
 #undef X
 
