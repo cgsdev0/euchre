@@ -121,7 +121,8 @@ const startBot = (room: string, i: number) => {
           break;
         case "welcome":
           state = { ...state, ...data };
-          if (state.phase === "lobby" && state.players.length === 4) {
+          if (state.phase === "lobby" && (state.players.length === 4 || process.env.BOT_TESTING)) {
+            console.log("restart!");
             ws.send(JSON.stringify({ type: "restart" }));
           }
           log(state);
