@@ -15,7 +15,6 @@ class GameTest : public testing::Test {
     HandlerArgs server = {
         .broadcast = [this](const std::string &msg) { this->broadcasts.push_back(msg); },
         .dm = [](const std::string &who, const std::string &msg) {},
-        .send = [](const std::string &msg) {},
         .session = session};
 
     std::string log_broadcasts() {

@@ -19,7 +19,6 @@ class GameCoordinator;
 struct HandlerArgs {
     SendFunc broadcast;
     DmFunc dm;
-    SendFunc send;
     std::string &session;
 };
 

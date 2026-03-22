@@ -172,8 +172,6 @@ uWS::App::WebSocketBehavior<PerSocketData> makeWebsocketBehavior(uWS::App *app, 
                                 {
                                     .broadcast = [app, room](auto s) { app->publish(room, s, uWS::OpCode::TEXT); },
                                     .dm = [app, room](const std::string &session, auto s) { app->publish(room + "-dm-" + session, s, uWS::OpCode::TEXT); },
-                                    .send =
-                                        [ws](auto s) { ws->send(s, uWS::OpCode::TEXT); },
                                     .session = session,
                                 },
                                 message);
