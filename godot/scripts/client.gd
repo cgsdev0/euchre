@@ -130,12 +130,12 @@ func apply_queued_action():
 			cooling_down = true
 			play_card.emit(action.id, action.card)
 			state.players[action.id].card_count -= 1
-			state.trick.push_back(action.card)
-			state.played_cards.push_back(action.card)
+			state.trick.push_back({"card": action.card, "id": action.id})
+			state.played_cards.push_back({"card": action.card, "id": action.id})
 		"last_card":
 			cooling_down = true
 			last_card.emit(action.cards)
-			state.trick = action.cards.map(func(c): return c.card)
+			state.trick = action.cards
 	
 func _process(_delta):
 	apply_queued_action()

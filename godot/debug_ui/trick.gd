@@ -21,5 +21,5 @@ func _process(delta: float) -> void:
 			child.hide()
 			continue
 		child.show()
-		var card = Client.state.trick[i]
+		var card = Client.state.trick[i].card
 		child.texture = cache[card.rank + "_" + card.suit]
