@@ -6,6 +6,7 @@
 
 #include "api/Card.hpp"
 #include "api/GameState.hpp"
+#include "api/TaggedCard.hpp"
 
 using namespace API;
 
@@ -39,11 +40,12 @@ namespace Bot {
     };
 
     struct BotDecisionState {
+        int id;
         BotName name;
         Phase phase;
         Suit trump;
         std::vector<API::Card> hand;        // bot's hand
-        std::vector<API::Card> stack;       // stack of cards played
+        std::vector<TaggedCard> stack;       // stack of cards played
         std::optional<API::Card> top_card;  // top card (for ordering up trump)
     };
 }
