@@ -678,7 +678,7 @@ void Game::fillWithBots(const HandlerArgs &server) {
         player.connected = false;
         player.session = "bot:" + std::to_string(curr);
         player.name = std::optional("Bot " + std::to_string(curr));
-        player.bot_enum = BotName::BOT_NONE;
+        player.bot_enum = BotName::BOT_BILL;
     }
 }
 
