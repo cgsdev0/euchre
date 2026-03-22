@@ -13,7 +13,13 @@ func on_welcome():
 	if get_index() == Client.state.id:
 		get_viewport().get_camera_3d().global_transform = marker.global_transform
 		get_viewport().get_camera_3d().global_basis = marker.global_basis
-
+		for i in Client.state.your_cards.size():
+			var c = Client.state.your_cards[i]
+			var card = $Cards.get_child(i)
+			card.suit = c.suit
+			card.rank = c.rank
+		card_count = Client.state.your_cards.size()
+	# card_count = Client.state.players[]
 func on_deal():
 	if get_index() == Client.state.id:
 		for i in Client.state.your_cards.size():
@@ -50,10 +56,18 @@ func on_play_card(i, card):
 
 var card_count = 5
 
-func hide_card(card):
+func hide_card():
 	card_count -= 1
-	
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+	update_visibility()
+	for i in Client.state.your_cards.size():
+		var c = Client.state.your_cards[i]
+		var card = $Cards.get_child(i)
+		card.suit = c.suit
+		card.rank = c.rank
+
+func update_visibility():
 	for i in $Cards.get_child_count():
 		$Cards.get_child(i).visible = i < card_count
+		
+func _process(delta: float) -> void:
+	update_visibility()

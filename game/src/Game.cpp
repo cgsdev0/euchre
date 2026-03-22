@@ -675,10 +675,13 @@ void Game::fillWithBots(const HandlerArgs &server) {
     while (state.players.size() < MAX_PLAYERS) {
         auto &player = state.players.emplace_back();
         int curr = bot_number++;
-        player.connected = false;
+        player.connected = true;
         player.session = "bot:" + std::to_string(curr);
         player.name = std::optional("Bot " + std::to_string(curr));
         player.bot_enum = BotName::BOT_BILL;
+        JoinMsg msg;
+        msg.id = state.players.size() - 1;
+        server.broadcast(msg.toString());
     }
 }
 

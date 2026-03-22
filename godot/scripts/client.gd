@@ -1,6 +1,6 @@
 extends Node
 
-@export var websocket_url = "wss://euchre.lol/ws/room/"
+@export var websocket_url = "ws://localhost:3001/ws/room/"
 @export var room = "pizza"
 
 # Our WebSocketClient instance.

@@ -4,7 +4,10 @@
 [ext_resource type="Script" uid="uid://cr7645mdpn6cv" path="res://scripts/card.gd" id="1_ktuci"]
 [ext_resource type="Texture2D" uid="uid://bplq23gca543y" path="res://debug_ui/cards/Card Back 1.png" id="2_ktuci"]
 
-[node name="Card" type="Node3D" unique_id=268527389]
+[sub_resource type="BoxShape3D" id="BoxShape3D_ktuci"]
+size = Vector3(0.39160156, 0.6357422, 0.041992188)
+
+[node name="Card" type="Area3D" unique_id=1486203906]
 script = ExtResource("1_ktuci")
 
 [node name="Front" type="Sprite3D" parent="." unique_id=276152436]
@@ -21,3 +24,7 @@ double_sided = false
 alpha_cut = 1
 texture_filter = 0
 texture = ExtResource("2_ktuci")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=398852196]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.01240918)
+shape = SubResource("BoxShape3D_ktuci")
