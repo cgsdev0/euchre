@@ -1,11 +1,18 @@
 extends Node3D
 
+@onready var marker = $Marker3D
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	Client.play_card.connect(on_play_card)
 	Client.last_card.connect(on_last_card)
 	Client.deal.connect(on_deal)
+	Client.welcome.connect(on_welcome)
+
+func on_welcome():
+	if get_index() == Client.state.id:
+		get_viewport().get_camera_3d().global_transform = marker.global_transform
+		get_viewport().get_camera_3d().global_basis = marker.global_basis
 
 func on_deal():
 	if get_index() == Client.state.id:

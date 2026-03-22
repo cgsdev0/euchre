@@ -1,7 +1,7 @@
 extends Node
 
 @export var websocket_url = "wss://euchre.lol/ws/room/"
-@export var room = "asdf123"
+@export var room = "pizza"
 
 # Our WebSocketClient instance.
 var socket = WebSocketPeer.new()
@@ -69,6 +69,7 @@ func merge(a, b):
 	for key in b:
 		a[key] = b[key]
 
+signal stand_down(id)
 signal play_card(id, card)
 signal last_card(cards)
 signal welcome
@@ -104,6 +105,10 @@ func apply_queued_action():
 			self.deal.emit()
 			print(state)
 		"order":
+			if "alone" in action:
+				var partner = (action.id + 2) % 2
+				state.players[partner].sitting_out = true
+				stand_down.emit(partner)
 			if state.dealer == state.id and state.phase == "vote_round1":
 				state.your_cards.push_back(state.top_card)
 			elif state.phase == "vote_round1":
