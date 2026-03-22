@@ -213,9 +213,29 @@ namespace Bot {
                     }
                 }
             } else {
-            }
+                // TODO just like the inner situation, if we _can_ win, we play the winning card,
+                // otherwise, we just dump a low card.
 
-            return sorted_cards[0];
+                auto lowest_card = std::ranges::min_element(state.hand, {}, [&](const Card &c) {
+                    return score_card(c, state.trump);
+                });
+                assert(lowest_card != state.hand.end());
+
+                auto highest_card = std::ranges::max_element(state.hand, {}, [&](const Card &c) {
+                    return score_card(c, state.trump);
+                });
+                assert(highest_card != state.hand.end());
+
+                bool will_win = std::all_of(state.stack.begin(), state.stack.end(), [&](const TaggedCard &tc) {
+                    return score_card(*highest_card, state.trump) > score_card(tc.card, state.trump);
+                });
+
+                if (will_win) {
+                    return *highest_card;
+                } else {
+                    return *lowest_card;
+                }
+            }
         }
     }
 }
