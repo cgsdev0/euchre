@@ -20,9 +20,7 @@ DEP := $(OBJ:.o=.d)
 
 .PHONY: clean
 clean:
-	rm -f **/*.o
-	rm -f GameServer
-	rm -f **/*.d
+	rm -f $(OBJ) $(DEP) GameServer
 	cd uWebSockets/uSockets && make clean
 
 test: CXXFLAGS=-std=c++20 -Iincludes -g
@@ -34,11 +32,9 @@ test: src/Game.o src/api/API.o tests/*.cpp
 	$(CXX) $(CXXFLAGS) tests/*.cpp -o test src/Game.o src/api/API.o $(LDFLAGS)
 	./test
 
-debug: clean
 debug: CXXFLAGS += -g
 debug: $(TARGET)
 
-release: clean
 release: CXXFLAGS += -O2
 release: $(TARGET)
 

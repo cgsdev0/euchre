@@ -5,9 +5,7 @@
 #include <algorithm>
 
 #include "Bot.hpp"
-#include "api/Phase.hpp"
-#include "api/Suit.hpp"
-#include "api/Rank.hpp"
+#include "api/API.hpp"
 
 using namespace Bot;
 using namespace API;

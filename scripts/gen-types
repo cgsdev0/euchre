@@ -46,6 +46,8 @@ sed -i '1s/^/#include "helper.hpp"\n/' API.cpp
 sed -i '1s/^/#include "json.hpp"\n/' API.cpp
 sed -i '1s/^/#include <optional>\n/' API.cpp
 
+sed -i '1s/^/#include <cstdint>\n/' *.hpp
+
 # Add our interface to all structs
 grep "struct.*{" * -l \
   | grep -vE 'helper\.hpp|API\.cpp' \

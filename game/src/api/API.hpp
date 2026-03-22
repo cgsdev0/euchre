@@ -1,5 +1,7 @@
+#include <cstdint>
 #include <memory>
 #include <vector>
+#include <cstdint>
 
 #pragma once
 
