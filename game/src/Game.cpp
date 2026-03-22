@@ -160,7 +160,6 @@ void Game::handleMessage(const HandlerArgs &server, const std::string_view messa
 #include "Handlers.def"
 #undef X
 
-
     throw GameError({.error = "Unknown action type"});
 }
 
@@ -582,10 +581,10 @@ void Game::dealCards(const HandlerArgs &server) {
 }
 
 void Game::restart(const HandlerArgs &server, RestartMsg &msg) {
-    if (state.players.size() < MAX_PLAYERS) // add bot players to fill up the game
-        fillWithBots(server);
     if (state.phase != Phase::ENDED && state.phase != Phase::LOBBY)
         throw GameError({.error = "not in a start-able phase"});
+    if (state.players.size() < MAX_PLAYERS) // add bot players to fill up the game
+        fillWithBots(server);
     for (auto &player : state.players) {
         player.tricks = 0;
         player.sitting_out = false;
@@ -692,7 +691,7 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
             .name  = (BotName)player.bot_enum,
             .phase = state.phase,
             .trump = state.trump,
-            .hand  = player.cards,
+            .hand = player.cards,
             .stack = state.played_cards,
             .top_card = state.top_card,
         };
@@ -701,39 +700,39 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
         // to do that here.
 
         switch (state.phase) {
-            case Phase::DISCARDING: {
-                Card card = Bot::discard(decision_state);
-                DiscardMsg msg = { .card = card, .id = std::nullopt };
-                discard(server, msg);
-                break;
-            }
+        case Phase::DISCARDING: {
+            Card card = Bot::discard(decision_state);
+            DiscardMsg msg = {.card = card, .id = std::nullopt};
+            discard(server, msg);
+            break;
+        }
 
-            case Phase::LOBBY:
-            case Phase::ENDED: {
-                assert(false); // WARN bots probably don't need to do anything here...
-                break;
-            }
+        case Phase::LOBBY:
+        case Phase::ENDED: {
+            assert(false); // WARN bots probably don't need to do anything here...
+            break;
+        }
 
-            case Phase::PLAYING: {
-                Card card = Bot::playCard(decision_state);
-                PlayCardMsg msg = { .card = card, .id = std::nullopt };
-                play_card(server, msg);
-                break;
-            }
+        case Phase::PLAYING: {
+            Card card = Bot::playCard(decision_state);
+            PlayCardMsg msg = {.card = card, .id = std::nullopt};
+            play_card(server, msg);
+            break;
+        }
 
-            case Phase::VOTE_ROUND1:
-            case Phase::VOTE_ROUND2: {
-                bool go_alone = false;
-                std::optional<Suit> suit = std::nullopt;
-                if (orderTrump(decision_state, suit, go_alone)) {
-                    OrderMsg msg = { .alone = go_alone, .id = std::nullopt, .suit = suit };
-                    order(server, msg);
-                } else {
-                    PassMsg msg = { .id = std::nullopt };
-                    pass(server, msg);
-                }
-                break;
+        case Phase::VOTE_ROUND1:
+        case Phase::VOTE_ROUND2: {
+            bool go_alone = false;
+            std::optional<Suit> suit = std::nullopt;
+            if (orderTrump(decision_state, suit, go_alone)) {
+                OrderMsg msg = {.alone = go_alone, .id = std::nullopt, .suit = suit};
+                order(server, msg);
+            } else {
+                PassMsg msg = {.id = std::nullopt};
+                pass(server, msg);
             }
+            break;
+        }
         }
     }
 }
