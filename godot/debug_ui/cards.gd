@@ -37,6 +37,5 @@ func _process(delta: float) -> void:
 			child.hide()
 			continue
 		child.show()
-		child.scale = Vector2(2.0, 2.0)
 		var card = Client.state.your_cards[i]
 		child.texture = cache[card.rank + "_" + card.suit]

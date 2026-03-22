@@ -15,6 +15,7 @@ namespace API {
     struct Player;
     struct RichTextMsg;
     enum class Suit : int;
+    struct CardElement;
 }
 
 namespace API {
@@ -36,6 +37,8 @@ namespace API {
      * Update everything
      *
      * Auto-play the last card of the hand.
+     *
+     * End the hand with your ridiculous cards.
      */
 
 
@@ -57,6 +60,8 @@ namespace API {
      * Update everything
      *
      * Auto-play the last card of the hand.
+     *
+     * End the hand with your ridiculous cards.
      */
     struct ServerMsg {
 std::string toString() const;
@@ -77,12 +82,13 @@ void fromString(const std::string &str);
         std::optional<Suit> trump;
         std::optional<int64_t> turn;
         std::optional<std::vector<Card>> your_cards;
+        std::optional<std::vector<Card>> your_premoves;
         std::optional<bool> alone;
         std::optional<Suit> suit;
         std::optional<int64_t> table_talk;
         std::optional<Card> card;
         std::optional<std::string> name;
         std::optional<std::vector<Msg>> msg;
-        std::optional<std::vector<TaggedCard>> cards;
+        std::optional<std::vector<CardElement>> cards;
     };
 }

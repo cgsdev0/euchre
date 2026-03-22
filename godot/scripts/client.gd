@@ -70,6 +70,7 @@ func merge(a, b):
 		a[key] = b[key]
 
 signal play_card(id, card)
+signal last_card(cards)
 signal welcome
 signal resume
 signal deal
@@ -126,6 +127,10 @@ func apply_queued_action():
 			state.players[action.id].card_count -= 1
 			state.trick.push_back(action.card)
 			state.played_cards.push_back(action.card)
+		"last_card":
+			cooling_down = true
+			last_card.emit(action.cards)
+			state.trick = action.cards.map(func(c): return c.card)
 	
 func _process(_delta):
 	apply_queued_action()

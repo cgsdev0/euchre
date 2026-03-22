@@ -34,6 +34,8 @@ namespace API {
      * Select a card to pre-move.
      *
      * Undo a premove action.
+     *
+     * End the hand with your ridiculous cards.
      */
 
 
@@ -59,6 +61,8 @@ namespace API {
      * Select a card to pre-move.
      *
      * Undo a premove action.
+     *
+     * End the hand with your ridiculous cards.
      */
     struct ClientMsg {
 std::string toString() const;
@@ -72,5 +76,6 @@ void fromString(const std::string &str);
         std::optional<int64_t> table_talk;
         std::optional<std::string> name;
         std::optional<int64_t> premoves;
+        std::optional<std::vector<Card>> cards;
     };
 }
