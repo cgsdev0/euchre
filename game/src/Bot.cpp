@@ -155,7 +155,7 @@ namespace Bot {
     static std::vector<Card> sort_hands_by_value(std::vector<Card> cards, Suit trump) {
         auto copy = cards;
         std::sort(copy.begin(), copy.end(), [&](Card a, Card b){
-            return score_card(a, trump) < score_card(b, trump);
+            return score_card(a, trump) > score_card(b, trump);
         });
         return copy;
     }
