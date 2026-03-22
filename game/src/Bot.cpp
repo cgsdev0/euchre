@@ -185,14 +185,32 @@ namespace Bot {
             std::vector<Card> legal_cards_vec(legal_cards, state.hand.end());
 
             if (!legal_cards_vec.empty()) {
+                auto lowest_legal_card = std::ranges::min_element(legal_cards_vec, {}, [&](const Card &c) {
+                    return score_card(c, state.trump);
+                });
+                assert(lowest_legal_card != legal_cards_vec.end());
+
                 if (is_team_winning_hand(state)) { // toss lowest card - partner for 1
-                    auto lowest_legal_card = std::ranges::min_element(legal_cards_vec, {}, [&](const Card &c) {
-                        return score_card(c, state.trump);
-                    });
-                    assert(lowest_legal_card != legal_cards_vec.end());
                     return *lowest_legal_card;
                 } else {
-                    // TODO make a smarter decision about _which_ card to play
+                    // TODO make a smarter decision about _which_ card to play, for now, we just
+                    // play the highest legal card, but maybe in the future, we want to play like,
+                    // the one-higher card if there is one? Maybe this is nonsense.
+
+                    auto highest_legal_card = std::ranges::max_element(legal_cards_vec, {}, [&](const Card &c) {
+                        return score_card(c, state.trump);
+                    });
+                    assert(highest_legal_card != legal_cards_vec.end());
+
+                    bool will_win = std::all_of(state.stack.begin(), state.stack.end(), [&](const TaggedCard &tc) {
+                        return score_card(*highest_legal_card, state.trump) > score_card(tc.card, state.trump);
+                    });
+
+                    if (will_win) {
+                        return *highest_legal_card;
+                    } else {
+                        return *lowest_legal_card;
+                    }
                 }
             } else {
             }
