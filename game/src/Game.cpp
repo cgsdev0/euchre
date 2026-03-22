@@ -1,8 +1,11 @@
 #include "Game.h"
 #include "Consts.h"
-#include "StringUtils.h"
 #include <algorithm>
 #include <json.hpp>
+
+#define STRING_UTILS_IMPLEMENTATION
+#include "StringUtils.h"
+
 using json = nlohmann::json;
 using namespace std::chrono_literals;
 
