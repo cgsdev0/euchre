@@ -157,7 +157,7 @@ namespace Bot {
         std::sort(copy.begin(), copy.end(), [&](Card a, Card b){
             return score_card(a, trump) < score_card(b, trump);
         });
-        return cards;
+        return copy;
     }
 
     static bool played_by_partner(BotDecisionState &state, TaggedCard &c) {

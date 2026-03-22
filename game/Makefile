@@ -28,8 +28,8 @@ test: CXXFLAGS += -Igoogletest/googletest/include
 test: CXXFLAGS += -Igoogletest/googlemock/include
 test: CXXFLAGS += -Isrc -Isrc/api
 test: LDFLAGS=-lz -Lgoogletest/lib -lgtest -lgmock -lpthread
-test: src/Game.o src/api/API.o tests/*.cpp
-	$(CXX) $(CXXFLAGS) tests/*.cpp -o test src/Game.o src/api/API.o $(LDFLAGS)
+test: src/Game.o src/Bot.o src/api/API.o tests/*.cpp
+	$(CXX) $(CXXFLAGS) tests/*.cpp -o test src/Game.o src/Bot.o src/api/API.o $(LDFLAGS)
 	./test
 
 debug: CXXFLAGS += -g
