@@ -448,11 +448,6 @@ void Game::lay_down(const HandlerArgs &server, LayDownMsg &msg) {
     server.broadcast(msg.toString());
 
     WinHandMsg msg2;
-    deck.shuffle();
-    for (auto &player : state.players) {
-        player.tricks = 0;
-        player.sitting_out = false;
-    }
     int winner = state.turn % 2;
     int partner = (state.turn + 2) % 4;
     int winnings = 2;
@@ -460,6 +455,11 @@ void Game::lay_down(const HandlerArgs &server, LayDownMsg &msg) {
         winnings = 4;
     }
     msg2.id = winner;
+    deck.shuffle();
+    for (auto &player : state.players) {
+        player.tricks = 0;
+        player.sitting_out = false;
+    }
     server.broadcast(msg2.toString());
     state.scores[winner] += winnings;
     if (state.scores[winner] >= 10) {

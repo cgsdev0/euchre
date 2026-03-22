@@ -108,6 +108,10 @@ class Game {
         return this->state.toString();
     }
 
+    const API::GameState &getState() const {
+        return this->state;
+    }
+
   private:
     std::string log_rich_chat(const RichTextStream &stream) {
         state.rich_chat_log.insert(state.rich_chat_log.begin(), stream.obj());
