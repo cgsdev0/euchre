@@ -603,7 +603,7 @@
         "trick": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Card"
+            "$ref": "#/definitions/TaggedCard"
           }
         },
         "scores": {
@@ -724,7 +724,7 @@
         "trick": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Card"
+            "$ref": "#/definitions/TaggedCard"
           }
         },
         "scores": {

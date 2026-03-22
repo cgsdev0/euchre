@@ -79,7 +79,7 @@ void fromString(const std::string &str);
         std::optional<std::vector<RichTextMsg>> rich_chat_log;
         std::optional<std::vector<int64_t>> scores;
         std::optional<Card> top_card;
-        std::optional<std::vector<Card>> trick;
+        std::optional<std::vector<TaggedCard>> trick;
         std::optional<Suit> trump;
         std::optional<int64_t> turn;
         std::optional<std::vector<Card>> your_cards;

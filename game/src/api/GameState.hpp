@@ -31,7 +31,7 @@ void fromString(const std::string &str);
         std::vector<RichTextMsg> rich_chat_log;
         std::vector<int64_t> scores;
         std::optional<Card> top_card;
-        std::vector<Card> trick;
+        std::vector<TaggedCard> trick;
         int64_t trick_leader;
         Suit trump;
         int64_t turn;

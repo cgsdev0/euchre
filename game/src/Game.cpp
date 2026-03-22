@@ -352,12 +352,12 @@ static int scoreCard(const Card &card, Suit trump, Suit led) {
 
 void Game::endTrick(const HandlerArgs &server) {
     WinTrickMsg msg;
-    Suit led = effectiveSuit(state.trick[0], state.trump);
+    Suit led = effectiveSuit(state.trick[0].card, state.trump);
     int best = 0;
     int winner = state.trick_leader;
     int current = state.trick_leader;
     for (size_t i = 0; i < state.trick.size(); ++i) {
-        int score = scoreCard(state.trick[i], state.trump, led);
+        int score = scoreCard(state.trick[i].card, state.trump, led);
         if (score > best) {
             best = score;
             winner = current;
@@ -395,7 +395,7 @@ void Game::endTrick(const HandlerArgs &server) {
             card.illegal = std::nullopt; // this is not up to the client
             if (state.trick.size() > 0) {
                 // check what suit we need to follow
-                auto suit = effectiveSuit(state.trick[0], state.trump);
+                auto suit = effectiveSuit(state.trick[0].card, state.trump);
                 if (suit != effectiveSuit(card, state.trump)) {
                     // ok we played an off-card, let's see if we cheated
 
@@ -411,7 +411,7 @@ void Game::endTrick(const HandlerArgs &server) {
             if (state.trick.empty()) {
                 state.trick_leader = state.turn;
             }
-            state.trick.push_back(card);
+            state.trick.push_back(TaggedCard{.card = card, .id = state.turn});
             auto tagged = TaggedCard{.card = server_copy, .id = state.turn};
             state.played_cards.push_back(tagged);
             last.cards.push_back(tagged);
@@ -503,7 +503,7 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
     msg.card.illegal = std::nullopt; // this is not up to the client
     if (state.trick.size() > 0) {
         // check what suit we need to follow
-        auto suit = effectiveSuit(state.trick[0], state.trump);
+        auto suit = effectiveSuit(state.trick[0].card, state.trump);
         if (suit != effectiveSuit(msg.card, state.trump)) {
             // ok we played an off-card, let's see if we cheated
 
@@ -519,7 +519,7 @@ void Game::play_card(const HandlerArgs &server, PlayCardMsg &msg) {
     if (state.trick.empty()) {
         state.trick_leader = state.turn;
     }
-    state.trick.push_back(msg.card);
+    state.trick.push_back(TaggedCard{.card = msg.card, .id = state.turn});
     state.played_cards.push_back(TaggedCard{.card = server_copy, .id = state.turn});
 
     msg.id = state.turn;

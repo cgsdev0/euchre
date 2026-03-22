@@ -180,7 +180,7 @@ export interface WelcomeMsg {
   trump: Suit;
   your_cards: Card[];
   your_premoves: Card[];
-  trick: Card[];
+  trick: TaggedCard[];
   scores: number[];
   players: Player[];
   rich_chat_log: RichTextMsg[];
@@ -311,7 +311,7 @@ export interface GameState {
   kitty?: Card[];
   played_cards: TaggedCard[];
   trump: Suit;
-  trick: Card[];
+  trick: TaggedCard[];
   scores: number[];
   rich_chat_log: RichTextMsg[];
   turn: number;

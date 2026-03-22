@@ -397,7 +397,7 @@ namespace API {
         x.rich_chat_log = get_stack_optional<std::vector<RichTextMsg>>(j, "rich_chat_log");
         x.scores = get_stack_optional<std::vector<int64_t>>(j, "scores");
         x.top_card = get_stack_optional<Card>(j, "top_card");
-        x.trick = get_stack_optional<std::vector<Card>>(j, "trick");
+        x.trick = get_stack_optional<std::vector<TaggedCard>>(j, "trick");
         x.trump = get_stack_optional<Suit>(j, "trump");
         x.turn = get_stack_optional<int64_t>(j, "turn");
         x.your_cards = get_stack_optional<std::vector<Card>>(j, "your_cards");
@@ -718,7 +718,7 @@ namespace API {
         x.rich_chat_log = j.at("rich_chat_log").get<std::vector<RichTextMsg>>();
         x.scores = j.at("scores").get<std::vector<int64_t>>();
         x.top_card = get_stack_optional<Card>(j, "top_card");
-        x.trick = j.at("trick").get<std::vector<Card>>();
+        x.trick = j.at("trick").get<std::vector<TaggedCard>>();
         x.trick_leader = j.at("trick_leader").get<int64_t>();
         x.trump = j.at("trump").get<Suit>();
         x.turn = j.at("turn").get<int64_t>();
@@ -771,7 +771,7 @@ namespace API {
         x.rich_chat_log = j.at("rich_chat_log").get<std::vector<RichTextMsg>>();
         x.scores = j.at("scores").get<std::vector<int64_t>>();
         x.top_card = get_stack_optional<Card>(j, "top_card");
-        x.trick = j.at("trick").get<std::vector<Card>>();
+        x.trick = j.at("trick").get<std::vector<TaggedCard>>();
         x.trump = j.at("trump").get<Suit>();
         x.turn = j.at("turn").get<int64_t>();
         x.type = j.at("type").get<WelcomeMsgType>();
