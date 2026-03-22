@@ -695,7 +695,7 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
             .phase = state.phase,
             .trump = state.trump,
             .hand = player.cards,
-            .stack = state.played_cards,
+            .stack = state.trick,
             .top_card = state.top_card,
         };
 
