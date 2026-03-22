@@ -686,6 +686,9 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
     while (state.players[state.turn].bot_enum != BotName::BOT_NONE) {
         auto &player = state.players[state.turn];
 
+        auto bot_server = server;
+        bot_server.session = player.session;
+
         BotDecisionState decision_state = {
             .id = (int)state.turn,
             .name = (BotName)player.bot_enum,
@@ -703,7 +706,7 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
         case Phase::DISCARDING: {
             Card card = Bot::discard(decision_state);
             DiscardMsg msg = {.card = card, .id = std::nullopt};
-            discard(server, msg);
+            discard(bot_server, msg);
             break;
         }
 
@@ -716,7 +719,7 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
         case Phase::PLAYING: {
             Card card = Bot::playCard(decision_state);
             PlayCardMsg msg = {.card = card, .id = std::nullopt};
-            play_card(server, msg);
+            play_card(bot_server, msg);
             break;
         }
 
@@ -726,10 +729,10 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
             std::optional<Suit> suit = std::nullopt;
             if (orderTrump(decision_state, suit, go_alone)) {
                 OrderMsg msg = {.alone = go_alone, .id = std::nullopt, .suit = suit};
-                order(server, msg);
+                order(bot_server, msg);
             } else {
                 PassMsg msg = {.id = std::nullopt};
-                pass(server, msg);
+                pass(bot_server, msg);
             }
             break;
         }
