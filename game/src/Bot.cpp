@@ -179,11 +179,10 @@ namespace Bot {
         } else {
             TaggedCard led = state.stack[0];
 
-            auto legal_cards = std::ranges::find_if(state.hand, [&](const Card &c) {
-                return led.card.suit == c.suit;
+            auto legal_view = state.hand | std::views::filter([&](const Card &c) {
+                return c.suit == led.card.suit;
             });
-
-            std::vector<Card> legal_cards_vec(legal_cards, state.hand.end());
+            std::vector<Card> legal_cards_vec(legal_view.begin(), legal_view.end());
 
             if (!legal_cards_vec.empty()) {
                 auto lowest_legal_card = std::ranges::min_element(legal_cards_vec, {}, [&](const Card &c) {

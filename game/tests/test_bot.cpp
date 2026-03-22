@@ -203,7 +203,8 @@ TEST_F(PlayCardTest, FollowCannotWinTakesLowest) {
     auto state = makeState(0, Phase::PLAYING, Suit::HEARTS, hand, stack);
 
     Card result = playCard(state);
-    EXPECT_EQ(result.suit, Suit::CLUBS);
+    EXPECT_EQ(result.suit, Suit::HEARTS);
+    EXPECT_EQ(result.rank, Rank::KING);
 }
 
 
