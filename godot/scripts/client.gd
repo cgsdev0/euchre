@@ -1,6 +1,6 @@
 extends Node
 
-@export var websocket_url = "ws://localhost:3001/ws/room/"
+@export var websocket_url = "wss://euchre.lol/ws/room/"
 @export var room = "asdf123"
 
 # Our WebSocketClient instance.
@@ -154,7 +154,7 @@ func _process(_delta):
 					"error":
 						match data.error:
 							"cookie":
-								var cookie = { "type": "cookie", "session": "asdf" }
+								var cookie = { "type": "cookie", "session": "bingobong" }
 								socket.send_text(JSON.stringify(cookie))
 							_:
 								printerr(data.error)

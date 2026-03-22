@@ -33,7 +33,9 @@ const startBot = (room: string, i: number) => {
   let cookie = `bot${i}`;
   let state: State = JSON.parse(JSON.stringify(initial_state)) as State;
   const setupWs = () => {
-    const ws = new WebSocket(`ws://localhost:3001/ws/room/${room}`, {
+    const prod = "wss://euchre.lol";
+    const dev = "ws://localhost:3001";
+    const ws = new WebSocket(`${prod}/ws/room/${room}`, {
       headers: { Cookie: `_session=${cookie}` },
     });
 
@@ -121,7 +123,10 @@ const startBot = (room: string, i: number) => {
           break;
         case "welcome":
           state = { ...state, ...data };
-          if ((state.phase === "lobby" || state.phase === "ended") && (state.players.length === 4 || process.env.BOT_TESTING)) {
+          if (
+            (state.phase === "lobby" || state.phase === "ended") &&
+            (state.players.length === 4 || process.env.BOT_TESTING)
+          ) {
             console.log("restart!");
             ws.send(JSON.stringify({ type: "restart" }));
           }
