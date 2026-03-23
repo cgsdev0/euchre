@@ -16,13 +16,14 @@ func _ready() -> void:
 
 func cards_equal(a, b):
 	return a.suit == b.suit and a.rank == b.rank
-	
+
 func on_press(i: int):
 	match Client.state.phase:
 		"discarding":
 			if Client.state.dealer == Client.state.id and \
 				not cards_equal(Client.state.your_cards[i], Client.state.top_card):
 				Client.send({"type": "discard", "card": Client.state.your_cards[i]})
+				Client.discard.emit(Client.state.id, Client.state.your_cards[i])
 				Client.state.your_cards.remove_at(i)
 		"playing":
 			if Client.state.turn == Client.state.id:

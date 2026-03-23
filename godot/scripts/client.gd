@@ -71,7 +71,9 @@ func merge(a, b):
 
 signal stand_down(id)
 signal play_card(id, card)
+signal pick_up(id, card)
 signal last_card(cards)
+signal discard(id, card)
 signal welcome
 signal resume
 signal deal
@@ -109,12 +111,16 @@ func apply_queued_action():
 				var partner = (action.id + 2) % 2
 				state.players[partner].sitting_out = true
 				stand_down.emit(partner)
+			if state.phase == "vote_round1":
+				pick_up.emit(state.dealer, state.top_card)
 			if state.dealer == state.id and state.phase == "vote_round1":
 				state.your_cards.push_back(state.top_card)
 			elif state.phase == "vote_round1":
 				state.players[state.dealer].card_count += 1
 		"discarded":
+			cooling_down = true
 			if state.dealer != state.id:
+				discard.emit(state.dealer, null)
 				state.players[action.id].card_count -= 1
 		"restart":
 			state.scores = [0, 0]

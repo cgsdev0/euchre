@@ -46,7 +46,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("BoneAttachment3D/Card:visible")
+tracks/3/path = NodePath("BoneAttachment3D/FakeCard:visible")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -264,7 +264,7 @@ tracks/2/keys = {
 tracks/3/type = "value"
 tracks/3/imported = false
 tracks/3/enabled = true
-tracks/3/path = NodePath("BoneAttachment3D/Card:visible")
+tracks/3/path = NodePath("BoneAttachment3D/FakeCard:visible")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
@@ -276,7 +276,7 @@ tracks/3/keys = {
 tracks/4/type = "method"
 tracks/4/imported = false
 tracks/4/enabled = true
-tracks/4/path = NodePath("BoneAttachment3D/Card")
+tracks/4/path = NodePath("BoneAttachment3D/FakeCard")
 tracks/4/interp = 1
 tracks/4/loop_wrap = true
 tracks/4/keys = {
@@ -440,13 +440,14 @@ transform = Transform3D(-0.7880383, 0.37650883, -0.05349507, 0.34426242, 0.75858
 
 [node name="BoneAttachment3D" type="BoneAttachment3D" parent="." index="6" unique_id=153220694]
 physics_interpolation_mode = 1
-transform = Transform3D(-0.8742601, 0.024919514, -0.025936175, -0.021331787, 0.14877003, 0.86199576, 0.028958917, 0.8618997, -0.14803681, 0.43218938, 2.9081948, 0.6021848)
+transform = Transform3D(-0.87426007, 0.024919573, -0.02593618, -0.021331785, 0.14877003, 0.86199576, 0.028958991, 0.86189973, -0.14803681, 0.43218938, 2.9081948, 0.60218483)
 bone_name = "mixamorig_LeftHandIndex1"
 bone_idx = 11
 use_external_skeleton = true
 external_skeleton = NodePath("../Skeleton3D")
 
-[node name="Card" parent="BoneAttachment3D" index="0" unique_id=528731295 instance=ExtResource("2_ut82k")]
+[node name="FakeCard" parent="BoneAttachment3D" index="0" unique_id=528731295 instance=ExtResource("2_ut82k")]
+unique_name_in_owner = true
 transform = Transform3D(0.6, 0, -2.3283064e-09, 0, 0.6000001, 0, 1.3969839e-09, -2.2351742e-08, 0.59999996, 0, 0.2576368, -0.032136917)
 visible = false
 script = ExtResource("3_f5ddd")
@@ -473,18 +474,4 @@ transform = Transform3D(0.937365, 0.34612522, -0.039296534, -0.34550193, 0.93816
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6866422, 2.8074474, 2.3736854)
 
 [node name="Cards" type="Node3D" parent="." index="14" unique_id=1738586476]
-transform = Transform3D(0.5, 0, 0, 0, 0.49359322, -0.07978553, 0, 0.07978553, 0.49359322, -0.106160164, 3.6916451, 0.73444)
-
-[node name="Card4" parent="Cards" index="0" unique_id=1644335535 instance=ExtResource("2_ut82k")]
-
-[node name="Card2" parent="Cards" index="1" unique_id=1156706373 instance=ExtResource("2_ut82k")]
-transform = Transform3D(0.9659258, 0.25550264, -0.041300032, -0.25550246, 0.9667934, 0.0053675175, 0.041300014, 0.0053675026, 0.9991325, 0.080382705, -0.03916788, -0.011964321)
-
-[node name="Card5" parent="Cards" index="2" unique_id=815957356 instance=ExtResource("2_ut82k")]
-transform = Transform3D(0.9659258, -0.25881904, 0, 0.25881886, 0.9659258, 0, 1.1175871e-08, 0, 1, -0.13016641, -0.03456354, 0.018156648)
-
-[node name="Card6" parent="Cards" index="3" unique_id=2046279246 instance=ExtResource("2_ut82k")]
-transform = Transform3D(0.86688375, -0.4967966, 0.041300036, 0.49702087, 0.86772186, 0.0053675473, -0.03850352, 0.015873924, 0.9991325, -0.24229687, -0.09786701, 0.043196917)
-
-[node name="Card3" parent="Cards" index="4" unique_id=731538242 instance=ExtResource("2_ut82k")]
-transform = Transform3D(0.8660254, 0.49359322, -0.07978557, -0.49359304, 0.8694368, 0.021104425, 0.079785526, 0.02110444, 0.9965889, 0.16134459, -0.115222454, -0.018800974)
+transform = Transform3D(0.5, 0, 0, 0, 0.49359322, -0.07978553, 0, 0.07978553, 0.49359322, -0.1576633, 3.6936321, 0.7221467)
