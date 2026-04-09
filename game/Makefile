@@ -23,14 +23,17 @@ clean:
 	rm -f $(OBJ) $(DEP) GameServer
 	cd uWebSockets/uSockets && make clean
 
-test: CXXFLAGS=-std=c++20 -Iincludes -g
-test: CXXFLAGS += -Igoogletest/googletest/include
-test: CXXFLAGS += -Igoogletest/googlemock/include
-test: CXXFLAGS += -Isrc -Isrc/api
-test: LDFLAGS=-lz -Lgoogletest/lib -lgtest -lgmock -lpthread
-test: src/Game.o src/Bot.o src/api/API.o tests/*.cpp
+test_build: CXXFLAGS=-std=c++20 -Iincludes -g
+test_build: CXXFLAGS += -Igoogletest/googletest/include
+test_build: CXXFLAGS += -Igoogletest/googlemock/include
+test_build: CXXFLAGS += -Isrc -Isrc/api
+test_build: LDFLAGS=-lz -Lgoogletest/lib -lgtest -lgmock -lpthread
+test_build: src/Game.o src/Bot.o src/api/API.o tests/*.cpp
 	$(CXX) $(CXXFLAGS) tests/*.cpp -o test src/Game.o src/Bot.o src/api/API.o $(LDFLAGS)
-	./test
+
+.PHONY: test
+test: test_build
+	./$@
 
 debug: CXXFLAGS += -g
 debug: $(TARGET)

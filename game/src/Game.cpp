@@ -666,6 +666,7 @@ void Game::handleBotUpdates(const HandlerArgs &server) {
             .name = (BotName)player.bot_enum,
             .phase = state.phase,
             .trump = state.trump,
+            .dealer = state.dealer,
             .hand = player.cards,
             .stack = state.trick,
             .top_card = state.top_card,

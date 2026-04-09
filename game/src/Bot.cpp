@@ -139,7 +139,7 @@ namespace Bot {
         }
 
         auto it = std::ranges::find_if(state.hand, [&](const Card &c) {
-            return counts[c.suit] == 1;
+            return counts[c.suit] == 1 && c.suit != state.trump;
         });
 
         if (it != state.hand.end()) return *it;

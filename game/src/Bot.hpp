@@ -44,6 +44,7 @@ namespace Bot {
         BotName name;
         Phase phase;
         Suit trump;
+        int64_t dealer;
         std::vector<API::Card> hand;        // bot's hand
         std::vector<TaggedCard> stack;       // stack of cards played
         std::optional<API::Card> top_card;  // top card (for ordering up trump)

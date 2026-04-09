@@ -13,3 +13,5 @@ auth/.twitch_secrets
 
 .setup-log.log
 
+tags
+.gdb_history
