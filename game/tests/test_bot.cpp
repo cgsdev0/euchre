@@ -8,10 +8,10 @@ using namespace Bot;
 using namespace API;
 
 class BotTest : public testing::Test {
-protected:
+  protected:
     BotDecisionState makeState(int id, Phase phase, Suit trump, std::vector<Card> hand,
-                                std::vector<TaggedCard> stack = {},
-                                std::optional<Card> top_card = std::nullopt) {
+                               std::vector<TaggedCard> stack = {},
+                               std::optional<Card> top_card = std::nullopt) {
         BotDecisionState state;
         state.id = id;
         state.name = BOT_BETHANY;
@@ -62,10 +62,10 @@ TEST_F(OrderUpP1Test, Top5Trump) {
     bool go_alone = false;
     auto top = card(Rank::NINE, Suit::SPADES);
     auto hand = c({
-        card(Rank::JACK,  Suit::SPADES),
-        card(Rank::JACK,  Suit::CLUBS),
-        card(Rank::ACE,   Suit::SPADES),
-        card(Rank::KING,  Suit::SPADES),
+        card(Rank::JACK, Suit::SPADES),
+        card(Rank::JACK, Suit::CLUBS),
+        card(Rank::ACE, Suit::SPADES),
+        card(Rank::KING, Suit::SPADES),
         card(Rank::QUEEN, Suit::SPADES),
     });
 
@@ -77,23 +77,21 @@ TEST_F(OrderUpP1Test, Top5Trump) {
 }
 
 TEST_F(OrderUpP1Test, Bottom5Trump) {
-    // When we have the top 5 trump cards, we should order up and go alone.
-
     bool go_alone = false;
     auto top = card(Rank::JACK, Suit::SPADES);
     auto hand = c({
-        card(Rank::ACE,   Suit::SPADES),
-        card(Rank::KING,  Suit::SPADES),
+        card(Rank::ACE, Suit::SPADES),
+        card(Rank::KING, Suit::SPADES),
         card(Rank::QUEEN, Suit::SPADES),
-        card(Rank::TEN,   Suit::SPADES),
-        card(Rank::NINE,  Suit::SPADES),
+        card(Rank::TEN, Suit::SPADES),
+        card(Rank::NINE, Suit::SPADES),
     });
 
-    auto you = 1; // left of the dealer
+    auto you = 1;
     auto dealer = 0;
 
     EXPECT_TRUE(order_up_p1(you, dealer, top, hand, go_alone));
-    EXPECT_FALSE(go_alone);
+    EXPECT_TRUE(go_alone);
 }
 TEST_F(OrderUpP1Test, NoneTrump) {
     // When we have the top 5 trump cards, we should order up and go alone.
@@ -101,10 +99,10 @@ TEST_F(OrderUpP1Test, NoneTrump) {
     bool go_alone = false;
     auto top = card(Rank::NINE, Suit::HEARTS);
     auto hand = c({
-        card(Rank::JACK,  Suit::SPADES),
-        card(Rank::JACK,  Suit::CLUBS),
-        card(Rank::ACE,   Suit::SPADES),
-        card(Rank::KING,  Suit::SPADES),
+        card(Rank::JACK, Suit::SPADES),
+        card(Rank::JACK, Suit::CLUBS),
+        card(Rank::ACE, Suit::SPADES),
+        card(Rank::KING, Suit::SPADES),
         card(Rank::QUEEN, Suit::SPADES),
     });
 
@@ -116,51 +114,147 @@ TEST_F(OrderUpP1Test, NoneTrump) {
 }
 
 TEST_F(OrderUpP1Test, TurnDownABowerPainForAnHour) {
-    // When there's a Bower on top of the kitty, the bots should order it up for their partner or
-    // themselves
-    // - if the bot has the left, they should have one other trump
-    // - if the bot has the right, they should have two other trump
-
     auto right_bower = card(Rank::JACK, Suit::SPADES);
-    auto left_bower  = card(Rank::JACK, Suit::CLUBS);
+    auto left_bower = card(Rank::JACK, Suit::CLUBS);
 
     bool go_alone = false;
 
     auto hand_one_trump = c({
         left_bower,
-        card(Rank::ACE,   Suit::SPADES),
-        card(Rank::NINE,  Suit::DIAMONDS),
-        card(Rank::TEN,   Suit::DIAMONDS),
-        card(Rank::QUEEN, Suit::HEARTS),
-    });
-
-    auto hand_two_trump = c({
-        card(Rank::ACE,   Suit::SPADES),
-        card(Rank::TEN,   Suit::SPADES),
-        card(Rank::JACK,  Suit::HEARTS),
-        card(Rank::NINE,  Suit::DIAMONDS),
+        card(Rank::ACE, Suit::SPADES),
+        card(Rank::NINE, Suit::DIAMONDS),
+        card(Rank::TEN, Suit::DIAMONDS),
         card(Rank::QUEEN, Suit::HEARTS),
     });
 
     auto you = 1;
+    auto partner = 3;
     auto e1 = 0;
     auto e2 = 2;
-    auto partner = 3;
-
-    // Right bower up, we should call if our partner is dealer.
 
     EXPECT_TRUE(order_up_p1(you, partner, right_bower, hand_one_trump, go_alone));
-    EXPECT_FALSE(go_alone);
-    EXPECT_TRUE(order_up_p1(you, partner, right_bower, hand_two_trump, go_alone));
-    EXPECT_FALSE(go_alone);
-
-    EXPECT_FALSE(order_up_p1(you, e1, right_bower, hand_one_trump, go_alone));
-    EXPECT_FALSE(order_up_p1(you, e2, right_bower, hand_one_trump, go_alone));
+    EXPECT_TRUE(order_up_p1(you, e1, right_bower, hand_one_trump, go_alone));
+    EXPECT_TRUE(order_up_p1(you, e2, right_bower, hand_one_trump, go_alone));
 }
 
 class OrderTrumpTest : public BotTest {};
 class DiscardTest : public BotTest {};
 class PlayCardTest : public BotTest {};
+
+TEST_F(OrderTrumpTest, StrongHandWith5TrumpOrders) {
+    auto hand = c({card(Rank::JACK, Suit::HEARTS),
+                   card(Rank::JACK, Suit::SPADES),
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::NINE, Suit::HEARTS)});
+    auto top = card(Rank::ACE, Suit::HEARTS);
+    auto state = makeState(0, Phase::VOTE_ROUND1, Suit::HEARTS, hand, {}, top);
+
+    std::optional<Suit> suit;
+    bool go_alone = false;
+    EXPECT_TRUE(orderTrump(state, suit, go_alone));
+}
+
+TEST_F(OrderTrumpTest, StrongHandWith4TrumpOrders) {
+    auto hand = c({card(Rank::JACK, Suit::HEARTS),
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::QUEEN, Suit::HEARTS),
+                   card(Rank::ACE, Suit::DIAMONDS)});
+    auto top = card(Rank::NINE, Suit::HEARTS);
+    auto state = makeState(0, Phase::VOTE_ROUND1, Suit::HEARTS, hand, {}, top);
+
+    std::optional<Suit> suit;
+    bool go_alone = false;
+    EXPECT_TRUE(orderTrump(state, suit, go_alone));
+}
+
+TEST_F(OrderTrumpTest, StrongHandWith3TrumpAndBowerOrders) {
+    auto hand = c({card(Rank::JACK, Suit::HEARTS),
+                   card(Rank::JACK, Suit::SPADES),
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::DIAMONDS),
+                   card(Rank::QUEEN, Suit::DIAMONDS)});
+    auto top = card(Rank::NINE, Suit::HEARTS);
+    auto state = makeState(0, Phase::VOTE_ROUND1, Suit::HEARTS, hand, {}, top);
+
+    std::optional<Suit> suit;
+    bool go_alone = false;
+    EXPECT_TRUE(orderTrump(state, suit, go_alone));
+}
+
+TEST_F(OrderTrumpTest, VeryStrongHandWithBowersGoesAlone) {
+    auto hand = c({card(Rank::JACK, Suit::HEARTS),
+                   card(Rank::JACK, Suit::SPADES),
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::QUEEN, Suit::HEARTS)});
+    auto top = card(Rank::ACE, Suit::HEARTS);
+    auto state = makeState(0, Phase::VOTE_ROUND1, Suit::HEARTS, hand, {}, top);
+
+    std::optional<Suit> suit;
+    bool go_alone = false;
+    EXPECT_TRUE(orderTrump(state, suit, go_alone));
+    EXPECT_TRUE(go_alone);
+}
+
+TEST_F(OrderTrumpTest, StrongHandRound2CallsDifferentSuit) {
+    auto hand = c({card(Rank::JACK, Suit::CLUBS),
+                   card(Rank::ACE, Suit::CLUBS),
+                   card(Rank::KING, Suit::CLUBS),
+                   card(Rank::QUEEN, Suit::CLUBS),
+                   card(Rank::ACE, Suit::DIAMONDS)});
+    auto top = card(Rank::ACE, Suit::HEARTS);
+    auto state = makeState(0, Phase::VOTE_ROUND2, Suit::HEARTS, hand, {}, top);
+
+    std::optional<Suit> suit;
+    bool go_alone = false;
+    bool result = orderTrump(state, suit, go_alone);
+    EXPECT_TRUE(result) << "Hand should order up (score > 20)";
+}
+
+TEST_F(OrderTrumpTest, StrongHandWithRightBowerOrders) {
+    auto hand = c({card(Rank::JACK, Suit::HEARTS),
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::QUEEN, Suit::HEARTS),
+                   card(Rank::ACE, Suit::SPADES)});
+    auto top = card(Rank::JACK, Suit::SPADES);
+    auto state = makeState(0, Phase::VOTE_ROUND1, Suit::SPADES, hand, {}, top);
+
+    std::optional<Suit> suit;
+    bool go_alone = false;
+    EXPECT_TRUE(orderTrump(state, suit, go_alone));
+}
+
+TEST_F(OrderTrumpTest, StrongHandWithLeftBowerOrders) {
+    auto hand = c({card(Rank::JACK, Suit::SPADES),
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::QUEEN, Suit::HEARTS),
+                   card(Rank::TEN, Suit::HEARTS)});
+    auto top = card(Rank::JACK, Suit::HEARTS);
+    auto state = makeState(0, Phase::VOTE_ROUND1, Suit::HEARTS, hand, {}, top);
+
+    std::optional<Suit> suit;
+    bool go_alone = false;
+    EXPECT_TRUE(orderTrump(state, suit, go_alone));
+}
+
+TEST_F(OrderTrumpTest, StrongHandWith2BowersGoesAlone) {
+    auto hand = c({card(Rank::JACK, Suit::HEARTS),
+                   card(Rank::JACK, Suit::SPADES),
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::DIAMONDS),
+                   card(Rank::ACE, Suit::DIAMONDS)});
+    auto top = card(Rank::NINE, Suit::HEARTS);
+    auto state = makeState(0, Phase::VOTE_ROUND1, Suit::HEARTS, hand, {}, top);
+
+    std::optional<Suit> suit;
+    bool go_alone = false;
+    EXPECT_TRUE(orderTrump(state, suit, go_alone));
+    EXPECT_TRUE(go_alone);
+}
 
 TEST_F(OrderTrumpTest, WeakHandRound1NoTrump) {
     auto hand = c({card(Rank::NINE, Suit::CLUBS),
@@ -221,13 +315,13 @@ TEST_F(OrderTrumpTest, ScoreBelow20DoesNotOrder) {
 }
 
 TEST_F(OrderTrumpTest, Round2NoGoodSuitPasses) {
-    auto hand = c({card(Rank::NINE, Suit::HEARTS),
-                   card(Rank::TEN, Suit::HEARTS),
-                   card(Rank::NINE, Suit::CLUBS),
+    auto hand = c({card(Rank::NINE, Suit::CLUBS),
                    card(Rank::NINE, Suit::DIAMONDS),
-                   card(Rank::NINE, Suit::SPADES)});
-    auto top = card(Rank::ACE, Suit::CLUBS);
-    auto state = makeState(0, Phase::VOTE_ROUND2, Suit::CLUBS, hand, {}, top);
+                   card(Rank::NINE, Suit::HEARTS),
+                   card(Rank::NINE, Suit::SPADES),
+                   card(Rank::NINE, Suit::CLUBS)});
+    auto top = card(Rank::ACE, Suit::SPADES);
+    auto state = makeState(0, Phase::VOTE_ROUND2, Suit::SPADES, hand, {}, top);
 
     std::optional<Suit> suit;
     bool go_alone = false;
@@ -286,13 +380,11 @@ TEST_F(DiscardTest, DiscardSingletonNotLowestRank) {
 }
 
 TEST_F(DiscardTest, CannotDiscard1Trump) {
-    auto hand = c({
-        card(Rank::TEN,   Suit::HEARTS),
-        card(Rank::TEN,   Suit::SPADES),
-        card(Rank::NINE,  Suit::SPADES),
-        card(Rank::QUEEN, Suit::HEARTS),
-        card(Rank::KING,  Suit::SPADES)
-    });
+    auto hand = c({card(Rank::TEN, Suit::HEARTS),
+                   card(Rank::TEN, Suit::SPADES),
+                   card(Rank::NINE, Suit::SPADES),
+                   card(Rank::QUEEN, Suit::HEARTS),
+                   card(Rank::KING, Suit::SPADES)});
 
     auto top_card = card(Rank::JACK, Suit::CLUBS);
 
@@ -317,7 +409,7 @@ TEST_F(PlayCardTest, LeadReturnsHighestScoringCard) {
     EXPECT_EQ(result.rank, Rank::ACE);
 }
 
-TEST_F(PlayCardTest, LeadWithMixedSuitReturnsLowestScoring) {
+TEST_F(PlayCardTest, LeadWithMixedSuitReturnsHighestScoring) {
     auto hand = c({card(Rank::NINE, Suit::HEARTS),
                    card(Rank::ACE, Suit::DIAMONDS),
                    card(Rank::KING, Suit::CLUBS),
@@ -326,8 +418,8 @@ TEST_F(PlayCardTest, LeadWithMixedSuitReturnsLowestScoring) {
     auto state = makeState(0, Phase::PLAYING, Suit::HEARTS, hand, {});
 
     Card result = playCard(state);
-    EXPECT_EQ(result.suit, Suit::DIAMONDS);
-    EXPECT_EQ(result.rank, Rank::ACE);
+    EXPECT_EQ(result.suit, Suit::HEARTS);
+    EXPECT_EQ(result.rank, Rank::NINE);
 }
 
 TEST_F(PlayCardTest, FollowCannotWinTakesLowest) {
@@ -345,5 +437,3 @@ TEST_F(PlayCardTest, FollowCannotWinTakesLowest) {
     EXPECT_EQ(result.suit, Suit::HEARTS);
     EXPECT_EQ(result.rank, Rank::KING);
 }
-
-

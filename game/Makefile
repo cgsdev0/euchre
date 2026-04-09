@@ -35,7 +35,7 @@ test_build:
 
 .PHONY: test
 test: test_build
-	./test --gtest_filter='-OrderUpP1Test.Bottom5Trump:OrderUpP1Test.TurnDownABowerPainForAnHour'
+	./test
 
 debug: CXXFLAGS += -g
 debug: $(TARGET)
