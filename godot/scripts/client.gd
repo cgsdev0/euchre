@@ -1,6 +1,7 @@
 extends Node
 
-@export var websocket_url = "ws://localhost:3001/ws/room/"
+# @export var websocket_url = "ws://localhost:3001/ws/room/"
+@export var websocket_url = "wss://euchre.lol/ws/room/"
 @export var room = "pizza"
 
 # Our WebSocketClient instance.
@@ -74,6 +75,7 @@ signal play_card(id, card)
 signal pick_up(id, card)
 signal last_card(cards)
 signal discard(id, card)
+signal win_trick(id)
 signal welcome
 signal resume
 signal deal
@@ -125,9 +127,14 @@ func apply_queued_action():
 		"restart":
 			state.scores = [0, 0]
 		"win_trick":
+			cooling_down = true
+			win_trick.emit(action.id)
 			state.trick = []
 			state.players[action.id].tricks += 1
 		"win_hand":
+			for n in get_tree().get_nodes_in_group("current_hand"):
+				n.queue_free()
+	
 			state.played_cards = []
 			for player in state.players:
 				player.sitting_out = false

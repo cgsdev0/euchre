@@ -38,6 +38,7 @@ func throw():
 	new_card.linear_velocity = v
 	new_card.collision_layer = 1
 	new_card.collision_mask = 1
+	new_card.add_to_group("current_trick")
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:

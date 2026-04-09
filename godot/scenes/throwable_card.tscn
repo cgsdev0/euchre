@@ -14,12 +14,14 @@ script = ExtResource("1_65u3x")
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742276e-08, 0, -1, 0, 0, 0)
 shaded = true
 double_sided = false
+alpha_cut = 1
 texture_filter = 0
 texture = ExtResource("1_y6c05")
 
 [node name="Back" type="Sprite3D" parent="." unique_id=1066609984]
 shaded = true
 double_sided = false
+alpha_cut = 1
 texture_filter = 0
 texture = ExtResource("2_65u3x")
 

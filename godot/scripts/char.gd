@@ -13,8 +13,27 @@ func _ready() -> void:
 	Client.welcome.connect(on_welcome)
 	Client.pick_up.connect(on_pick_up)
 	Client.discard.connect(on_discard)
-
+	Client.win_trick.connect(on_win_trick)
 var dummy = true
+
+func on_win_trick(pid):
+	if pid == get_index():
+		var t = create_tween()
+		t.set_parallel()
+		t.set_trans(Tween.TRANS_QUAD)
+		t.set_ease(Tween.EASE_OUT)
+		for n in get_tree().get_nodes_in_group("current_trick"):
+			n.remove_from_group("current_trick")
+			n.add_to_group("current_hand")
+			n.freeze = true
+			t.tween_property(n, "global_position", get_tricks_marker().global_position, 0.8)
+			t.tween_property(n, "global_rotation", get_tricks_marker().global_rotation, 0.8)
+		await t.finished
+		Client.resume.emit()
+			
+func get_tricks_marker():
+	return $Tricks
+	
 func on_welcome():
 	dummy = get_index() != Client.state.id
 	if !dummy:
@@ -28,17 +47,24 @@ func on_welcome():
 			var ci = cards.get_child(i)
 			ci.suit = c.suit
 			ci.rank = c.rank
-		card_count = Client.state.your_cards.size()
-
+	else:
+		if Client.state.players.size() <= get_index():
+			return
+		var card_count = Client.state.players[get_index()].card_count
+		while card_count > cards.get_child_count():
+			cards.add_child(card.instantiate())
+		while card_count < cards.get_child_count():
+			cards.get_child(0).queue_free()
+		relayout()
+		
 func on_pick_up(id, c):
 	if id != get_index():
 		return
-	if !dummy:
-		var ci = card.instantiate()
-		cards.add_child(ci)
-		ci.suit = c.suit
-		ci.rank = c.rank
-		relayout()
+	var ci = card.instantiate()
+	cards.add_child(ci)
+	ci.suit = c.suit
+	ci.rank = c.rank
+	relayout()
 		
 func on_deal():
 	if !dummy:
@@ -52,6 +78,10 @@ func on_deal():
 			ci.rank = c.rank
 			await get_tree().create_timer(0.2).timeout
 		Client.resume.emit()
+	else:
+		while cards.get_child_count() < 5:
+			cards.add_child(card.instantiate())
+			relayout()
 
 func on_last_card(cards):
 	for i in cards.size():
@@ -85,11 +115,12 @@ func on_play_card(i, card):
 		await $AnimationPlayer2.animation_finished
 		Client.resume.emit()
 
-var card_count = 5
-
 func hide_card():
 	if dummy:
-		card_count -= 1
+		var ci = cards.get_child(0)
+		ci.queue_free()
+		await RenderingServer.frame_post_draw
+		relayout()
 	else:
 		if !pending:
 			return
