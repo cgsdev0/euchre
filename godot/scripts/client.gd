@@ -1,8 +1,13 @@
 extends Node
 
-# @export var websocket_url = "ws://localhost:3001/ws/room/"
-@export var websocket_url = "wss://euchre.lol/ws/room/"
+@export var prod = false
 @export var room = "pizza"
+
+func get_url():
+	if prod:
+		return "wss://euchre.lol/ws/room/"
+	else:
+		return "ws://localhost:3001/ws/room/"
 
 # Our WebSocketClient instance.
 var socket = WebSocketPeer.new()
@@ -39,7 +44,7 @@ func on_resume():
 	cooling_down = false
 	
 func connect_ws():
-	var actual_url = websocket_url + room
+	var actual_url = get_url() + room
 	# Initiate connection to the given URL.
 	var err = socket.connect_to_url(actual_url)
 	if err == OK:
