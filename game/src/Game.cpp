@@ -581,6 +581,7 @@ void Game::undo_premove(const HandlerArgs &server, UndoPremoveMsg &msg) {
     for (i = 0; i < state.players.size(); ++i) {
         if (state.players[i].session == server.session) {
             player = &state.players[i];
+            break;
         }
     }
     if (player == nullptr)
@@ -611,6 +612,7 @@ void Game::premove(const HandlerArgs &server, PremoveMsg &msg) {
         for (i = 0; i < state.players.size(); ++i) {
             if (state.players[i].session == server.session) {
                 player = &state.players[i];
+                break;
             }
         }
         if (player == nullptr)
