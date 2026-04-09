@@ -177,8 +177,10 @@ func _process(_delta):
 					"error":
 						match data.error:
 							"cookie":
-								var cookie = { "type": "cookie", "session": "bingobong" }
+								var cookie = { "type": "cookie", "session": "fingoflong" }
 								socket.send_text(JSON.stringify(cookie))
+								var update_name = { "type": "update_name", "name": "badcop" }
+								socket.send_text(JSON.stringify(update_name))
 							_:
 								printerr(data.error)
 					"redirect":

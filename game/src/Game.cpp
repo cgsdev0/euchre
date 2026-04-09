@@ -615,6 +615,8 @@ void Game::premove(const HandlerArgs &server, PremoveMsg &msg) {
         }
         if (player == nullptr)
             throw GameError({.error = "unknown player"});
+        if (player->sitting_out)
+            throw GameError({.error = "nice try brian"});
         if (!std::erase(player->cards, msg.card))
             throw GameError({.error = "you don't have that card"});
         player->premoves.push_back(msg.card);
