@@ -92,8 +92,8 @@ namespace Bot {
 
         if (state.phase == Phase::VOTE_ROUND1) {
             int score = score_hand_for_suit(state.hand, (*state.top_card).suit);
-            if (score > 20) {
-                if (score > 35) {
+            if (score >= 20) {
+                if (score >= 35) {
                     go_alone = true;
                 }
                 return true;
@@ -105,9 +105,9 @@ namespace Bot {
                     continue;
 
                 int score = score_hand_for_suit(state.hand, (Suit)i);
-                if (score > 20) {
+                if (score >= 20) {
                     suit = (Suit)i;
-                    if (score > 35) {
+                    if (score >= 35) {
                         go_alone = true;
                     }
                     return true;
