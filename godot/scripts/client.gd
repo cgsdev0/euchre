@@ -1,8 +1,11 @@
 extends Node
 
 @export var prod = true
-@export var room = "pizza"
+@export var room = "pizza6"
 
+func cookie_hack():
+	return OS.get_processor_name()
+	
 func get_url():
 	if prod:
 		return "wss://euchre.lol/ws/room/"
@@ -81,9 +84,12 @@ signal pick_up(id, card)
 signal last_card(cards)
 signal discard(id, card)
 signal win_trick(id)
+signal update_player(id)
 signal welcome
 signal resume
 signal deal
+signal think(id)
+signal order
 
 func apply_queued_action():
 	if queue.is_empty() || cooling_down:
@@ -93,8 +99,6 @@ func apply_queued_action():
 	match action.type:
 		"join":
 			state.players.push_back({ "tricks": 0, "card_count": 0, "connected": true })
-		"update_name":
-			state.players[action.id]['name'] = action.name
 		"disconnect":
 			state.players[action.id].connected = false
 		"reconnect":
@@ -103,9 +107,19 @@ func apply_queued_action():
 			merge(state, action)
 			self.welcome.emit()
 			print(state)
+		"update_player":
+			state.players[action.id]['name'] = action.name
+			self.update_player.emit(action.id)
 		"update":
 			merge(state, action)
-			print(state)
+			# detect voting changes
+			match state.phase:
+				"vote_round1":
+					think.emit(state.turn)
+					cooling_down = true
+				"vote_round2":
+					think.emit(state.turn)
+					cooling_down = true
 		"deal":
 			for player in state.players:
 				player.card_count = 5
@@ -114,6 +128,7 @@ func apply_queued_action():
 			self.deal.emit()
 			print(state)
 		"order":
+			order.emit()
 			if "alone" in action:
 				var partner = (action.id + 2) % 2
 				state.players[partner].sitting_out = true
@@ -141,7 +156,8 @@ func apply_queued_action():
 				n.queue_free()
 	
 			state.played_cards = []
-			for player in state.players:
+			for i in state.players.size():
+				var player = state.players[i]
 				player.sitting_out = false
 				player.tricks = 0
 		"play_card":
@@ -177,9 +193,9 @@ func _process(_delta):
 					"error":
 						match data.error:
 							"cookie":
-								var cookie = { "type": "cookie", "session": "fingoflong" }
+								var cookie = { "type": "cookie", "session": cookie_hack() }
 								socket.send_text(JSON.stringify(cookie))
-								var update_name = { "type": "update_name", "name": "badcop" }
+								var update_name = { "type": "update_name", "name": cookie_hack() }
 								socket.send_text(JSON.stringify(update_name))
 							_:
 								printerr(data.error)

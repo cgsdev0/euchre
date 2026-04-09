@@ -1,7 +1,7 @@
 extends Node3D
 
 @onready var marker = $Marker3D
-@onready var cards = $Cards
+@onready var cards = %Cards
 
 static var card = preload("res://scenes/card.tscn")
 
@@ -14,8 +14,17 @@ func _ready() -> void:
 	Client.pick_up.connect(on_pick_up)
 	Client.discard.connect(on_discard)
 	Client.win_trick.connect(on_win_trick)
+	Client.think.connect(on_think)
+	Client.order.connect(on_order)
+	Client.stand_down.connect(on_stand_down)
 var dummy = true
 
+var folded = false
+
+func on_stand_down(id):
+	if id == get_index():
+		set_folded(Client.state.players[id].sitting_out)
+		
 func on_win_trick(pid):
 	if pid == get_index():
 		var t = create_tween()
@@ -33,9 +42,43 @@ func on_win_trick(pid):
 			
 func get_tricks_marker():
 	return $Tricks
+
+var thinking = false
+
+func set_think(t):
+	if !thinking && t:
+		thinking = t
+		await get_tree().create_timer(0.1)
+		$AnimationPlayer2.play("think")
+		await $AnimationPlayer2.animation_finished
+		await get_tree().create_timer(0.25)
+		Client.resume.emit()
+	elif thinking && !t:
+		thinking = t
+		$AnimationPlayer2.play_backwards("think")
+
+func set_folded(t):
+	if !folded && t:
+		folded = t
+		$AnimationPlayer2.play("fold")
+	elif folded && !t:
+		folded = t
+		$AnimationPlayer2.play_backwards("fold")
+		
+func on_order():
+	set_think(false)
+	
+func on_think(id):
+	set_think(get_index() == id)
 	
 func on_welcome():
 	dummy = get_index() != Client.state.id
+	if Client.state.players.size() > get_index():
+		if Client.state.players[get_index()].sitting_out:
+			set_folded(true)
+	if get_index() == Client.state.turn:
+		if Client.state.phase == "vote_round1" || Client.state.phase == "vote_round2":
+			set_think(true)
 	if !dummy:
 		get_viewport().get_camera_3d().global_transform = marker.global_transform
 		get_viewport().get_camera_3d().global_basis = marker.global_basis
@@ -67,6 +110,7 @@ func on_pick_up(id, c):
 	relayout()
 		
 func on_deal():
+	set_folded(false)
 	if !dummy:
 		for i in Client.state.your_cards.size():
 			if i >= cards.get_child_count():
