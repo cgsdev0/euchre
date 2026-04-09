@@ -1,6 +1,6 @@
 extends Node
 
-@export var prod = false
+@export var prod = true
 @export var room = "pizza"
 
 func get_url():
