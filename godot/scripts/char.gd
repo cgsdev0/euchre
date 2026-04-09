@@ -48,10 +48,10 @@ var thinking = false
 func set_think(t):
 	if !thinking && t:
 		thinking = t
-		await get_tree().create_timer(0.1)
+		await get_tree().create_timer(0.3).timeout
 		$AnimationPlayer2.play("think")
 		await $AnimationPlayer2.animation_finished
-		await get_tree().create_timer(0.25)
+		await get_tree().create_timer(0.7).timeout
 		Client.resume.emit()
 	elif thinking && !t:
 		thinking = t

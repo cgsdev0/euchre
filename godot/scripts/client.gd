@@ -1,7 +1,7 @@
 extends Node
 
 @export var prod = true
-@export var room = "pizza6"
+@export var room = "pizzaA"
 
 func cookie_hack():
 	return OS.get_processor_name()
@@ -108,18 +108,20 @@ func apply_queued_action():
 			self.welcome.emit()
 			print(state)
 		"update_player":
-			state.players[action.id]['name'] = action.name
+			if 'name' in action:
+				state.players[action.id]['name'] = action.name
+			print(action)
 			self.update_player.emit(action.id)
 		"update":
 			merge(state, action)
 			# detect voting changes
 			match state.phase:
 				"vote_round1":
-					think.emit(state.turn)
 					cooling_down = true
+					think.emit(state.turn)
 				"vote_round2":
-					think.emit(state.turn)
 					cooling_down = true
+					think.emit(state.turn)
 		"deal":
 			for player in state.players:
 				player.card_count = 5
@@ -129,8 +131,8 @@ func apply_queued_action():
 			print(state)
 		"order":
 			order.emit()
-			if "alone" in action:
-				var partner = (action.id + 2) % 2
+			if "alone" in action && action.alone:
+				var partner = (action.id + 2) % 4
 				state.players[partner].sitting_out = true
 				stand_down.emit(partner)
 			if state.phase == "vote_round1":
