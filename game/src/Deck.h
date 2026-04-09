@@ -24,6 +24,14 @@ struct Deck {
         this->deal_ptr = 0;
     }
 
+    void setDeck(const std::vector<API::Card>& new_cards) {
+        assert(new_cards.size() == CARDS_IN_DECK);
+        for (std::size_t i = 0; i < CARDS_IN_DECK; ++i) {
+            this->cards[i] = new_cards[i];
+        }
+        this->deal_ptr = 0;
+    }
+
     const std::vector<API::Card> deal(std::size_t n) {
         this->deal_ptr += n;
         assert(this->deal_ptr <= CARDS_IN_DECK);

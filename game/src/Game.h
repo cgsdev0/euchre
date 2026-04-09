@@ -133,6 +133,7 @@ class Game {
     // send all complaints to noreply@rollycubes.com
     bool cascading = false;
     friend GameCoordinator;
+    friend class SimulationTest;
 };
 
 #endif

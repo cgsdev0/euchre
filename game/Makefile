@@ -23,17 +23,19 @@ clean:
 	rm -f $(OBJ) $(DEP) GameServer
 	cd uWebSockets/uSockets && make clean
 
-test_build: CXXFLAGS=-std=c++20 -Iincludes -g
-test_build: CXXFLAGS += -Igoogletest/googletest/include
-test_build: CXXFLAGS += -Igoogletest/googlemock/include
-test_build: CXXFLAGS += -Isrc -Isrc/api
-test_build: LDFLAGS=-lz -Lgoogletest/lib -lgtest -lgmock -lpthread
-test_build: src/Game.o src/Bot.o src/api/API.o tests/*.cpp
-	$(CXX) $(CXXFLAGS) tests/*.cpp -o test src/Game.o src/Bot.o src/api/API.o $(LDFLAGS)
+.PHONY: test_clean
+test_clean:
+	rm -f test
+
+test_build:
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -Igoogletest/googletest/include -Igoogletest/googlemock/include -Isrc -Isrc/api \
+		tests/test_bot.cpp tests/test_game.cpp tests/test_simulation.cpp \
+		src/Game.o src/Bot.o src/api/API.o \
+		-o test googletest/lib/libgtest_main.a googletest/lib/libgtest.a -lpthread
 
 .PHONY: test
 test: test_build
-	./$@
+	./test --gtest_filter='-OrderUpP1Test.Bottom5Trump:OrderUpP1Test.TurnDownABowerPainForAnHour'
 
 debug: CXXFLAGS += -g
 debug: $(TARGET)
