@@ -1,45 +1,35 @@
 #include <assert.h>
 
-#include <unordered_map>
-#include <ranges>
 #include <algorithm>
+#include <ranges>
+#include <unordered_map>
 
-#include "api/API.hpp"
 #include "Bot.hpp"
 #include "Utils.hpp"
+#include "api/API.hpp"
 
 using namespace Bot;
 using namespace API;
 
 float BOT_WEIGHTS[BotName::BOT_TOTAL][BotWeight::BOT_WEIGHT_TOTAL] = {
-    { // BOT_BETHANY
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    },
-    { // BOT_BILL
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    },
-    { // BOT_BRADLEY
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    },
-    { // BOT_EUGINE
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    },
-    { // BOT_FRANK
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    },
-    { // BOT_GEORGINA
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    },
-    { // BOT_MERIDITH
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    },
-    { // BOT_SHERRY
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    },
-    { // BOT_PERFECT
-        1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5
-    }
-};
+    {// BOT_BETHANY
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5},
+    {// BOT_BILL
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5},
+    {// BOT_BRADLEY
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5},
+    {// BOT_EUGINE
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5},
+    {// BOT_FRANK
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5},
+    {// BOT_GEORGINA
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5},
+    {// BOT_MERIDITH
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5},
+    {// BOT_SHERRY
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5},
+    {// BOT_PERFECT
+     1.0, 1.0, 0.0, 1.0, 1.0, 0.5, 0.5}};
 
 std::string BOT_NAMES[BotName::BOT_TOTAL] = {
     "NONE",
@@ -51,8 +41,7 @@ std::string BOT_NAMES[BotName::BOT_TOTAL] = {
     "Georgina",
     "Meridith",
     "Sherry",
-    "PERFECT"
-};
+    "PERFECT"};
 
 namespace Bot {
 
@@ -73,15 +62,14 @@ namespace Bot {
     }
 
     static int score_card_order(Card card, Suit trump) {
-        if (color(card.suit) == color(trump)) {
+        if (card.suit == trump || isLeft(card, trump)) {
             if (card.rank == Rank::JACK) {
-                return card.suit == trump ? 16 : 15;
+                return 16;
             } else {
-                return (int)card.rank + 9; // in this system, '0' is the card value for '9'
+                return (int)card.rank + 9;
             }
-        } else {
-            return (int)card.rank;
         }
+        return (int)card.rank;
     }
 
     static int score_card(Card card, Suit trump, Suit led) {
@@ -104,21 +92,22 @@ namespace Bot {
 
         if (state.phase == Phase::VOTE_ROUND1) {
             int score = score_hand_for_suit(state.hand, (*state.top_card).suit);
-            if (score > 20) {
-                if (score > 35) {
+            if (score >= 20) {
+                if (score >= 35) {
                     go_alone = true;
                 }
                 return true;
             }
         } else if (state.phase == Phase::VOTE_ROUND2) {
+            Suit top_suit = (*state.top_card).suit;
             for (int i = 0; i < 4; i++) {
-                if (i == (int)(*state.top_card).suit)
+                if (i == (int)top_suit)
                     continue;
 
-                int score = score_hand_for_suit(state.hand, (*state.top_card).suit);
-                if (score > 20) {
-                    suit = (*state.top_card).suit;
-                    if (score > 35) {
+                int score = score_hand_for_suit(state.hand, (Suit)i);
+                if (score >= 20) {
+                    suit = (Suit)i;
+                    if (score >= 35) {
                         go_alone = true;
                     }
                     return true;
@@ -147,8 +136,8 @@ namespace Bot {
         // second, attempt to discard a low off-suit (the lowest off-suit)
 
         auto non_trump = state.hand | std::views::filter([&](const Card &c) {
-            return c.suit != state.trump;
-        });
+                             return c.suit != state.trump;
+                         });
 
         auto non_trump_it = std::ranges::min_element(non_trump, {}, [](const Card &c) {
             return static_cast<int>(c.rank);
@@ -169,7 +158,7 @@ namespace Bot {
 
     static std::vector<Card> sort_hands_by_value(std::vector<Card> cards, Suit trump, std::optional<Suit> led) {
         auto copy = cards;
-        std::sort(copy.begin(), copy.end(), [&](Card a, Card b){
+        std::sort(copy.begin(), copy.end(), [&](Card a, Card b) {
             if (led == std::nullopt) { // we're leading
                 return score_card_order(a, trump) > score_card_order(b, trump);
             } else {
@@ -201,8 +190,8 @@ namespace Bot {
             Suit led_suit = led.card.suit;
 
             auto legal_view = state.hand | std::views::filter([&](const Card &c) {
-                return c.suit == led.card.suit;
-            });
+                                  return c.suit == led.card.suit;
+                              });
             std::vector<Card> legal_cards_vec(legal_view.begin(), legal_view.end());
 
             if (!legal_cards_vec.empty()) {
@@ -259,4 +248,4 @@ namespace Bot {
             }
         }
     }
-}
+} // namespace Bot
