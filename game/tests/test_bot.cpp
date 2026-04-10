@@ -588,3 +588,134 @@ TEST_F(PlayCardTest, FollowCannotWinTakesLowest) {
     EXPECT_EQ(result.suit, Suit::HEARTS);
     EXPECT_EQ(result.rank, Rank::KING);
 }
+
+TEST_F(PlayCardTest, LeftBowerLedRightBowerFollows) {
+    // Hearts is trump. Left bower (Jack of Clubs) is led.
+    // Bot with right bower (Jack of Hearts) should follow with right bower.
+    auto hand = c({card(Rank::JACK, Suit::HEARTS), // right bower
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::QUEEN, Suit::HEARTS),
+                   card(Rank::NINE, Suit::DIAMONDS)});
+    auto stack = std::vector<TaggedCard>{tagged(1, Rank::JACK, Suit::CLUBS)}; // left bower led
+    auto state = makeState(2, Phase::PLAYING, Suit::HEARTS, hand, stack);
+
+    Card result = playCard(state);
+    EXPECT_EQ(result.suit, Suit::HEARTS) << "Right bower should follow left bower (both are trump)";
+    EXPECT_EQ(result.rank, Rank::JACK);
+}
+
+TEST_F(PlayCardTest, LeftBowerLedOtherTrumpFollows) {
+    // Hearts is trump. Left bower (Jack of Clubs) is led.
+    // Bot with other trump (not right bower) should follow with trump.
+    auto hand = c({card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::QUEEN, Suit::HEARTS),
+                   card(Rank::TEN, Suit::HEARTS),
+                   card(Rank::NINE, Suit::DIAMONDS)});
+    auto stack = std::vector<TaggedCard>{tagged(1, Rank::JACK, Suit::CLUBS)}; // left bower led
+    auto state = makeState(2, Phase::PLAYING, Suit::HEARTS, hand, stack);
+
+    Card result = playCard(state);
+    EXPECT_EQ(result.suit, Suit::HEARTS) << "Should follow with trump, not dump off-suit";
+}
+
+TEST_F(PlayCardTest, TrumpLedLeftBowerFollows) {
+    // Hearts is trump. Ace of Hearts is led.
+    // Bot with left bower (Jack of Clubs) should follow with left bower.
+    auto hand = c({card(Rank::JACK, Suit::CLUBS), // left bower
+                   card(Rank::ACE, Suit::DIAMONDS),
+                   card(Rank::KING, Suit::DIAMONDS),
+                   card(Rank::QUEEN, Suit::SPADES),
+                   card(Rank::NINE, Suit::SPADES)});
+    auto stack = std::vector<TaggedCard>{tagged(1, Rank::ACE, Suit::HEARTS)}; // trump led
+    auto state = makeState(2, Phase::PLAYING, Suit::HEARTS, hand, stack);
+
+    Card result = playCard(state);
+    EXPECT_EQ(result.suit, Suit::CLUBS) << "Left bower should follow trump lead";
+    EXPECT_EQ(result.rank, Rank::JACK);
+}
+
+TEST_F(PlayCardTest, TrumpLedRightBowerFollows) {
+    // Hearts is trump. Ace of Hearts is led.
+    // Bot with right bower should follow with it.
+    auto hand = c({card(Rank::JACK, Suit::HEARTS), // right bower
+                   card(Rank::ACE, Suit::DIAMONDS),
+                   card(Rank::KING, Suit::DIAMONDS),
+                   card(Rank::QUEEN, Suit::CLUBS),
+                   card(Rank::NINE, Suit::CLUBS)});
+    auto stack = std::vector<TaggedCard>{tagged(1, Rank::ACE, Suit::HEARTS)}; // trump led
+    auto state = makeState(2, Phase::PLAYING, Suit::HEARTS, hand, stack);
+
+    Card result = playCard(state);
+    EXPECT_EQ(result.suit, Suit::HEARTS);
+    EXPECT_EQ(result.rank, Rank::JACK);
+}
+
+TEST_F(PlayCardTest, LeftBowerLedBotHasOnlyOffSuit) {
+    // Hearts is trump. Left bower (Jack of Clubs) is led.
+    // Bot with no trump or left bower should be unable to follow and dump off-suit.
+    auto hand = c({card(Rank::ACE, Suit::DIAMONDS),
+                   card(Rank::KING, Suit::DIAMONDS),
+                   card(Rank::QUEEN, Suit::SPADES),
+                   card(Rank::TEN, Suit::SPADES),
+                   card(Rank::NINE, Suit::SPADES)});
+    auto stack = std::vector<TaggedCard>{tagged(1, Rank::JACK, Suit::CLUBS)}; // left bower led
+    auto state = makeState(2, Phase::PLAYING, Suit::HEARTS, hand, stack);
+
+    Card result = playCard(state);
+    EXPECT_NE(result.suit, Suit::HEARTS) << "No trump to follow, should dump off-suit";
+    EXPECT_NE(result.suit, Suit::CLUBS) << "No left bower to follow";
+}
+
+TEST_F(PlayCardTest, LeftBowerLedNoRightBowerButHasTrump) {
+    // Hearts is trump. Left bower (Jack of Clubs) is led.
+    // Bot has no right bower but has other hearts - should follow with hearts.
+    auto hand = c({card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::QUEEN, Suit::HEARTS),
+                   card(Rank::NINE, Suit::DIAMONDS),
+                   card(Rank::NINE, Suit::SPADES)});
+    auto stack = std::vector<TaggedCard>{tagged(1, Rank::JACK, Suit::CLUBS)}; // left bower led
+    auto state = makeState(2, Phase::PLAYING, Suit::HEARTS, hand, stack);
+
+    Card result = playCard(state);
+    EXPECT_EQ(result.suit, Suit::HEARTS) << "Should follow left bower with other trump";
+}
+
+TEST_F(PlayCardTest, BothBowersPlayableFollowsLeft) {
+    // Hearts is trump. Left bower (Jack of Clubs) is led.
+    // Bot has both left and right bowers - must follow with left bower (same suit as led).
+    auto hand = c({card(Rank::JACK, Suit::HEARTS), // right bower
+                   card(Rank::JACK, Suit::CLUBS),  // left bower
+                   card(Rank::ACE, Suit::DIAMONDS),
+                   card(Rank::KING, Suit::DIAMONDS),
+                   card(Rank::QUEEN, Suit::SPADES)});
+    auto stack = std::vector<TaggedCard>{tagged(1, Rank::JACK, Suit::CLUBS)}; // left bower led
+    auto state = makeState(2, Phase::PLAYING, Suit::HEARTS, hand, stack);
+
+    Card result = playCard(state);
+    EXPECT_EQ(result.suit, Suit::CLUBS) << "Must follow with left bower (same suit as led)";
+    EXPECT_EQ(result.rank, Rank::JACK);
+}
+
+TEST_F(PlayCardTest, LeftBowerDifferentColorTrump) {
+    // Spades is trump. Left bower would be Clubs (same color as spades).
+    // Hearts is led - bot has left bower of spades (Jack of Clubs).
+    // Wait, that's wrong - when spades is trump, left bower is Jack of Clubs (same color black).
+    // So if Hearts is led, left bower doesn't apply.
+
+    // Let's test: Spades is trump, Clubs is led.
+    // Bot has Jack of Clubs (left bower of spades) - should follow.
+    auto hand = c({card(Rank::JACK, Suit::CLUBS), // left bower when spades is trump
+                   card(Rank::ACE, Suit::HEARTS),
+                   card(Rank::KING, Suit::HEARTS),
+                   card(Rank::QUEEN, Suit::DIAMONDS),
+                   card(Rank::NINE, Suit::DIAMONDS)});
+    auto stack = std::vector<TaggedCard>{tagged(1, Rank::ACE, Suit::CLUBS)}; // Clubs led
+    auto state = makeState(2, Phase::PLAYING, Suit::SPADES, hand, stack);
+
+    Card result = playCard(state);
+    EXPECT_EQ(result.suit, Suit::CLUBS) << "Left bower should follow when its color is led";
+    EXPECT_EQ(result.rank, Rank::JACK);
+}

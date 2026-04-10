@@ -190,7 +190,7 @@ namespace Bot {
             Suit led_suit = led.card.suit;
 
             auto legal_view = state.hand | std::views::filter([&](const Card &c) {
-                                  return c.suit == led.card.suit;
+                                  return c.suit == led.card.suit || isLeft(c, state.trump);
                               });
             std::vector<Card> legal_cards_vec(legal_view.begin(), legal_view.end());
 
