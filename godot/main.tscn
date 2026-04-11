@@ -27,28 +27,29 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
 [node name="Slot0" parent="Players" unique_id=1324661739 instance=ExtResource("1_ig7tw")]
 
 [node name="Marker3D" type="Marker3D" parent="Players/Slot0" unique_id=1665918901]
-transform = Transform3D(-0.9997632, 2.4680821e-08, 0.021762462, 0.006971235, 0.9473054, 0.32025608, -0.020615688, 0.32033196, -0.947081, 0, 4.185, -0.217)
+transform = Transform3D(-0.9999756, 0.006981288, -8.280775e-08, 0.0066127214, 0.9471872, 0.32061297, 0.0022383698, 0.32060516, -0.94721025, 0, 4.185, -0.217)
 
 [node name="Slot1" parent="Players" unique_id=823384225 instance=ExtResource("1_ig7tw")]
 transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 2, 0, 2)
 
 [node name="Marker3D" type="Marker3D" parent="Players/Slot1" unique_id=1791732637]
-transform = Transform3D(-0.9997632, 2.4680821e-08, 0.021762462, 0.006971235, 0.9473054, 0.32025608, -0.020615688, 0.32033196, -0.947081, 0, 4.185, -0.217)
+transform = Transform3D(-0.9999756, 0.006981288, -8.280775e-08, 0.0066127214, 0.9471872, 0.32061297, 0.0022383698, 0.32060516, -0.94721025, 0, 4.185, -0.217)
 
 [node name="Slot2" parent="Players" unique_id=794632755 instance=ExtResource("1_ig7tw")]
 transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 1.7484555e-07, 0, 4)
 
 [node name="Marker3D" type="Marker3D" parent="Players/Slot2" unique_id=1597953044]
-transform = Transform3D(-0.9997632, 2.4680821e-08, 0.021762462, 0.006971235, 0.9473054, 0.32025608, -0.020615688, 0.32033196, -0.947081, 0, 4.185, -0.217)
+transform = Transform3D(-0.9999756, 0.006981288, -8.280775e-08, 0.0066127214, 0.9471872, 0.32061297, 0.0022383698, 0.32060516, -0.94721025, 0, 4.185, -0.217)
 
 [node name="Slot3" parent="Players" unique_id=2083612014 instance=ExtResource("1_ig7tw")]
 transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -2, 0, 2)
 
 [node name="Marker3D" type="Marker3D" parent="Players/Slot3" unique_id=1475954040]
-transform = Transform3D(-0.9997632, 2.4680823e-08, 0.021762462, 0.006971235, 0.9473054, 0.32025608, -0.020615688, 0.32033196, -0.947081, -1.5736131e-07, 4.184538, -0.21650124)
+transform = Transform3D(-0.9999756, 0.006981288, -8.280775e-08, 0.0066127214, 0.9471872, 0.32061297, 0.0022383698, 0.32060516, -0.94721025, -1.5736131e-07, 4.184538, -0.21650124)
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1378730159]
 transform = Transform3D(-0.020615647, 0.32033193, -0.947081, 0.006971235, 0.9473054, 0.32025605, 0.9997632, -3.865936e-08, -0.021762421, -1.9388361, 4.184538, 1.6682488e-07)
+fov = 55.0
 script = ExtResource("2_h2yge")
 
 [node name="CSGCylinder3D" type="CSGCylinder3D" parent="." unique_id=618008539]

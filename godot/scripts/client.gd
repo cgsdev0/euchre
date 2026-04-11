@@ -1,7 +1,7 @@
 extends Node
 
-@export var prod = true
-@export var room = "pizzaA"
+@export var prod = false
+@export var room = "pizzaB"
 
 func cookie_hack():
 	return OS.get_processor_name()

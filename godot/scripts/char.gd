@@ -70,7 +70,13 @@ func on_order():
 	
 func on_think(id):
 	set_think(get_index() == id)
-	
+
+func _process(delta):
+	if !dummy:
+		$RHTarget/RHFudged.position.x = -0.2
+		$RHTarget/RHFudged.position.z = -0.15
+		$RHTarget/RHFudged.position.y = -0.1
+		
 func on_welcome():
 	dummy = get_index() != Client.state.id
 	if Client.state.players.size() > get_index():
@@ -145,7 +151,7 @@ func on_discard(i, card):
 	if i == get_index():
 		if !dummy:
 			pending = card
-		$AnimationPlayer2.play("play_card")
+		$AnimationPlayer2.play("discard")
 		await $AnimationPlayer2.animation_finished
 		Client.resume.emit()
 		
